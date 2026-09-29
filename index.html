@@ -3,53 +3,148 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PHD115 Fundamentals of Chemistry · Dr. NAM</title>
+<title>PHD115 Study Hub · Chemistry with Dr. NAM</title>
 <style>
-:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;color-scheme:light}
+:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;--ok:#2E7D4F;--ok-soft:#E3F3E9;color-scheme:light}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
-header{background:var(--ink);color:#fff;padding:36px 20px 30px}
-.in{max-width:880px;margin:0 auto}
-header p{margin:0;color:#A3B1C2}
-h1{font-size:clamp(1.8rem,6vw,2.6rem);margin:6px 0 8px;line-height:1.15}
-main{padding:24px 20px 60px}
-h2{font-size:1.2rem;margin:28px 0 12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
-.card.soon{opacity:.6}
-.tag{display:inline-block;font-size:.78rem;font-weight:600;color:var(--cold);background:var(--cold-soft);border-radius:999px;padding:2px 10px}
-.card h3{margin:10px 0 4px;font-size:1.1rem}
-.card p{margin:0 0 14px;color:var(--muted);font-size:.93rem}
-.btn{display:block;text-align:center;text-decoration:none;font-weight:600;border-radius:10px;padding:12px 14px;margin-top:8px;font-size:1rem}
-.btn.main{background:var(--cold);color:#fff}
-.btn.alt{background:transparent;color:var(--cold);border:1.5px solid var(--cold)}
-.tip{background:var(--heat-soft);border-radius:14px;padding:14px 18px;font-size:.95rem}
-.tip b{color:var(--heat)}
-footer{color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);padding-top:14px;margin-top:36px}
-a:focus-visible{outline:3px solid var(--heat);outline-offset:2px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+.in{max-width:920px;margin:0 auto;padding:0 18px}
+header{background:var(--ink);color:#fff;padding:calc(28px + env(safe-area-inset-top,0px)) 0 26px}
+header .kick{margin:0;color:#A3B1C2;font-size:.9rem}
+h1{font-size:clamp(1.7rem,6vw,2.5rem);margin:6px 0 6px;line-height:1.15}
+header .brand{margin:0;color:#F0B24A;font-weight:600;font-size:.95rem}
+header .sub{margin:10px 0 0;color:#C9D3DC;font-size:.95rem;max-width:640px}
+main{padding:22px 0 50px}
+h2{font-size:1.15rem;margin:26px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.continue{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-left:5px solid var(--heat)}
+.continue p{margin:0}.continue small{color:var(--muted)}
+.path{display:flex;gap:8px;flex-wrap:wrap;margin:0;padding:0;list-style:none}
+.path li{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.9rem}
+.path b{display:block;font-size:.95rem}
+.path .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--cold);color:#fff;font-size:.75rem;font-weight:700;margin-right:6px}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin:20px 0 6px}
+.seg button{flex:1;font:inherit;font-weight:600;border:0;border-radius:9px;padding:11px 8px;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--cold);color:#fff}
+.grid{display:grid;gap:14px}
+.topic{scroll-margin-top:16px}
+.topic.flash{outline:3px solid var(--heat);outline-offset:2px}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--cold);background:var(--cold-soft);border-radius:999px;padding:2px 10px}
+.topic h3{margin:8px 0 2px;font-size:1.08rem}
+.topic p.b{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+.bar{height:6px;background:var(--line);border-radius:999px;overflow:hidden;margin:6px 0 12px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cold),var(--heat))}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+a.go,span.go{display:flex;flex-direction:column;gap:2px;text-decoration:none;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--ink);background:var(--card);min-height:62px}
+a.go:hover{border-color:var(--cold)}
+.go .t{font-weight:600;font-size:.95rem}
+.st{font-size:.78rem;color:var(--muted)}
+.st.done{color:var(--ok);font-weight:600}.st.prog{color:var(--heat);font-weight:600}
+span.go{opacity:.55;background:transparent;border-style:dashed}
+.small{font-size:.85rem;color:var(--muted)}
+.small a{color:var(--cold)}
+.act .desc{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+.rows{display:grid;gap:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}
+.row .l{min-width:0}.row .l b{display:block;font-size:.95rem}
+.btn{font:inherit;font-weight:600;text-decoration:none;border-radius:10px;padding:9px 14px;border:0;background:var(--cold);color:#fff;white-space:nowrap;cursor:pointer}
+.btn.warn{background:transparent;color:#B3261E;border:1.5px solid #B3261E}
+.btn[aria-disabled="true"]{background:var(--line);color:var(--muted);pointer-events:none}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.82rem}
+footer .brand{color:var(--cold);font-weight:700}
+.foot-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+[hidden]{display:none!important}
+a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offset:2px}
 </style>
 </head>
 <body>
 <header><div class="in">
-<p>PHD115 Fundamentals of Chemistry · Diploma in Pharmacy</p>
-<h1>Chemistry with Dr. NAM</h1>
-<p>Lecture slides for Dr. Nur 'Ainun Mokhtar's topics · Faculty of Pharmacy, UiTM Pulau Pinang</p>
+<p class="kick">PHD115 Fundamentals of Chemistry · Diploma in Pharmacy</p>
+<h1>Chemistry with Dr. NAM · Study Hub</h1>
+<p class="brand">Dr. Nur 'Ainun Mokhtar (Dr. NAM) · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p class="sub">Self-instructional materials for Dr. NAM's topics. Study at your own pace, in any order, as often as you like. Every activity can be reset and tried again.</p>
 </div></header>
+
 <main><div class="in">
-<div class="tip"><b>On a phone or tablet:</b> turn it sideways. Tap the right side of a slide (or swipe left) for the next step, the left side to go back. Tap an answer on quick-check slides to see if you are right.</div>
-<h2>Lectures</h2>
-<div class="grid">
- <div class="card"><span class="tag">Week of 19 Oct</span><h3>Ionic &amp; Covalent Compounds I</h3><p>Ball chapter 3: ions, formulas, naming, formula mass, properties of ionic compounds.</p>
-  <a class="btn main" href="ic1/">Open slides</a><a class="btn alt" href="downloads/PHD115_IonicCovalent1_Slides.pptx" download>Download PowerPoint</a></div>
- <div class="card soon"><span class="tag">Week of 26 Oct</span><h3>Ionic &amp; Covalent Compounds II</h3><p>Ball chapter 4 and intermolecular forces. Coming soon.</p></div>
- <div class="card"><span class="tag">Week of 2 Nov</span><h3>Energy &amp; Matters</h3><p>Ball chapter 7: energy, heat, phase changes, bond energies, biochemical energy.</p>
-  <a class="btn main" href="em/">Open slides</a><a class="btn alt" href="downloads/PHD115_EnergyMatters_Slides.pptx" download>Download PowerPoint</a></div>
- <div class="card soon"><span class="tag">Week of 9 Nov</span><h3>Chemical Reactions I</h3><p>Coming soon.</p></div>
- <div class="card soon"><span class="tag">Week of 23 Nov</span><h3>Chemical Reactions II</h3><p>Coming soon.</p></div>
- <div class="card soon"><span class="tag">Week of 30 Nov</span><h3>Solution</h3><p>Coming soon.</p></div>
+<div id="cont" class="card continue" hidden></div>
+
+<h2>Suggested study path for each topic</h2>
+<ol class="path">
+ <li><span class="n">1</span><b>Before class</b>15-min warm-up</li>
+ <li><span class="n">2</span><b>Slides</b>the full lecture</li>
+ <li><span class="n">3</span><b>After class</b>check your understanding</li>
+ <li><span class="n">4</span><b>Tutorial</b>exam-style practice</li>
+ <li><span class="n">5</span><b>Game</b>quick-fire revision</li>
+</ol>
+
+<div class="seg" role="group" aria-label="Browse">
+ <button id="vTopic" aria-pressed="true">By topic</button>
+ <button id="vAct" aria-pressed="false">By activity</button>
 </div>
-<footer>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0. Shared under the same licence for non-commercial teaching.</footer>
+<p class="small">On a phone or tablet, turn it sideways for slides. Tap the right side of a slide for next, the left side to go back.</p>
+
+<section id="byTopic" class="grid"></section>
+<section id="byAct" hidden></section>
+
+<footer>
+ <div class="foot-row"><span>Your progress is saved on this device only. Nothing is sent anywhere.</span><button class="btn warn" id="reset">Reset my progress</button></div>
+ <p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+ <p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0. Shared under the same licence for non-commercial teaching.</p>
+</footer>
 </div></main>
+
+<script>
+// ---- Site content: add a path when an activity is ready (null = coming soon)
+const ACTS=[
+ {k:'pre',  name:'Before class', desc:'A short reading and readiness check to do before the lecture.'},
+ {k:'slides',name:'Slides',     desc:'The complete lecture: figures, worked examples, exercises and quick checks.'},
+ {k:'post', name:'After class', desc:'Questions, calculations and a pharmacy scenario to check your understanding.'},
+ {k:'tut',  name:'Tutorial',    desc:'Exam-style questions with hints and full worked solutions.'},
+ {k:'game', name:'Game',        desc:'A timed quick-fire game that shows which outcomes to revise.'}
+];
+const TOPICS=[
+ {code:'ic1',n:1,title:'Ionic & Covalent Compounds I',blurb:'Ions, formulas, naming, formula mass and the properties of ionic compounds.',ppt:'downloads/PHD115_IonicCovalent1_Slides.pptx',
+  a:{slides:'ic1/slides/',pre:null,post:null,tut:null,game:null}},
+ {code:'ic2',n:2,title:'Ionic & Covalent Compounds II',blurb:'Covalent bonds, naming, Lewis structures, polarity, molecular shape and intermolecular forces.',ppt:null,
+  a:{slides:null,pre:null,post:null,tut:null,game:null}},
+ {code:'em',n:3,title:'Energy & Matters',blurb:'Energy and heat, temperature, phase changes, bond energies and biochemical energy.',ppt:'downloads/PHD115_EnergyMatters_Slides.pptx',
+  a:{slides:'em/slides/',pre:null,post:null,tut:null,game:null}},
+ {code:'cr1',n:4,title:'Chemical Reactions I',blurb:'Balancing equations, types of reactions, redox and stoichiometry.',ppt:null,a:{slides:null,pre:null,post:null,tut:null,game:null}},
+ {code:'cr2',n:5,title:'Chemical Reactions II',blurb:'Reaction rates, collision theory and factors affecting rate.',ppt:null,a:{slides:null,pre:null,post:null,tut:null,game:null}},
+ {code:'sol',n:6,title:'Solution',blurb:'Solubility, concentration, dilution, colligative properties and osmosis.',ppt:null,a:{slides:null,pre:null,post:null,tut:null,game:null}},
+];
+// ---- Progress (saved per device)
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function status(code,act){const p=LS.get('phd115:'+code+':'+act);if(!p)return{txt:'Not started',cls:'',pct:0};
+ if(act==='slides'){const pct=Math.min(100,Math.round(100*(p.max||0)/(p.total||1)));return pct>=100?{txt:'Viewed all ✓',cls:'done',pct:100}:{txt:pct+'% viewed',cls:'prog',pct}}
+ if(p.done)return{txt:(p.best!=null?'Best '+p.best+(p.total?'/'+p.total:''):'Done')+' ✓',cls:'done',pct:100};
+ return{txt:'In progress',cls:'prog',pct:50}}
+const esc=s=>s.replace(/&/g,'&amp;');
+function goEl(t,A){const path=t.a[A.k];if(!path)return `<span class="go"><span class="t">${A.name}</span><span class="st">Coming soon</span></span>`;
+ const s=status(t.code,A.k);return `<a class="go" href="${path}" data-t="${t.code}" data-a="${A.k}"><span class="t">${A.name}</span><span class="st ${s.cls}">${s.txt}</span></a>`}
+function renderTopics(){document.getElementById('byTopic').innerHTML=TOPICS.map(t=>{
+  const av=ACTS.filter(A=>t.a[A.k]);const pct=av.length?Math.round(av.reduce((s,A)=>s+status(t.code,A.k).pct,0)/av.length):0;
+  return `<article class="card topic" id="${t.code}"><span class="tag">Topic ${t.n}</span><h3>${esc(t.title)}</h3>
+  <p class="b">${t.blurb}</p>${av.length?`<div class="bar" aria-label="Progress ${pct}%"><i style="width:${pct}%"></i></div>`:'<p class="small">Materials coming soon.</p>'}
+  <div class="acts">${ACTS.map(A=>goEl(t,A)).join('')}</div>
+  ${t.ppt?`<p class="small" style="margin:10px 0 0"><a href="${t.ppt}" download>Download the slides as PowerPoint</a></p>`:''}</article>`}).join('')}
+function renderActs(){document.getElementById('byAct').innerHTML=ACTS.map(A=>`<div class="act"><h2 style="margin-top:22px">${A.name}</h2><p class="desc">${A.desc}</p><div class="rows">${
+  TOPICS.map(t=>{const path=t.a[A.k];const s=path?status(t.code,A.k):{txt:'Coming soon',cls:''};
+   return `<div class="row"><div class="l"><b>Topic ${t.n} · ${esc(t.title)}</b><span class="st ${s.cls}">${s.txt}</span></div>${path?`<a class="btn" href="${path}" data-t="${t.code}" data-a="${A.k}">Open</a>`:`<span class="btn" aria-disabled="true">Soon</span>`}</div>`}).join('')}</div></div>`).join('')}
+function renderCont(){const l=LS.get('phd115:last');const el=document.getElementById('cont');if(!l){el.hidden=true;return}
+ const t=TOPICS.find(x=>x.code===l.topic),A=ACTS.find(x=>x.k===l.act);if(!t||!A||!t.a[A.k]){el.hidden=true;return}
+ el.hidden=false;el.innerHTML=`<div><p><b>Continue where you left off</b></p><p>Topic ${t.n} · ${esc(t.title)} · ${A.name}</p><small>${status(t.code,A.k).txt}</small></div><a class="btn" href="${t.a[A.k]}" data-t="${t.code}" data-a="${A.k}">Continue</a>`}
+function view(v){const t=v!=='act';document.getElementById('byTopic').hidden=!t;document.getElementById('byAct').hidden=t;
+ document.getElementById('vTopic').setAttribute('aria-pressed',t);document.getElementById('vAct').setAttribute('aria-pressed',!t);try{localStorage.setItem('phd115:view',t?'topic':'act')}catch(e){}}
+function render(){renderTopics();renderActs();renderCont()}
+document.getElementById('vTopic').onclick=()=>view('topic');document.getElementById('vAct').onclick=()=>view('act');
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-t]');if(a)LS.set('phd115:last',{topic:a.dataset.t,act:a.dataset.a,t:Date.now()})});
+document.getElementById('reset').onclick=()=>{if(!confirm('Reset all your saved progress and answers on this device? This cannot be undone.'))return;
+ try{Object.keys(localStorage).filter(k=>k.startsWith('phd115')).forEach(k=>localStorage.removeItem(k))}catch(e){}render();view('topic')};
+render();let v='topic';try{v=localStorage.getItem('phd115:view')||'topic'}catch(e){}view(v);
+addEventListener('pageshow',render);
+if(location.hash){const el=document.getElementById(location.hash.slice(1));if(el){view('topic');setTimeout(()=>{el.scrollIntoView({behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800)},100)}}
+</script>
 </body>
 </html>
