@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Before class · Energy & Matters · PHD115 Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;--ok:#2E7D4F;--ok-soft:#E3F3E9;--bad:#B3261E;--bad-soft:#FBE7E5;color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+.top{position:sticky;top:0;z-index:5;background:rgba(27,42,65,.96);color:#fff;padding:calc(8px + env(safe-area-inset-top,0px)) 0 8px}
+.top .in{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.top a{color:#fff;text-decoration:none;font-size:.9rem;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:6px 10px;white-space:nowrap}
+.meter{flex:1;height:6px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;max-width:260px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7DB6E3,#F0B24A);transition:width .3s}
+.top small{color:#C9D3DC;font-size:.8rem;white-space:nowrap}
+header{background:var(--ink);color:#fff;padding:26px 0 30px;position:relative;overflow:hidden}
+header .kick{margin:0;color:#A3B1C2;font-size:.88rem}
+h1{font-size:clamp(1.7rem,6.5vw,2.4rem);line-height:1.15;margin:6px 0 8px;font-weight:600}
+header .brand{margin:0;color:#F0B24A;font-weight:500;font-size:.92rem}
+header .sub{margin:12px 0 0;color:#C9D3DC;max-width:560px}
+header .in{position:relative;z-index:1}
+header svg.mol{position:absolute;right:-18px;top:14px;width:170px;opacity:.9}
+@media (max-width:620px){header svg.mol{width:120px;right:-26px;top:auto;bottom:-14px;opacity:.35}}
+main{padding:10px 0 40px}
+h2{font-size:1.2rem;margin:34px 0 4px;font-weight:600;display:flex;align-items:baseline;gap:10px}
+h2 .n{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:var(--cold);color:#fff;font-size:.85rem}
+.lead{margin:0 0 12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;margin:12px 0}
+.tag{display:inline-block;font-size:.74rem;font-weight:600;color:var(--cold);background:var(--cold-soft);border-radius:999px;padding:2px 10px;margin-right:6px}
+.src{font-size:.78rem;color:var(--muted)}
+.card h3{margin:8px 0 6px;font-size:1.05rem;font-weight:600}
+.card p{margin:0 0 10px}
+ul.los{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+ul.los li{display:flex;gap:10px;font-size:.93rem}
+ul.los li .tag{flex:none;align-self:flex-start;white-space:nowrap;margin:2px 0 0}
+.q{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.q .qt{font-weight:500;margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;min-height:48px}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);font-size:.8rem;font-weight:600;color:var(--muted)}
+.opt:hover:not([disabled]){border-color:var(--cold)}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.fb{margin-top:10px;border-radius:12px;padding:12px 14px;font-size:.93rem}
+.fb.ok{background:var(--ok-soft);border-left:4px solid var(--ok)}
+.fb.no{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.fb.info{background:var(--heat-soft);border-left:4px solid var(--heat)}
+.fb p{margin:0 0 6px}.fb p:last-child{margin:0}
+.again{font:inherit;font-size:.85rem;font-weight:500;background:none;border:0;color:var(--cold);padding:6px 0 0;cursor:pointer;text-decoration:underline}
+.num{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.num input{font:inherit;font-size:1.05rem;width:150px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.num input:focus{outline:3px solid var(--heat);outline-offset:1px}
+.num .u{color:var(--muted)}
+.btn{font:inherit;font-weight:600;text-decoration:none;border-radius:12px;padding:10px 16px;border:0;background:var(--cold);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--cold);border:1.5px solid var(--cold)}
+.btn.warn{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.btn[disabled]{opacity:.45;cursor:default}
+svg.curve{width:100%;max-width:420px;height:auto;display:block;margin:4px 0 10px}
+.result{border:2px solid var(--cold);background:linear-gradient(180deg,var(--cold-soft),#fff 70%)}
+.score{font-size:2.6rem;font-weight:600;line-height:1;margin:4px 0 6px}
+.score small{font-size:1rem;color:var(--muted);font-weight:400}
+.lorow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.lorow:last-child{border:0}
+.lorow .s{white-space:nowrap;font-weight:600}.lorow .s.ok{color:var(--ok)}.lorow .s.no{color:var(--heat)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pending{color:var(--muted);font-size:.93rem}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.82rem}
+footer .brand{color:var(--cold);font-weight:600}
+[hidden]{display:none!important}
+a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+</style>
+</head>
+<body>
+<div class="top"><div class="in"><a href="../../#em">⌂ Study hub</a><div class="meter" aria-hidden="true"><i id="meter"></i></div><small id="count">0 of 10 answered</small></div></div>
+<header><div class="in">
+<p class="kick">PHD115 Fundamentals of Chemistry · Topic 3 · Energy &amp; Matters</p>
+<h1>Before class</h1>
+<p class="brand">Dr. Nur 'Ainun Mokhtar (Dr. NAM) · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p class="sub">A 15-minute warm-up for the lecture. Make one prediction, read six short cards, then try four quick calculations. Every answer is checked straight away, and you can try again as often as you like.</p>
+</div>
+<svg class="mol" viewBox="0 0 200 150" aria-hidden="true"><defs>
+<radialGradient id="gO" cx=".35" cy=".35"><stop offset="0" stop-color="#FF9B8F"/><stop offset="1" stop-color="#C0392B"/></radialGradient>
+<radialGradient id="gH" cx=".35" cy=".35"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#B9C6D3"/></radialGradient></defs>
+<line x1="100" y1="70" x2="50" y2="110" stroke="#C9D3DC" stroke-width="8" stroke-linecap="round"/><line x1="100" y1="70" x2="152" y2="110" stroke="#C9D3DC" stroke-width="8" stroke-linecap="round"/>
+<circle cx="100" cy="70" r="34" fill="url(#gO)"/><circle cx="48" cy="112" r="21" fill="url(#gH)"/><circle cx="154" cy="112" r="21" fill="url(#gH)"/></svg>
+</header>
+
+<main><div class="in">
+<div class="card"><h3 style="margin-top:0">By the end of the lecture you should be able to…</h3><ul class="los" id="los"></ul>
+<p class="src" style="margin:12px 0 0">Prefer paper? <a href="../../downloads/PHD115_EM_PreLecture_v1.pdf" download>Download the printable version (PDF)</a> with a self-check answer key.</p></div>
+
+<h2><span class="n">1</span>Predict</h2>
+<p class="lead">Take a guess before you read anything. It is not scored.</p>
+<div class="card" id="predict"></div>
+
+<h2><span class="n">2</span>Read and check</h2>
+<p class="lead">Each card previews one part of the lecture. Read it, then answer the question below it.</p>
+<div id="read"></div>
+
+<h2><span class="n">3</span>Maths warm-up</h2>
+<p class="lead">Four calculations you will need in the lecture. Type a number, then tap Check.</p>
+<div id="maths"></div>
+
+<h2><span class="n">4</span>Your results</h2>
+<div class="card result" id="result"></div>
+
+<footer>
+<p>Your answers are saved on this device only. Nothing is sent anywhere.</p>
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 7.0–7.5. Shared under the same licence for non-commercial teaching.</p>
+</footer>
+</div></main>
+
+<script>
+const D={"los": [["EM-LO1", "Define energy and heat, and convert between joules, calories and nutritional Calories"], ["EM-LO2", "Convert between temperature scales and calculate heat gained or lost using q = mcΔT"], ["EM-LO3", "Describe phase changes and calculate the energy involved using heats of fusion and vaporisation"], ["EM-LO4", "Interpret the heating curve of water"], ["EM-LO5", "Define bond energy, estimate ΔH from bond energies, and classify reactions as endothermic or exothermic"], ["EM-LO6", "Relate energy changes to biochemical reactions such as glucose oxidation and ATP hydrolysis"]], "part": {"EM-LO1": "Part 1", "EM-LO2": "Part 2", "EM-LO3": "Part 3", "EM-LO4": "Part 3", "EM-LO5": "Part 4", "EM-LO6": "Part 5"}, "predict": {"q": "You squeeze an instant cold pack for a patient's sprained ankle. Inside, ammonium nitrate dissolves in water and the pack turns cold within seconds. Which way does the heat flow?", "opts": ["From the pack into the ankle", "From the ankle into the pack", "No heat flows; the pack makes 'cold'", "Heat is destroyed inside the pack"], "ans": 1, "why": "Heat always flows from hotter to colder. The dissolving process absorbs heat (it is <b>endothermic</b>), so heat flows out of the ankle and into the pack. The ankle loses energy, so it feels cold. There is no such thing as 'cold' flowing; cold is just less energy. You will meet endothermic and exothermic processes in Part 4."}, "read": [{"lo": "EM-LO1", "h": "Energy, heat and their units", "src": "Ball 7.0–7.1", "body": ["<b>Energy</b> is the ability to do work. <b>Heat</b> is the <i>transfer</i> of energy between objects that are at different temperatures. An object contains energy; heat is what flows.", "The SI unit of energy is the <b>joule (J)</b>; 1 kJ = 1000 J. The <b>calorie (cal)</b> is an older unit: 1 cal = 4.184 J.", "Food labels use the nutritional <b>Calorie</b> with a capital C: 1 Cal = 1 kcal = 1000 cal = 4.184 kJ. Malaysian labels show both kcal and kJ, so you can check the factor on any snack packet."], "q": "A food label says one serving provides 110 Calories. How many calories (small c) is that?", "opts": ["0.110 cal", "110 cal", "1.10 × 10<sup>5</sup> cal", "4.60 × 10<sup>5</sup> cal"], "ans": 2, "why": "Capital-C Calorie = 1 kcal = 1000 cal. So 110 Cal × 1000 cal/Cal = 110 000 cal = 1.10 × 10<sup>5</sup> cal. (4.60 × 10<sup>5</sup> is the value in joules, not calories.)"}, {"lo": "EM-LO2", "h": "Heat and temperature", "src": "Ball 7.2", "body": ["<b>Temperature</b> measures the <b>average kinetic energy</b> of the particles. It is measured in °C, °F or K, where K = °C + 273.15. Normal body temperature is 37.0 °C.", "Heat flows from a <b>hotter</b> object to a <b>colder</b> one. The heat needed to change a temperature is <b>q = m × c × ΔT</b>, where ΔT = T<sub>final</sub> − T<sub>initial</sub>.", "The <b>specific heat (c)</b> is the energy to warm 1 g of a substance by 1 °C. Water's is high, 4.184 J/g·°C, so water warms and cools slowly. That is why warming a litre of IV fluid takes a lot of energy."], "q": "Which statement is correct?", "opts": ["Heat and temperature mean the same thing", "Temperature measures the average kinetic energy of the particles", "Heat flows from a colder object to a hotter one", "Water has a low specific heat, so it heats up quickly"], "ans": 1, "why": "Temperature is the average kinetic energy of the particles; heat is energy that flows because of a temperature difference, always from hotter to colder. Water's specific heat is high, not low."}, {"lo": "EM-LO3", "h": "Phase changes", "src": "Ball 7.3", "body": ["Matter is solid, liquid or gas depending on how much energy its particles have.", "<b>Melting</b>, <b>vaporisation</b> and <b>sublimation</b> absorb heat (<b>endothermic</b>). <b>Freezing</b>, <b>condensation</b> and <b>deposition</b> release heat (<b>exothermic</b>).", "While a phase change happens, the temperature stays <b>constant</b>. The heat is found with q = m × ΔH<sub>fus</sub> (melting) or q = m × ΔH<sub>vap</sub> (boiling). For water, ΔH<sub>fus</sub> = 334 J/g and ΔH<sub>vap</sub> = 2260 J/g."], "q": "Which change of state releases heat to the surroundings?", "opts": ["Melting", "Vaporisation", "Sublimation", "Condensation"], "ans": 3, "why": "Condensation (gas → liquid) is exothermic: the particles lose energy, and it goes to the surroundings. This is why a steam burn is worse than a hot-water burn. The other three absorb heat."}, {"lo": "EM-LO4", "h": "The heating curve of water", "src": "Ball 7.3", "body": ["A heating curve plots temperature against heat added as ice is warmed all the way to steam.", "The <b>slopes</b> are one phase warming up (use q = mcΔT). The <b>flat sections</b> are phase changes at constant temperature (use q = mΔH): melting at 0 °C and boiling at 100 °C.", "The boiling section is about 7 times longer than the melting section, because ΔH<sub>vap</sub> is much bigger than ΔH<sub>fus</sub>."], "fig": "<svg viewBox=\"0 0 360 170\" role=\"img\" aria-label=\"Heating curve of water: temperature rises, stays flat at 0 °C while melting, rises, stays flat for longer at 100 °C while boiling, then rises again\" class=\"curve\">\n<line x1=\"62\" y1=\"12\" x2=\"62\" y2=\"140\" stroke=\"#A3B1C2\"/><line x1=\"62\" y1=\"140\" x2=\"350\" y2=\"140\" stroke=\"#A3B1C2\"/>\n<polyline points=\"66,132 86,110 128,110 162,52 292,52 340,26\" fill=\"none\" stroke=\"url(#hc)\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n<defs><linearGradient id=\"hc\" x1=\"0\" x2=\"1\"><stop offset=\"0\" stop-color=\"#2F6F9F\"/><stop offset=\"1\" stop-color=\"#B86E00\"/></linearGradient></defs>\n<text x=\"56\" y=\"114\" font-size=\"11\" text-anchor=\"end\" fill=\"#56657A\">0 °C</text><text x=\"56\" y=\"56\" font-size=\"11\" text-anchor=\"end\" fill=\"#56657A\">100 °C</text>\n<text x=\"107\" y=\"102\" font-size=\"11\" text-anchor=\"middle\" fill=\"#1B2A41\">melting</text><text x=\"227\" y=\"44\" font-size=\"11\" text-anchor=\"middle\" fill=\"#1B2A41\">boiling (much longer)</text>\n<text x=\"206\" y=\"160\" font-size=\"11\" text-anchor=\"middle\" fill=\"#56657A\">heat added →</text>\n<text x=\"14\" y=\"76\" font-size=\"11\" fill=\"#56657A\" transform=\"rotate(-90 14 76)\" text-anchor=\"middle\">temperature</text></svg>", "q": "On the heating curve of water, what is happening along the flat section at 100 °C?", "opts": ["Steam is warming up", "Water is boiling at constant temperature", "Ice is melting", "No heat is being added"], "ans": 1, "why": "At 100 °C, liquid water turns into steam. Heat is still being added, but it goes into changing the state, not into raising the temperature."}, {"lo": "EM-LO5", "h": "Bond energy and reactions", "src": "Ball 7.4", "body": ["Atoms bond because bonded atoms have <b>lower</b> energy. <b>Breaking</b> a bond always <b>needs</b> energy; <b>forming</b> a bond always <b>releases</b> energy. This amount is the <b>bond energy</b>.", "A reaction's energy change can be estimated as <b>ΔH ≈ Σ(bonds broken) − Σ(bonds formed)</b>.", "<b>Exothermic</b>: heat is a product, ΔH is negative, the surroundings warm up. <b>Endothermic</b>: heat is a reactant, ΔH is positive, the surroundings get cold."], "q": "Burning methane in a Bunsen burner has ΔH = −890 kJ per mole. Which statement is correct?", "opts": ["It is endothermic and the surroundings get cold", "It is exothermic and releases heat to the surroundings", "Its products are higher in energy than its reactants", "Breaking the bonds in methane releases energy"], "ans": 1, "why": "A negative ΔH means heat is released: exothermic. The products are lower in energy than the reactants. Breaking bonds always costs energy; the energy is released when the new bonds form."}, {"lo": "EM-LO6", "h": "Energy in the body", "src": "Ball 7.5", "body": ["The body gets energy by oxidising glucose: C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6 O<sub>2</sub> → 6 CO<sub>2</sub> + 6 H<sub>2</sub>O + about 2800 kJ (670 kcal) per mole.", "Carbohydrates and proteins supply about <b>17 kJ/g (4 kcal/g)</b>; fats supply about <b>38 kJ/g (9 kcal/g)</b>.", "Cells store and spend energy through <b>ATP</b>. Converting ATP to ADP releases about <b>31 kJ/mol (7.5 kcal/mol)</b>: small, but enough to drive other reactions in the cell."], "q": "Which nutrient supplies the most energy per gram?", "opts": ["Carbohydrate", "Protein", "Fat", "Water"], "ans": 2, "why": "Fat supplies about 38 kJ/g (9 kcal/g), more than twice the 17 kJ/g (4 kcal/g) of carbohydrate or protein. Water supplies no energy."}], "maths": [{"lo": "EM-LO1", "kind": "num", "q": "A snack provides 2.50 kcal per gram. Convert this to kJ per gram. (1 kcal = 4.184 kJ)", "val": 10.5, "tol": 0.06, "unit": "kJ/g", "work": "2.50 kcal/g × 4.184 kJ/kcal = 10.46 kJ/g = <b>10.5 kJ/g</b> (3 significant figures)."}, {"lo": "EM-LO2", "kind": "num", "q": "Insulin must be stored in a fridge at no more than 8 °C. Express 8 °C in kelvin.", "val": 281, "tol": 0.2, "unit": "K", "work": "K = °C + 273.15 = 8 + 273.15 = 281.15, reported as <b>281 K</b>."}, {"lo": "EM-LO2", "kind": "num", "q": "A bag of IV fluid cools from 37.0 °C to 25.0 °C. What is ΔT?", "val": -12.0, "tol": 0.05, "unit": "°C", "sign": true, "work": "ΔT = T<sub>final</sub> − T<sub>initial</sub> = 25.0 − 37.0 = <b>−12.0 °C</b>. The minus sign tells you the fluid lost heat."}, {"lo": "EM-LO2", "kind": "mcq", "q": "Rearrange q = m × c × ΔT to find the specific heat, c.", "opts": ["c = q × m × ΔT", "c = q ÷ (m × ΔT)", "c = (m × ΔT) ÷ q", "c = q − m − ΔT"], "ans": 1, "work": "Divide both sides by (m × ΔT): <b>c = q ÷ (m × ΔT)</b>. You will use this in Part 2 to identify an unknown metal."}], "pdf": "../../downloads/PHD115_EM_PreLecture_v1.pdf"};
+const KEY='phd115:em:pre';
+const LS={get(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}},set(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}}};
+try{localStorage.setItem('phd115:last',JSON.stringify({topic:'em',act:'pre',t:Date.now()}))}catch(e){}
+let st=LS.get()||{};st.a=st.a||{};
+const ITEMS=[...D.read.map((r,i)=>({id:'r'+i,lo:r.lo})),...D.maths.map((m,i)=>({id:'m'+i,lo:m.lo}))];
+const TOTAL=ITEMS.length,L='ABCD';
+function save(){const n=ITEMS.filter(x=>st.a[x.id]).length,c=ITEMS.filter(x=>st.a[x.id]&&st.a[x.id].ok).length;
+ st.total=TOTAL;if(n===TOTAL){st.done=true;st.best=Math.max(st.best||0,c)}LS.set(st);meter()}
+function meter(){const n=ITEMS.filter(x=>st.a[x.id]).length;document.getElementById('meter').style.width=(100*n/TOTAL)+'%';document.getElementById('count').textContent=n+' of '+TOTAL+' answered'}
+
+document.getElementById('los').innerHTML=D.los.map(l=>`<li><span class="tag">${l[0]}</span><span>${l[1]}</span></li>`).join('');
+
+function mcq(el,id,q,opts,ans,why,scored){
+ const a=scored?st.a[id]:st.pred;
+ el.innerHTML=`<p class="qt">${q}</p><div class="opts">${opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${L[j]}</span><span>${o}</span></button>`).join('')}</div><div class="out"></div>`;
+ const bs=[...el.querySelectorAll('.opt')];
+ function show(j){bs.forEach(b=>b.disabled=true);bs[j].classList.add(j===ans?'right':'wrong');bs[ans].classList.add('right');
+  const ok=j===ans,cls=scored?(ok?'ok':'no'):'info';
+  el.querySelector('.out').innerHTML=`<div class="fb ${cls}"><p><b>${scored?(ok?'Correct.':'Not quite. The answer is '+L[ans]+'.'):(ok?'Good prediction.':'The answer is '+L[ans]+'.')}</b></p><p>${why}</p></div><button class="again">↺ Try again</button>`;
+  el.querySelector('.again').onclick=()=>{if(scored)delete st.a[id];else delete st.pred;save();mcq(el,id,q,opts,ans,why,scored);result();el.querySelector('.opt').focus()}}
+ bs.forEach(b=>b.onclick=()=>{const j=+b.dataset.j;if(scored)st.a[id]={j,ok:j===ans};else st.pred=j;save();show(j);result()});
+ if(a!=null)show(scored?a.j:a)}
+
+// 1 Predict
+mcq(document.getElementById('predict'),'pred',D.predict.q,D.predict.opts,D.predict.ans,D.predict.why,false);
+
+// 2 Read and check
+document.getElementById('read').innerHTML=D.read.map((r,i)=>`<article class="card"><span class="tag">${r.lo}</span><span class="src">${r.src}</span><h3>${r.h}</h3>${r.body.map(p=>`<p>${p}</p>`).join('')}${r.fig||''}<div class="q" id="rq${i}"></div></article>`).join('');
+D.read.forEach((r,i)=>mcq(document.getElementById('rq'+i),'r'+i,'<span class="tag">Check</span>'+r.q,r.opts,r.ans,r.why,true));
+
+// 3 Maths
+document.getElementById('maths').innerHTML=D.maths.map((m,i)=>`<div class="card"><span class="tag">${m.lo}</span><div class="q" style="border:0;margin:6px 0 0;padding:0" id="mq${i}"></div></div>`).join('');
+function parse(v){v=(v||'').trim().replace(/[−–]/g,'-').replace(/,/g,'').replace(/\s/g,'');if(!/^[-+]?\d*\.?\d+(e[-+]?\d+)?$/i.test(v))return NaN;return parseFloat(v)}
+function num(el,id,m){
+ const a=st.a[id];
+ el.innerHTML=`<p class="qt">${m.q}</p><div class="num"><input inputmode="decimal" autocomplete="off" aria-label="Your answer in ${m.unit}"><span class="u">${m.unit}</span><button class="btn">Check</button></div><div class="out"></div>`;
+ const inp=el.querySelector('input'),btn=el.querySelector('.btn');
+ function show(v,ok){inp.value=v;inp.disabled=true;btn.disabled=true;
+  let msg=ok?'<b>Correct.</b>':'<b>Not quite.</b>';
+  if(!ok&&m.sign&&Math.abs(Math.abs(v)-Math.abs(m.val))<=m.tol)msg='<b>Check the sign.</b> ΔT = T<sub>final</sub> − T<sub>initial</sub>, so a drop in temperature gives a negative ΔT.';
+  el.querySelector('.out').innerHTML=`<div class="fb ${ok?'ok':'no'}"><p>${msg}</p><p>${m.work}</p></div><button class="again">↺ Try again</button>`;
+  el.querySelector('.again').onclick=()=>{delete st.a[id];save();num(el,id,m);result();el.querySelector('input').focus()}}
+ function check(){const v=parse(inp.value);if(isNaN(v)){inp.setCustomValidity('Enter a number');inp.reportValidity();return}inp.setCustomValidity('');
+  const ok=Math.abs(v-m.val)<=m.tol;st.a[id]={v,ok};save();show(v,ok);result()}
+ btn.onclick=check;inp.onkeydown=e=>{if(e.key==='Enter')check()};inp.oninput=()=>inp.setCustomValidity('');
+ if(a)show(a.v,a.ok)}
+D.maths.forEach((m,i)=>{const el=document.getElementById('mq'+i);m.kind==='mcq'?mcq(el,'m'+i,m.q,m.opts,m.ans,m.work,true):num(el,'m'+i,m)});
+
+// 4 Result
+function result(){const el=document.getElementById('result');const n=ITEMS.filter(x=>st.a[x.id]).length,c=ITEMS.filter(x=>st.a[x.id]&&st.a[x.id].ok).length;
+ const by={};ITEMS.forEach(x=>{by[x.lo]=by[x.lo]||{n:0,c:0,a:0};by[x.lo].n++;if(st.a[x.id]){by[x.lo].a++;if(st.a[x.id].ok)by[x.lo].c++}});
+ const weak=D.los.filter(l=>by[l[0]]&&by[l[0]].a===by[l[0]].n&&by[l[0]].c<by[l[0]].n);
+ let head;
+ if(n<TOTAL)head=`<p class="pending">Answer all ${TOTAL} questions to see your results. You have answered ${n}.</p>`;
+ else{const msg=c===TOTAL?'Excellent. You are ready for the lecture.':c>=7?'Good start. Note the outcomes below that need a closer look during the lecture.':'That is fine for a warm-up. Listen closely in the parts marked below, then come back and try again.';
+  head=`<div class="score">${c}<small> / ${TOTAL}</small></div><p style="margin:0 0 4px">${msg}</p>${st.best!=null?`<p class="src" style="margin:0">Your best score: ${st.best} / ${TOTAL}</p>`:''}`}
+ el.innerHTML=head+`<div style="margin-top:12px">${D.los.map(l=>{const b=by[l[0]];const done=b.a===b.n;const ok=done&&b.c===b.n;
+  return `<div class="lorow"><span><span class="tag">${l[0]}</span>${D.part[l[0]]}</span><span class="s ${done?(ok?'ok':'no'):''}">${done?(ok?b.c+'/'+b.n+' ✓':b.c+'/'+b.n+' · watch closely'):'–'}</span></div>`}).join('')}</div>
+ ${n===TOTAL&&weak.length?`<p class="src" style="margin:10px 0 0">Focus on: ${weak.map(l=>D.part[l[0]]+' ('+l[0]+')').filter((v,i,a)=>a.indexOf(v)===i).join(', ')}.</p>`:''}
+ <div class="row"><a class="btn" href="../slides/">Open the lecture slides</a><button class="btn warn" id="resetAll">↺ Start again</button></div>`;
+ document.getElementById('resetAll').onclick=()=>{if(!confirm('Clear all your answers for this activity and start again? Your best score is kept.'))return;st={a:{},best:st.best,total:TOTAL};LS.set(st);location.reload()}}
+meter();result();
+</script>
+</body>
+</html>
