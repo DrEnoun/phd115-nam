@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>After class · Energy & Matters · PHD115 Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;--ok:#2E7D4F;--ok-soft:#E3F3E9;--bad:#B3261E;--bad-soft:#FBE7E5;color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+.top{position:sticky;top:0;z-index:5;background:rgba(27,42,65,.96);color:#fff;padding:calc(8px + env(safe-area-inset-top,0px)) 0 8px}
+.top .in{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.top a{color:#fff;text-decoration:none;font-size:.9rem;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:6px 10px;white-space:nowrap}
+.meter{flex:1;height:6px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;max-width:260px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7DB6E3,#F0B24A);transition:width .3s}
+.top small{color:#C9D3DC;font-size:.8rem;white-space:nowrap}
+header{background:var(--ink);color:#fff;padding:26px 0 30px;position:relative;overflow:hidden}
+header .kick{margin:0;color:#A3B1C2;font-size:.88rem}
+h1{font-size:clamp(1.7rem,6.5vw,2.4rem);line-height:1.15;margin:6px 0 8px;font-weight:600}
+header .brand{margin:0;color:#F0B24A;font-weight:500;font-size:.92rem}
+header .sub{margin:12px 0 0;color:#C9D3DC;max-width:560px}
+header .in{position:relative;z-index:1}
+header svg.mol{position:absolute;right:-18px;top:14px;width:170px;opacity:.9}
+@media (max-width:620px){header svg.mol{width:120px;right:-26px;top:auto;bottom:-14px;opacity:.35}}
+main{padding:10px 0 40px}
+h2{font-size:1.2rem;margin:34px 0 4px;font-weight:600;display:flex;align-items:baseline;gap:10px}
+h2 .n{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:var(--cold);color:#fff;font-size:.85rem}
+.lead{margin:0 0 12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;margin:12px 0}
+.tag{display:inline-block;font-size:.74rem;font-weight:600;color:var(--cold);background:var(--cold-soft);border-radius:999px;padding:2px 10px;margin-right:6px}
+.src{font-size:.78rem;color:var(--muted)}
+.card h3{margin:8px 0 6px;font-size:1.05rem;font-weight:600}
+.card p{margin:0 0 10px}
+ul.los{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+ul.los li{display:flex;gap:10px;font-size:.93rem}
+ul.los li .tag{flex:none;align-self:flex-start;white-space:nowrap;margin:2px 0 0}
+.q{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.q .qt{font-weight:500;margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;min-height:48px}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);font-size:.8rem;font-weight:600;color:var(--muted)}
+.opt:hover:not([disabled]){border-color:var(--cold)}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.fb{margin-top:10px;border-radius:12px;padding:12px 14px;font-size:.93rem}
+.fb.ok{background:var(--ok-soft);border-left:4px solid var(--ok)}
+.fb.no{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.fb.info{background:var(--heat-soft);border-left:4px solid var(--heat)}
+.fb p{margin:0 0 6px}.fb p:last-child{margin:0}
+.again{font:inherit;font-size:.85rem;font-weight:500;background:none;border:0;color:var(--cold);padding:6px 0 0;cursor:pointer;text-decoration:underline}
+.num{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.num input{font:inherit;font-size:1.05rem;width:150px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.num input:focus{outline:3px solid var(--heat);outline-offset:1px}
+.num .u{color:var(--muted)}
+.btn{font:inherit;font-weight:600;text-decoration:none;border-radius:12px;padding:10px 16px;border:0;background:var(--cold);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--cold);border:1.5px solid var(--cold)}
+.btn.warn{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.btn[disabled]{opacity:.45;cursor:default}
+svg.curve{width:100%;max-width:420px;height:auto;display:block;margin:4px 0 10px}
+.result{border:2px solid var(--cold);background:linear-gradient(180deg,var(--cold-soft),#fff 70%)}
+.score{font-size:2.6rem;font-weight:600;line-height:1;margin:4px 0 6px}
+.score small{font-size:1rem;color:var(--muted);font-weight:400}
+.lorow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.lorow:last-child{border:0}
+.lorow .s{white-space:nowrap;font-weight:600}.lorow .s.ok{color:var(--ok)}.lorow .s.no{color:var(--heat)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pending{color:var(--muted);font-size:.93rem}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.82rem}
+footer .brand{color:var(--cold);font-weight:600}
+[hidden]{display:none!important}
+a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+
+.segs{display:grid;gap:8px;margin-top:6px}
+.seg{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg .lab{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-weight:600}
+.seg select{font:inherit;font-size:.85rem;flex:1;min-width:0;max-width:100%;padding:9px 6px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.seg select.right{border-color:var(--ok);background:var(--ok-soft)}.seg select.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.seg .mk{flex:none;font-weight:600;width:20px}
+.seg select:disabled{opacity:1;color:var(--ink)}
+@media (max-width:620px){header svg.mol{display:none}}
+textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
+textarea:focus,select:focus{outline:3px solid var(--heat);outline-offset:1px}
+.self{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.self button{font:inherit;font-size:.88rem;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+.self button[aria-pressed="true"].y{background:var(--ok-soft);border-color:var(--ok)}
+.self button[aria-pressed="true"].n{background:var(--heat-soft);border-color:var(--heat)}
+.saved{font-size:.8rem;color:var(--ok);margin-left:6px}
+.scen{background:var(--heat-soft);border-left:4px solid var(--heat);border-radius:12px;padding:12px 14px;margin:0 0 12px}
+</style>
+</head>
+<body>
+<div class="top"><div class="in"><a href="../../#em">⌂ Study hub</a><div class="meter" aria-hidden="true"><i id="meter"></i></div><small id="count"></small></div></div>
+<header><div class="in">
+<p class="kick">PHD115 Fundamentals of Chemistry · Topic 3 · Energy &amp; Matters</p>
+<h1>After class</h1>
+<p class="brand">Dr. Nur 'Ainun Mokhtar (Dr. NAM) · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p class="sub">About 25 minutes, after the lecture. Check your ideas, work through the calculations, label the heating curve and try a pharmacy scenario. Keep the slides open if you need them, and try again as often as you like.</p>
+</div>
+<svg class="mol" viewBox="0 0 200 150" aria-hidden="true"><defs>
+<radialGradient id="gC" cx=".35" cy=".35"><stop offset="0" stop-color="#8A96A3"/><stop offset="1" stop-color="#2B333C"/></radialGradient>
+<radialGradient id="gO" cx=".35" cy=".35"><stop offset="0" stop-color="#FF9B8F"/><stop offset="1" stop-color="#C0392B"/></radialGradient></defs>
+<line x1="40" y1="75" x2="160" y2="75" stroke="#C9D3DC" stroke-width="8"/><line x1="40" y1="65" x2="160" y2="65" stroke="#C9D3DC" stroke-width="6" opacity=".6"/>
+<circle cx="100" cy="72" r="30" fill="url(#gC)"/><circle cx="36" cy="72" r="26" fill="url(#gO)"/><circle cx="164" cy="72" r="26" fill="url(#gO)"/></svg>
+</header>
+
+<main><div class="in">
+<div class="card"><h3 style="margin-top:0">This activity checks all six outcomes</h3><ul class="los" id="los"></ul>
+<p class="src" style="margin:12px 0 0">Prefer paper? <a href="../../downloads/PHD115_EM_PostLecture_v1.pdf" download>Download the printable version (PDF)</a> with full worked answers.</p></div>
+
+<h2><span class="n">1</span>Concept check</h2>
+<p class="lead">One question for each outcome.</p>
+<div id="mcq"></div>
+
+<h2><span class="n">2</span>Calculations</h2>
+<p class="lead">Show your working on paper, type your final number, then tap Check. Give answers to the same significant figures as the data.</p>
+<div id="calc"></div>
+
+<h2><span class="n">3</span>Label the heating curve</h2>
+<p class="lead">Match each segment of water's heating curve to what is happening and the equation you would use.</p>
+<div class="card" id="curve"></div>
+
+<h2><span class="n">4</span>Pharmacy scenario</h2>
+<p class="lead">Write your answer on paper first, then reveal the model answer and mark yourself. Not included in your score.</p>
+<div class="card" id="scen"></div>
+
+<h2><span class="n">5</span>Reflect</h2>
+<p class="lead">Short notes for yourself. They stay on this device and are handy for revision.</p>
+<div class="card" id="refl"></div>
+
+<h2><span class="n">6</span>Your results</h2>
+<div class="card result" id="result"></div>
+
+<footer>
+<p>Your answers are saved on this device only. Nothing is sent anywhere.</p>
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 7.0–7.5. Shared under the same licence for non-commercial teaching.</p>
+</footer>
+</div></main>
+
+<script>
+const D={"los": [["EM-LO1", "Define energy and heat, and convert between joules, calories and nutritional Calories"], ["EM-LO2", "Convert between temperature scales and calculate heat gained or lost using q = mcΔT"], ["EM-LO3", "Describe phase changes and calculate the energy involved using heats of fusion and vaporisation"], ["EM-LO4", "Interpret the heating curve of water"], ["EM-LO5", "Define bond energy, estimate ΔH from bond energies, and classify reactions as endothermic or exothermic"], ["EM-LO6", "Relate energy changes to biochemical reactions such as glucose oxidation and ATP hydrolysis"]], "part": {"EM-LO1": "Part 1", "EM-LO2": "Part 2", "EM-LO3": "Part 3", "EM-LO4": "Part 3", "EM-LO5": "Part 4", "EM-LO6": "Part 5"}, "mcq": [{"lo": "EM-LO1", "q": "Which is the largest amount of energy?", "opts": ["1 kJ", "1 kcal", "1000 J", "100 cal"], "ans": 1, "why": "1 kcal = 4.184 kJ = 4184 J. 1 kJ and 1000 J are the same, and 100 cal is only 418.4 J."}, {"lo": "EM-LO2", "q": "A laboratory keeps drug stability samples in a large water bath to hold them at a steady 37 °C. Why water?", "opts": ["Water has a low specific heat, so it heats up quickly", "Water has a high specific heat, so its temperature changes slowly", "Water cannot lose heat", "Water boils at 37 °C"], "ans": 1, "why": "Water's specific heat (4.184 J/g·°C) is one of the highest. It absorbs or loses a lot of heat for a small temperature change, so the bath stays steady."}, {"lo": "EM-LO3", "q": "Why does sweating cool the body?", "opts": ["Sweat freezes on the skin", "Evaporating sweat absorbs heat from the skin", "Sweat condenses and releases heat", "Sweat has a low specific heat"], "ans": 1, "why": "Vaporisation is endothermic. The sweat takes its heat of vaporisation from the skin, so the skin cools."}, {"lo": "EM-LO4", "q": "On the heating curve of water, why is the plateau at 100 °C much longer than the plateau at 0 °C?", "opts": ["Steam has a higher specific heat than ice", "ΔH<sub>vap</sub> (2260 J/g) is much larger than ΔH<sub>fus</sub> (334 J/g)", "Water boils more slowly than ice melts because it is hotter", "The temperature rises during boiling"], "ans": 1, "why": "The length of a plateau is the heat needed for that phase change. Vaporising water needs about 7 times more heat per gram than melting ice."}, {"lo": "EM-LO5", "q": "In an energy diagram, the products lie above the reactants. Which statement is correct?", "opts": ["The reaction is exothermic and ΔH is negative", "The reaction is endothermic and ΔH is positive", "The products have stronger bonds than the reactants", "Heat is written on the product side"], "ans": 1, "why": "'Uphill' means the products have more energy, so energy must be absorbed: endothermic, ΔH positive. The reactants have the stronger bonds, and heat is written on the reactant side."}, {"lo": "EM-LO6", "q": "Which statement about ATP is correct?", "opts": ["Converting ATP to ADP absorbs about 31 kJ/mol", "Converting ATP to ADP releases about 31 kJ/mol, used to drive other reactions in cells", "ATP releases more energy per mole than glucose", "Converting ATP to ADP involves no bond breaking or forming"], "ans": 1, "why": "ATP → ADP breaks an O–P bond and forms an O–P bond and two O–H bonds, releasing about 31 kJ/mol (7.5 kcal/mol). That is small compared with glucose (2800 kJ/mol) but enough to drive other reactions."}], "calc": [{"lo": "EM-LO1", "q": "A bottle of oral nutrition supplement provides 330 kcal. What is this in kJ? (1 kcal = 4.184 kJ)", "val": 1381, "tol": 6, "unit": "kJ", "disp": "1.38 × 10<sup>3</sup>", "work": "330 kcal × 4.184 kJ/kcal = 1380.7 kJ = <b>1.38 × 10<sup>3</sup> kJ</b>."}, {"lo": "EM-LO2", "q": "A tourist's thermometer reads 102.2 °F. What is this in °C? Is it a fever?", "val": 39.0, "tol": 0.06, "unit": "°C", "disp": "39.0", "work": "°C = (°F − 32) × 5/9 = (102.2 − 32) × 5/9 = 70.2 × 5/9 = <b>39.0 °C</b>. Yes: in adults, above 37.8 °C (100 °F) is a fever."}, {"lo": "EM-LO2", "q": "How much heat is needed to warm 500. g of IV fluid from 25.0 °C to 37.0 °C? Treat it as water (c = 4.184 J/g·°C). Answer in kJ.", "val": 25.1, "tol": 0.06, "unit": "kJ", "work": "ΔT = 37.0 − 25.0 = 12.0 °C<br>q = m × c × ΔT = 500. g × 4.184 J/g·°C × 12.0 °C = 25 104 J = <b>25.1 kJ</b>."}, {"lo": "EM-LO2", "q": "A 25.0 g metal sample absorbs 180. J and warms from 22.0 °C to 38.0 °C. Find its specific heat. (Then use the specific heat table to identify it.)", "val": 0.45, "tol": 0.005, "unit": "J/g·°C", "work": "ΔT = 38.0 − 22.0 = 16.0 °C<br>c = q ÷ (m × ΔT) = 180. ÷ (25.0 × 16.0) = <b>0.450 J/g·°C</b>. This matches <b>iron</b> (0.452 J/g·°C)."}, {"lo": "EM-LO3", "q": "A cold compress contains 15.0 g of ice at 0 °C. How much heat does it absorb from the skin as it melts completely? (ΔH<sub>fus</sub> = 334 J/g). Answer in kJ.", "val": 5.01, "tol": 0.02, "disp": "5.01", "unit": "kJ", "work": "q = m × ΔH<sub>fus</sub> = 15.0 g × 334 J/g = 5010 J = <b>5.01 kJ</b>. The temperature stays at 0 °C while it melts."}, {"lo": "EM-LO3", "q": "2.00 g of steam at 100 °C condenses on a hand. How much heat is released onto the skin by condensation alone? (ΔH<sub>vap</sub> = 2260 J/g). Answer in kJ.", "val": 4.52, "tol": 0.02, "unit": "kJ", "work": "q = m × ΔH<sub>vap</sub> = 2.00 g × 2260 J/g = 4520 J = <b>4.52 kJ</b>, released. The condensed water then gives off even more heat as it cools, which is why steam burns are so severe."}, {"lo": "EM-LO5", "q": "Estimate ΔH for burning methane: CH<sub>4</sub> + 2 O<sub>2</sub> → CO<sub>2</sub> + 2 H<sub>2</sub>O(g). Bond energies (kJ/mol): C–H 418, O=O 498, C=O 795, O–H 460.", "val": -762, "tol": 3, "unit": "kJ", "sign": true, "work": "Broken: 4 C–H + 2 O=O = 4(418) + 2(498) = 1672 + 996 = 2668 kJ<br>Formed: 2 C=O + 4 O–H = 2(795) + 4(460) = 1590 + 1840 = 3430 kJ<br>ΔH ≈ 2668 − 3430 = <b>−762 kJ</b>. Negative, so exothermic. (Average bond energies give an estimate; the measured value differs a little.)"}, {"lo": "EM-LO6", "q": "A patient with low blood sugar takes two glucose tablets containing 4.50 g of glucose each. How much energy can this glucose release when oxidised? (Glucose: 180.2 g/mol, releases 2800 kJ/mol.)", "val": 140, "tol": 1.5, "unit": "kJ", "work": "Mass = 2 × 4.50 g = 9.00 g<br>Moles = 9.00 g ÷ 180.2 g/mol = 0.0499 mol<br>Energy = 0.0499 mol × 2800 kJ/mol = <b>140 kJ</b> (about 33 kcal)."}], "segs": ["Ice warming: q = mcΔT with c of ice", "Ice melting at 0 °C: q = mΔH<sub>fus</sub>", "Water warming: q = mcΔT with c of water", "Water boiling at 100 °C: q = mΔH<sub>vap</sub>", "Steam warming: q = mcΔT with c of steam"], "short": ["Ice warming (q = mcΔT)", "Ice melting (q = mΔHfus)", "Water warming (q = mcΔT)", "Water boiling (q = mΔHvap)", "Steam warming (q = mcΔT)"], "segans": [0, 1, 2, 3, 4], "scen": {"text": "A hospital pharmacy prepares for a morning theatre list. Bags of saline are warmed from room temperature to body temperature before use, vaccines are sent to a clinic in a cold box packed with frozen ice packs, and a nurse asks for an instant cold pack for a patient's swollen wrist.", "parts": [{"lo": "EM-LO2", "q": "(a) Calculate the heat needed to warm one 1.00 L bag of saline (take it as 1000 g of water) from 25.0 °C to 37.0 °C. Answer in kJ.", "a": "q = m × c × ΔT = 1000 g × 4.184 J/g·°C × 12.0 °C = 50 208 J = <b>50.2 kJ</b>."}, {"lo": "EM-LO3 · EM-LO4", "q": "(b) Why are frozen ice packs better than the same mass of cold water for keeping vaccines at 2–8 °C during transport?", "a": "As the ice melts it absorbs a lot of heat (334 J/g) <b>while staying at 0 °C</b>, because a phase change happens at constant temperature. The same mass of cold water only absorbs 4.184 J/g for each 1 °C rise, so it warms up much sooner."}, {"lo": "EM-LO5", "q": "(c) The instant cold pack feels cold when squeezed. Is the process endothermic or exothermic? Explain using the words system and surroundings.", "a": "<b>Endothermic.</b> The system (the chemicals in the pack) absorbs heat from the surroundings (the wrist and the air), so the surroundings lose energy and feel cold."}]}, "reflect": ["What was your 'muddiest point' in this lecture, the idea that is still unclear?", "Explain the difference between heat and temperature in one or two sentences, as if to a friend."], "pdf": "../../downloads/PHD115_EM_PostLecture_v1.pdf"};
+const KEY='phd115:em:post';
+const LS={get(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}},set(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}}};
+try{localStorage.setItem('phd115:last',JSON.stringify({topic:'em',act:'post',t:Date.now()}))}catch(e){}
+let st=LS.get()||{};st.a=st.a||{};st.self=st.self||{};st.refl=st.refl||{};
+const ITEMS=[...D.mcq.map((r,i)=>({id:'q'+i,lo:r.lo})),...D.calc.map((m,i)=>({id:'c'+i,lo:m.lo})),...D.segs.map((s,i)=>({id:'s'+i,lo:'EM-LO4'}))];
+const TOTAL=ITEMS.length,L='ABCD',SL='ABCDE';
+const answered=()=>ITEMS.filter(x=>st.a[x.id]).length, correct=()=>ITEMS.filter(x=>st.a[x.id]&&st.a[x.id].ok).length;
+function save(){st.total=TOTAL;if(answered()===TOTAL){st.done=true;st.best=Math.max(st.best||0,correct())}LS.set(st);meter()}
+function meter(){const n=answered();document.getElementById('meter').style.width=(100*n/TOTAL)+'%';document.getElementById('count').textContent=n+' of '+TOTAL+' answered'}
+document.getElementById('los').innerHTML=D.los.map(l=>`<li><span class="tag">${l[0]}</span><span>${l[1]}</span></li>`).join('');
+
+function mcq(el,id,q,opts,ans,why){
+ el.innerHTML=`<p class="qt">${q}</p><div class="opts">${opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${L[j]}</span><span>${o}</span></button>`).join('')}</div><div class="out"></div>`;
+ const bs=[...el.querySelectorAll('.opt')];
+ function show(j){bs.forEach(b=>b.disabled=true);bs[j].classList.add(j===ans?'right':'wrong');bs[ans].classList.add('right');const ok=j===ans;
+  el.querySelector('.out').innerHTML=`<div class="fb ${ok?'ok':'no'}"><p><b>${ok?'Correct.':'Not quite. The answer is '+L[ans]+'.'}</b></p><p>${why}</p></div><button class="again">↺ Try again</button>`;
+  el.querySelector('.again').onclick=()=>{delete st.a[id];save();mcq(el,id,q,opts,ans,why);result();el.querySelector('.opt').focus()}}
+ bs.forEach(b=>b.onclick=()=>{const j=+b.dataset.j;st.a[id]={j,ok:j===ans};save();show(j);result()});
+ if(st.a[id])show(st.a[id].j)}
+document.getElementById('mcq').innerHTML=D.mcq.map((m,i)=>`<div class="card"><span class="tag">${m.lo}</span><div class="q" style="border:0;margin:6px 0 0;padding:0" id="mq${i}"></div></div>`).join('');
+D.mcq.forEach((m,i)=>mcq(document.getElementById('mq'+i),'q'+i,m.q,m.opts,m.ans,m.why));
+
+function parse(v){v=(v||'').trim().replace(/[−–]/g,'-').replace(/,/g,'').replace(/\s/g,'').replace(/[x×]10\^?/i,'e');if(!/^[-+]?\d*\.?\d+(e[-+]?\d+)?$/i.test(v))return NaN;return parseFloat(v)}
+function num(el,id,m){
+ el.innerHTML=`<p class="qt">${m.q}</p><div class="num"><input inputmode="decimal" autocomplete="off" aria-label="Your answer in ${m.unit}"><span class="u">${m.unit}</span><button class="btn">Check</button></div><div class="out"></div>`;
+ const inp=el.querySelector('input'),btn=el.querySelector('.btn');
+ function show(v,ok){inp.value=v;inp.disabled=true;btn.disabled=true;let msg=ok?'<b>Correct.</b>':'<b>Not quite.</b> Compare your working with this:';
+  if(!ok&&m.sign&&Math.abs(Math.abs(v)-Math.abs(m.val))<=m.tol)msg='<b>Right size, wrong sign.</b> Check which quantity is subtracted from which.';
+  el.querySelector('.out').innerHTML=`<div class="fb ${ok?'ok':'no'}"><p>${msg}</p><p>${m.work}</p></div><button class="again">↺ Try again</button>`;
+  el.querySelector('.again').onclick=()=>{delete st.a[id];save();num(el,id,m);result();el.querySelector('input').focus()}}
+ function check(){const v=parse(inp.value);if(isNaN(v)){inp.setCustomValidity('Enter a number, e.g. 25.1');inp.reportValidity();return}inp.setCustomValidity('');
+  const ok=Math.abs(v-m.val)<=m.tol;st.a[id]={v,ok};save();show(v,ok);result()}
+ btn.onclick=check;inp.onkeydown=e=>{if(e.key==='Enter')check()};inp.oninput=()=>inp.setCustomValidity('');
+ if(st.a[id])show(st.a[id].v,st.a[id].ok)}
+document.getElementById('calc').innerHTML=D.calc.map((m,i)=>`<div class="card"><span class="tag">${m.lo}</span><span class="src">Calculation ${i+1}</span><div class="q" style="border:0;margin:6px 0 0;padding:0" id="cq${i}"></div></div>`).join('');
+D.calc.forEach((m,i)=>num(document.getElementById('cq'+i),'c'+i,m));
+
+// Heating curve
+const strip=s=>s.replace(/<[^>]+>/g,'');
+function curve(){const el=document.getElementById('curve');const done=D.segs.every((s,i)=>st.a['s'+i]);
+ el.innerHTML=`<span class="tag">EM-LO4</span>${"<svg viewBox=\"0 0 420 210\" role=\"img\" aria-label=\"Heating curve of water with five segments labelled A to E\" class=\"curve\" style=\"max-width:520px\">\n<defs><linearGradient id=\"hc2\" x1=\"0\" x2=\"1\"><stop offset=\"0\" stop-color=\"#2F6F9F\"/><stop offset=\"1\" stop-color=\"#B86E00\"/></linearGradient></defs>\n<line x1=\"62\" y1=\"16\" x2=\"62\" y2=\"178\" stroke=\"#A3B1C2\"/><line x1=\"62\" y1=\"178\" x2=\"410\" y2=\"178\" stroke=\"#A3B1C2\"/>\n<polyline points=\"66,168 96,140 150,140 190,66 340,66 396,30\" fill=\"none\" stroke=\"url(#hc2)\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n<line x1=\"62\" y1=\"140\" x2=\"96\" y2=\"140\" stroke=\"#D7E0E8\" stroke-dasharray=\"3 3\"/><line x1=\"62\" y1=\"66\" x2=\"190\" y2=\"66\" stroke=\"#D7E0E8\" stroke-dasharray=\"3 3\"/>\n<text x=\"56\" y=\"144\" font-size=\"12\" text-anchor=\"end\" fill=\"#56657A\">0 \u00b0C</text><text x=\"56\" y=\"70\" font-size=\"12\" text-anchor=\"end\" fill=\"#56657A\">100 \u00b0C</text>\n<g font-size=\"14\" font-weight=\"700\" fill=\"#fff\">\n<circle cx=\"72\" cy=\"146\" r=\"11\" fill=\"#1B2A41\"/><text x=\"72\" y=\"151\" text-anchor=\"middle\">A</text>\n<circle cx=\"123\" cy=\"124\" r=\"11\" fill=\"#1B2A41\"/><text x=\"123\" y=\"129\" text-anchor=\"middle\">B</text>\n<circle cx=\"160\" cy=\"112\" r=\"11\" fill=\"#1B2A41\"/><text x=\"160\" y=\"117\" text-anchor=\"middle\">C</text>\n<circle cx=\"265\" cy=\"50\" r=\"11\" fill=\"#1B2A41\"/><text x=\"265\" y=\"55\" text-anchor=\"middle\">D</text>\n<circle cx=\"378\" cy=\"60\" r=\"11\" fill=\"#1B2A41\"/><text x=\"378\" y=\"65\" text-anchor=\"middle\">E</text></g>\n<text x=\"236\" y=\"200\" font-size=\"12\" text-anchor=\"middle\" fill=\"#56657A\">heat added \u2192</text>\n<text x=\"66\" y=\"10\" font-size=\"12\" fill=\"#56657A\">temperature \u2191</text></svg>"}<div class="segs">${D.segs.map((s,i)=>`<div class="seg"><span class="lab">${SL[i]}</span><select id="sel${i}" aria-label="Segment ${SL[i]}" ${done?'disabled':''}><option value="">Choose…</option>${D.segs.map((o,j)=>`<option value="${j}">${D.short[j]}</option>`).join('')}</select><span class="mk" id="mk${i}"></span></div>`).join('')}</div>
+ <div class="row" style="margin-top:12px">${done?'<button class="btn ghost" id="segAgain">↺ Try again</button>':'<button class="btn" id="segCheck">Check my labels</button>'}</div><div class="out"></div>`;
+ D.segs.forEach((s,i)=>{const a=st.a['s'+i],sel=document.getElementById('sel'+i);if(a){sel.value=a.j;sel.classList.add(a.ok?'right':'wrong');document.getElementById('mk'+i).textContent=a.ok?'✓':'✗';document.getElementById('mk'+i).style.color=a.ok?'var(--ok)':'var(--bad)'}});
+ if(done){const c=D.segs.filter((s,i)=>st.a['s'+i].ok).length;el.querySelector('.out').innerHTML=`<div class="fb ${c===5?'ok':'no'}" style="margin-top:10px"><p><b>${c} of 5 correct.</b></p><p>${D.segs.map((s,i)=>`<b>${SL[i]}</b>: ${s}`).join('<br>')}</p><p>Slopes use q = mcΔT with the specific heat of the phase present; flat sections use q = mΔH.</p></div>`;
+  document.getElementById('segAgain').onclick=()=>{D.segs.forEach((s,i)=>delete st.a['s'+i]);save();curve();result()}}
+ else document.getElementById('segCheck').onclick=()=>{const v=D.segs.map((s,i)=>document.getElementById('sel'+i).value);
+  if(v.some(x=>x==='')){el.querySelector('.out').innerHTML='<div class="fb info" style="margin-top:10px"><p>Choose a label for every segment, A to E, then check.</p></div>';return}
+  v.forEach((x,i)=>st.a['s'+i]={j:+x,ok:+x===D.segans[i]});save();curve();result()}}
+curve();
+
+// Scenario
+function scen(){const el=document.getElementById('scen');
+ el.innerHTML=`<p class="scen">${D.scen.text}</p>${D.scen.parts.map((p,i)=>`<div class="q" ${i===0?'style="border:0;margin:0;padding:0"':''}><span class="tag">${p.lo}</span><p class="qt" style="margin-top:6px">${p.q}</p><button class="btn ghost" data-r="${i}">Show model answer</button><div id="sa${i}" hidden><div class="fb info"><p>${p.a}</p></div><div class="self" role="group" aria-label="Mark yourself"><button class="y" data-i="${i}" data-v="y" aria-pressed="${st.self[i]==='y'}">✓ I got this</button><button class="n" data-i="${i}" data-v="n" aria-pressed="${st.self[i]==='n'}">Not yet</button></div></div></div>`).join('')}
+ <div class="row"><button class="btn warn" id="scReset">↺ Try again</button></div>`;
+ el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{document.getElementById('sa'+b.dataset.r).hidden=false;b.hidden=true});
+ D.scen.parts.forEach((p,i)=>{if(st.self[i]){document.getElementById('sa'+i).hidden=false;el.querySelector(`[data-r="${i}"]`).hidden=true}});
+ el.querySelectorAll('.self button').forEach(b=>b.onclick=()=>{st.self[b.dataset.i]=b.dataset.v;save();scen()});
+ document.getElementById('scReset').onclick=()=>{st.self={};save();scen()}}
+scen();
+
+// Reflect
+document.getElementById('refl').innerHTML=D.reflect.map((q,i)=>`<p class="qt" ${i?'style="margin-top:14px"':''}>${q}</p><textarea id="rf${i}" aria-label="${q}"></textarea><span class="saved" id="sv${i}"></span>`).join('')+'<div class="row"><button class="btn warn" id="rfReset">↺ Clear my notes</button></div>';
+D.reflect.forEach((q,i)=>{const t=document.getElementById('rf'+i);t.value=st.refl[i]||'';let tm;t.oninput=()=>{st.refl[i]=t.value;clearTimeout(tm);tm=setTimeout(()=>{save();const s=document.getElementById('sv'+i);s.textContent='Saved';setTimeout(()=>s.textContent='',1200)},400)}});
+document.getElementById('rfReset').onclick=()=>{st.refl={};save();D.reflect.forEach((q,i)=>document.getElementById('rf'+i).value='')};
+
+// Result
+function result(){const el=document.getElementById('result');const n=answered(),c=correct();
+ const by={};ITEMS.forEach(x=>{by[x.lo]=by[x.lo]||{n:0,c:0,a:0};by[x.lo].n++;if(st.a[x.id]){by[x.lo].a++;if(st.a[x.id].ok)by[x.lo].c++}});
+ let head;
+ if(n<TOTAL)head=`<p class="pending">Answer all ${TOTAL} scored questions (sections 1 to 3) to see your results. You have answered ${n}.</p>`;
+ else{const pct=c/TOTAL;const msg=c===TOTAL?'Excellent. You have met every outcome for this topic.':pct>=.7?'Good work. Revise the outcomes marked below, then try the tutorial.':'Revisit the slides for the outcomes marked below, then try this activity again before the tutorial.';
+  head=`<div class="score">${c}<small> / ${TOTAL}</small></div><p style="margin:0 0 4px">${msg}</p>${st.best!=null?`<p class="src" style="margin:0">Your best score: ${st.best} / ${TOTAL}</p>`:''}`}
+ el.innerHTML=head+`<div style="margin-top:12px">${D.los.map(l=>{const b=by[l[0]];const done=b.a===b.n;const ok=done&&b.c===b.n;
+  return `<div class="lorow"><span><span class="tag">${l[0]}</span>${D.part[l[0]]}</span><span class="s ${done?(ok?'ok':'no'):''}">${done?(ok?b.c+'/'+b.n+' ✓':b.c+'/'+b.n+' · revise'):'–'}</span></div>`}).join('')}</div>
+ <div class="row"><a class="btn" href="../slides/">Revise with the slides</a><button class="btn warn" id="resetAll">↺ Start again</button></div>`;
+ document.getElementById('resetAll').onclick=()=>{if(!confirm('Clear all your answers for this activity and start again? Your best score and notes are kept.'))return;st={a:{},self:{},refl:st.refl,best:st.best,total:TOTAL};LS.set(st);location.reload()}}
+meter();result();
+</script>
+</body>
+</html>
