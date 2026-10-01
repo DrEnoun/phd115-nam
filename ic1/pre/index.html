@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PHD115 · IC1 · Before class</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;--ok:#2E7D4F;--ok-soft:#E3F3E9;--bad:#B3261E;--bad-soft:#FBE7E5;color-scheme:light}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:400}
+b,strong{font-weight:600}
+.in{max-width:860px;margin:0 auto;padding:0 16px}
+header{background:var(--ink);color:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 0 22px}
+header a.home{display:inline-block;color:#fff;text-decoration:none;font-size:.85rem;border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:5px 10px;margin-bottom:12px}
+header .kick{margin:0;color:#A3B1C2;font-size:.85rem}
+header h1{margin:4px 0 4px;font-size:clamp(1.5rem,5.5vw,2.2rem);line-height:1.15}
+header .brand{margin:0;color:#F0B24A;font-weight:600;font-size:.9rem}
+header .sub{margin:10px 0 0;color:#C9D3DC;font-size:.92rem}
+.bar{position:sticky;top:0;z-index:5;background:rgba(242,246,249,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar .in{display:flex;align-items:center;gap:10px;padding-top:8px;padding-bottom:8px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.prog{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cold),var(--heat));transition:width .3s}
+.bar .n{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.btn{font:inherit;font-weight:600;font-size:.92rem;border:0;border-radius:10px;padding:9px 14px;background:var(--cold);color:#fff;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:var(--cold);border:1.5px solid var(--cold)}.btn.warn{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.btn.small{padding:6px 11px;font-size:.85rem}
+main{padding:14px 0 40px}
+h2{font-size:1.2rem;margin:28px 0 6px}
+.secintro{color:var(--muted);margin:0 0 12px;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+.read{border-left:5px solid var(--cold)}.read h3{margin:0 0 6px;font-size:1.05rem;color:var(--cold)}
+.read p{margin:.5em 0}.read ul{margin:.4em 0;padding-left:1.2em}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;color:var(--cold);background:var(--cold-soft);border-radius:99px;padding:2px 9px;margin-right:6px}
+.tag.m{color:var(--heat);background:var(--heat-soft)}
+.qn{font-weight:600;color:var(--muted);font-size:.85rem}
+.q{margin:6px 0 10px;font-size:1rem}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.opt b{color:var(--cold)}.opt:hover{border-color:var(--cold)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{margin-top:10px;border-radius:12px;padding:10px 14px;font-size:.93rem}.fb.ok{background:var(--ok-soft)}.fb.no{background:var(--bad-soft)}.fb.info{background:var(--heat-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
+input[type=text],select{font:inherit;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);min-width:0}
+input[type=text]{flex:1;min-width:140px}
+.pair{display:grid;grid-template-columns:1fr minmax(120px,48%);gap:8px;align-items:center;margin:6px 0}
+.pair span{font-size:.95rem}
+table.rub{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:8px}
+table.rub th,table.rub td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.rub th{background:var(--cold-soft);font-weight:600}
+table.rub td.c{text-align:center;width:64px}
+details{margin-top:10px}summary{cursor:pointer;color:var(--cold);font-weight:600}
+.hint{background:var(--heat-soft);border-radius:12px;padding:10px 14px;margin-top:8px;font-size:.93rem}
+.model{background:var(--ok-soft);border-radius:12px;padding:10px 14px;margin-top:8px;font-size:.93rem}
+.result{border-left:5px solid var(--heat)}
+.lobar{display:grid;grid-template-columns:90px 1fr 60px;gap:8px;align-items:center;font-size:.88rem;margin:5px 0}
+.lobar div{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.lobar i{display:block;height:100%;background:var(--cold)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:14px 0 calc(24px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.8rem}
+footer .brand{color:var(--cold);font-weight:600}
+.done-note{font-size:.8rem;color:var(--muted)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #F0B24A;outline-offset:2px}
+[hidden]{display:none!important}
+/* print */
+body.print{background:#fff}body.print header{background:#fff;color:var(--ink);border-bottom:2px solid var(--ink);padding:10px 0}
+body.print header .kick,body.print header .sub{color:var(--muted)}body.print header .brand{color:var(--heat)}
+.pline{border-bottom:1px solid #9aa7b5;height:26px}
+.pbox{border:1px solid #9aa7b5;border-radius:6px;height:90px;margin-top:6px}
+.popt{margin:3px 0 3px 4px}
+.key{color:var(--ok);font-weight:600}
+@media print{.card{break-inside:avoid}h2{break-after:avoid}}
+</style></head><body>
+<div id="app"></div>
+<script src="../../js/ptable.js"></script>
+<script>
+const DATA={"topic": "ic1", "act": "pre", "topicTitle": "Ionic &amp; Covalent Compounds I", "title": "Before class: from atoms to ions", "sub": "About 15 minutes. Read the three short cards, then try the readiness check. Wrong answers are fine: they show what to listen for in the lecture.", "how": "Tap <b>Periodic table</b> in the top bar whenever you need it. Read the cards first. Each question checks itself as soon as you answer. Press <b>Finish</b> at the end to see your score. You can reset and try again as often as you like.", "howPrint": "Read the cards first, then answer the questions without notes.", "pdf": "../../downloads/PHD115_IC1_PreLecture.pdf", "attrib": "Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 3.0–3.6. Shared under the same licence for non-commercial teaching.", "next": "Next: open the IC1 slides.", "sections": [{"h": "1 · Read first (5 min)", "items": [{"type": "read", "h": "Why do atoms bond?", "html": "<p>The noble gases (He, Ne, Ar …) hardly ever form compounds. Apart from helium, they all have <b>eight valence electrons</b>. Other atoms become more stable by reaching eight valence electrons too: the <b>octet rule</b>. Very small atoms (H, Li) are stable with two (the <b>duet rule</b>).</p><p>An atom can reach an octet by <b>transferring</b> electrons (this lecture) or by <b>sharing</b> them (the next lecture, IC2).</p>"}, {"type": "read", "h": "What is an ion?", "html": "<ul><li>An atom is neutral: protons (+) = electrons (−).</li><li>If an atom <b>loses</b> electrons it has more protons than electrons: a positive ion, a <b>cation</b>. Metals usually do this.</li><li>If an atom <b>gains</b> electrons it becomes a negative ion, an <b>anion</b>. Nonmetals usually do this.</li><li>Opposite charges attract. That attraction is an <b>ionic bond</b>, and the substance is an <b>ionic compound</b>, such as sodium chloride (NaCl).</li></ul>"}, {"type": "read", "h": "Why this matters in pharmacy", "html": "<p>Normal saline (0.9% NaCl) is given intravenously every day in hospitals. Iron tablets (ferrous sulfate), antacids (calcium carbonate, magnesium hydroxide) and Epsom salt (magnesium sulfate) are all ionic compounds. In this lecture you will learn to write their formulas, name them and calculate their masses.</p>"}]}, {"h": "2 · Readiness check", "intro": "Ten quick questions on what you need for today.", "items": [{"type": "mcq", "lo": "Recap", "q": "How many valence electrons does a sodium atom (Group 1A) have?", "opts": ["1", "2", "7", "8"], "ans": 0, "why": "Group 1A → 1 valence electron."}, {"type": "fill", "lo": "Recap", "q": "A chlorine atom (Group 7A) has ____ valence electrons.", "acc": ["7", "seven"], "ph": "a number", "why": "Group 7A → 7."}, {"type": "mcq", "lo": "IC1-LO1", "q": "Why are the noble gases so unreactive?", "opts": ["They are very heavy", "Their valence shell is full (an octet, or a duet for He)", "They have no electrons", "They are always ions"], "ans": 1, "why": "A full valence shell is especially stable, so they have little reason to gain, lose or share electrons."}, {"type": "match", "lo": "Recap", "q": "Classify each element.", "left": ["magnesium (Mg)", "sulfur (S)", "potassium (K)", "oxygen (O)"], "right": ["metal", "nonmetal"], "ans": [0, 1, 0, 1]}, {"type": "mcq", "lo": "IC1-LO2", "q": "An ion has 11 protons and 10 electrons. What is its charge?", "opts": ["1−", "0", "1+", "2+"], "ans": 2, "why": "11 positive − 10 negative = 1+."}, {"type": "tf", "lo": "IC1-LO2", "q": "Metals usually lose electrons and become positive ions (cations).", "ans": true, "why": "Metals have few valence electrons, which they lose easily."}, {"type": "mcq", "lo": "IC1-LO2", "q": "Is a sodium atom more likely to lose 1 electron or gain 7 to reach an octet?", "opts": ["Lose 1", "Gain 7", "Neither", "Both at once"], "ans": 0, "why": "Losing one electron is far easier than gaining seven. The result is Na<sup>+</sup>."}, {"type": "fill", "lo": "IC1-LO2", "q": "Oxygen (Group 6A) gains ____ electrons to complete its octet.", "acc": ["2", "two"], "ph": "a number", "why": "6 + 2 = 8, giving the oxide ion O<sup>2−</sup>."}, {"type": "tf", "lo": "IC1-LO1", "q": "An ionic compound can be made of two positive ions.", "ans": false, "why": "Like charges repel. An ionic compound always contains both cations and anions."}, {"type": "mcq", "lo": "IC1-LO3", "q": "Which pair of elements is most likely to form an <b>ionic</b> compound?", "opts": ["C and O", "N and H", "Ca and Cl", "S and O"], "ans": 2, "why": "Calcium is a metal and chlorine a nonmetal: electrons are transferred. The others are nonmetal pairs (covalent, IC2)."}]}, {"h": "3 · Think ahead", "intro": "No wrong answers here. Make a guess, then check it after the lecture (Parts 1–2).", "items": [{"type": "self", "lo": "IC1-LO1", "q": "Sodium is a reactive metal and chlorine is a poisonous gas. Why is sodium chloride safe enough to eat and to give in an IV drip?", "model": "When sodium and chlorine react, each sodium atom <b>transfers</b> one electron to a chlorine atom. Both become ions with stable octets (Na<sup>+</sup> and Cl<sup>−</sup>). The compound's properties are completely different from those of the elements: the reactive metal and the toxic gas are gone, and the ions are held together by ionic bonds."}]}]};
+const P=new URLSearchParams(location.search);const PRINT=P.has('print'),KEY=P.has('key');
+const K='phd115:'+DATA.topic+':'+DATA.act;
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let ST=LS.get(K+':state')||{a:{}};
+const L=['A','B','C','D','E','F'];
+const norm=(s,cs)=>{s=String(s).replace(/[₀-₉]/g,c=>'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(c)]).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,' ').trim();s=s.replace(/\s*([+\-])\s*$/,'$1');return cs?s.replace(/ /g,''):s.toLowerCase().replace(/[.]$/,'')};
+// flatten items
+const ITEMS=[];DATA.sections.forEach((s,si)=>s.items.forEach((it,ii)=>{if(it.type!=='read'){it.id=si+'_'+ii;it.no=ITEMS.length+1;ITEMS.push(it)}}));
+const maxOf=it=>it.type==='partb'?it.rubric.reduce((a,r)=>a+r[1],0):1;
+const TOTAL=ITEMS.reduce((a,it)=>a+maxOf(it),0);
+function save(){LS.set(K+':state',ST);const got=score();const answered=ITEMS.filter(it=>ST.a[it.id]&&ST.a[it.id].done).length;
+ const p=LS.get(K)||{};p.total=TOTAL;p.t=Date.now();p.answered=answered;if(ST.finished&&answered===ITEMS.length){p.done=true;p.best=Math.max(p.best||0,got)}LS.set(K,p);
+ LS.set('phd115:last',{topic:DATA.topic,act:DATA.act,t:Date.now()});bar()}
+function score(){return ITEMS.reduce((a,it)=>{const s=ST.a[it.id];if(!s)return a;if(it.type==='partb')return a+(s.ticks||[]).reduce((x,t,i)=>x+(t?it.rubric[i][1]:0),0);return a+(s.ok?1:0)},0)}
+function bar(){const done=ITEMS.filter(it=>ST.a[it.id]&&ST.a[it.id].done).length;const e=document.querySelector('.prog i');if(e)e.style.width=(100*done/ITEMS.length)+'%';const n=document.getElementById('cnt');if(n)n.textContent=done+' / '+ITEMS.length+' done'}
+function head(){return `<header><div class="in">${PRINT?'':`<a class="home" href="../../#${DATA.topic}">⌂ Study hub</a>`}
+<p class="kick">PHD115 Fundamentals of Chemistry · ${DATA.topicTitle}</p><h1>${DATA.title}</h1>
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p class="sub">${DATA.sub}</p></div></header>`}
+function tags(it){return `${it.topic?`<span class="tag">Topic: ${it.topic}</span>`:''}${it.lo?`<span class="tag">${it.lo}</span>`:''}${it.marks?`<span class="tag m">${it.marks} marks${it.level?', '+it.level:''}</span>`:''}`}
+// ---------- interactive renderers
+const R={
+ read:it=>`<div class="card read">${it.h?`<h3>${it.h}</h3>`:''}${it.html}</div>`,
+ mcq:it=>`<div class="opts">${it.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${L[j]}</b><span>${o}</span></button>`).join('')}</div>`,
+ tf:it=>`<div class="opts" style="grid-template-columns:1fr 1fr"><button class="opt" data-j="0"><b>T</b><span>True</span></button><button class="opt" data-j="1"><b>F</b><span>False</span></button></div>`,
+ fill:it=>`${it.cs?'<p class="done-note" style="margin:2px 0 4px">Type formulas on one line: numbers become subscripts automatically (CO2 = CO₂, SO42- = SO₄²⁻).</p>':''}<div class="row"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${it.ph||'Type your answer'}"><button class="btn small chk">Check</button></div>`,
+ num:it=>`<div class="row"><input type="text" inputmode="decimal" placeholder="number" style="max-width:180px">${it.unit?`<span>${it.unit}</span>`:''}<button class="btn small chk">Check</button></div>`,
+ match:it=>`${it.left.map((l,i)=>`<div class="pair"><span>${l}</span><select data-i="${i}"><option value="">choose…</option>${it.right.map((r,j)=>`<option value="${j}">${r}</option>`).join('')}</select></div>`).join('')}<div class="row"><button class="btn small chk">Check</button></div>`,
+ order:it=>`${it.items.map((l,i)=>`<div class="pair"><span>${l}</span><select data-i="${i}"><option value="">rank…</option>${it.items.map((_,j)=>`<option value="${j+1}">${j+1}${j==0?' ('+it.low+')':j==it.items.length-1?' ('+it.high+')':''}</option>`).join('')}</select></div>`).join('')}<div class="row"><button class="btn small chk">Check</button></div>`,
+ self:it=>`<textarea rows="3" style="width:100%;font:inherit;border:1.5px solid var(--line);border-radius:10px;padding:8px" placeholder="Write your answer here (optional), then reveal the model answer."></textarea><div class="row"><button class="btn small ghost rev">Show model answer</button></div><div class="model" hidden>${it.model}<div class="row"><span>Did your answer match?</span><button class="btn small yes">Yes</button><button class="btn small ghost no">Not yet</button></div></div>`,
+ partb:it=>`${it.hint?`<details><summary>Hint</summary><div class="hint">${it.hint}</div></details>`:''}<details class="sol"><summary>Worked solution and self-marking</summary><div class="model">${it.work||''}</div>
+ <p class="done-note">Tick each row you earned. Your marks are added to your score.</p><table class="rub"><tr><th>Step</th><th>Marking criteria</th><th>Marks</th><th>Got it</th></tr>${it.rubric.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${r[0]}</td><td class="c">${r[1]}</td><td class="c"><input type="checkbox" data-i="${i}" aria-label="Step ${i+1} earned"></td></tr>`).join('')}<tr><th></th><th>Total</th><th class="c">${maxOf(it)}</th><th class="c tk">0</th></tr></table></details>`
+};
+function qcard(it){if(it.type==='read')return R.read(it);
+ return `<div class="card" id="q${it.id}"><span class="qn">${it.label?(it.type==='partb'?'Question ':'')+it.label:'Q'+it.no}</span> ${tags(it)}<div class="q">${it.q}</div>${R[it.type](it)}<div class="fbx"></div></div>`}
+function fb(el,ok,it,extra){const x=el.querySelector('.fbx');x.innerHTML=`<div class="fb ${ok===null?'info':ok?'ok':'no'}">${ok===null?'':ok?'<b>Correct.</b> ':'<b>Not quite.</b> '}${extra||''}${it.why?' '+it.why:''}</div>`}
+function mark(it,ok,val){ST.a[it.id]={done:true,ok,val};save()}
+function restore(it,el){const s=ST.a[it.id];if(!s)return;
+ if(it.type==='mcq'||it.type==='tf'){const a=it.type==='tf'?(it.ans?0:1):it.ans;el.querySelectorAll('.opt').forEach(b=>{const j=+b.dataset.j;if(j===a)b.classList.add('right');else if(j===s.val)b.classList.add('wrong')});fb(el,s.ok,it,s.ok?'':`Answer: <b>${it.type==='tf'?(it.ans?'True':'False'):L[a]}</b>.`)}
+ else if(it.type==='fill'||it.type==='num'){el.querySelector('input').value=s.val||'';fb(el,s.ok,it,s.ok?'':`Answer: <b>${it.type==='num'?it.ans+(it.unit?' '+it.unit:''):it.show||it.acc[0]}</b>.`)}
+ else if(it.type==='match'||it.type==='order'){el.querySelectorAll('select').forEach((sl,i)=>sl.value=(s.val||[])[i]??'');fb(el,s.ok,it,s.ok?'':'Correct: '+ansText(it)+'.')}
+ else if(it.type==='self'){el.querySelector('textarea').value=s.val||'';el.querySelector('.model').hidden=false;fb(el,s.ok?true:null,it,s.ok?'Marked as matched.':'Marked as not yet. Review this and try again later.')}
+ else if(it.type==='partb'){(s.ticks||[]).forEach((t,i)=>{const c=el.querySelector(`input[data-i="${i}"]`);if(c)c.checked=!!t});el.querySelector('.tk').textContent=(s.ticks||[]).reduce((x,t,i)=>x+(t?it.rubric[i][1]:0),0)}}
+function ansText(it){if(it.type==='match')return it.left.map((l,i)=>`${l} → <b>${it.right[it.ans[i]]}</b>`).join('; ');if(it.type==='order'){const o=it.items.map((l,i)=>[it.ans[i],l]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);return o.join(' &lt; ')+` (${it.low} → ${it.high})`}return ''}
+function wire(it,el){
+ if(it.type==='mcq'||it.type==='tf')el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(ST.a[it.id])return;const j=+b.dataset.j;const a=it.type==='tf'?(it.ans?0:1):it.ans;mark(it,j===a,j);restore(it,el)});
+ if(it.type==='fill')el.querySelector('.chk').onclick=()=>{const v=el.querySelector('input').value;if(!v.trim())return;const ok=it.acc.some(a=>norm(a,it.cs)===norm(v,it.cs));mark(it,ok,v);restore(it,el)};
+ if(it.type==='num')el.querySelector('.chk').onclick=()=>{const v=el.querySelector('input').value;const x=parseFloat(v.replace(',','.'));if(isNaN(x))return;mark(it,Math.abs(x-it.ans)<=(it.tol||0.01),v);restore(it,el)};
+ if(it.type==='match'||it.type==='order')el.querySelector('.chk').onclick=()=>{const v=[...el.querySelectorAll('select')].map(s=>s.value);if(v.some(x=>x===''))return;const ok=v.every((x,i)=>+x===it.ans[i]);mark(it,ok,v);restore(it,el)};
+ if(it.type==='self'){el.querySelector('.rev').onclick=()=>{el.querySelector('.model').hidden=false};el.querySelector('.yes').onclick=()=>{mark(it,true,el.querySelector('textarea').value);restore(it,el)};el.querySelector('.no').onclick=()=>{mark(it,false,el.querySelector('textarea').value);restore(it,el)}}
+ if(it.type==='partb')el.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{const t=[...el.querySelectorAll('input[type=checkbox]')].map(x=>x.checked);ST.a[it.id]={done:true,ticks:t};save();restore(it,el)});
+}
+function finish(){ST.finished=true;save();const got=score();const by={};ITEMS.forEach(it=>{const lo=it.lo||'—';by[lo]=by[lo]||[0,0];by[lo][1]+=maxOf(it);const s=ST.a[it.id];if(s)by[lo][0]+=it.type==='partb'?(s.ticks||[]).reduce((x,t,i)=>x+(t?it.rubric[i][1]:0),0):(s.ok?1:0)});
+ const weak=Object.entries(by).filter(([k,v])=>v[0]/v[1]<0.7).map(([k])=>k);
+ const r=document.getElementById('result');r.hidden=false;r.innerHTML=`<h3 style="margin:0 0 6px">Your score: ${got} / ${TOTAL} (${Math.round(100*got/TOTAL)}%)</h3>
+ ${Object.entries(by).map(([k,v])=>`<div class="lobar"><span>${k}</span><div><i style="width:${100*v[0]/v[1]}%"></i></div><span>${v[0]}/${v[1]}</span></div>`).join('')}
+ <p>${weak.length?`Revise: <b>${weak.join(', ')}</b>. The slides for these outcomes are in the study hub.`:'Well done. You are ready for the next step.'} ${DATA.next||''}</p>
+ <p class="done-note">Your best score is saved on this device. You can reset and try again at any time.</p>`;r.scrollIntoView({behavior:'smooth'})}
+function render(){document.body.classList.remove('print');
+ document.getElementById('app').innerHTML=head()+`<div class="bar"><div class="in"><div class="prog"><i></i></div><span class="n" id="cnt"></span><span data-pt-slot=""></span><button class="btn small warn" id="reset">Reset</button></div></div>
+<main><div class="in"><div class="card" style="border-left:5px solid var(--heat)"><p style="margin:0">${DATA.how}</p>${DATA.pdf?`<p style="margin:8px 0 0"><a href="${DATA.pdf}" download>Download the printable version (PDF, with answer key)</a></p>`:''}</div>
+${DATA.sections.map(s=>`<h2>${s.h}</h2>${s.intro?`<p class="secintro">${s.intro}</p>`:''}${s.items.map(qcard).join('')}`).join('')}
+<div class="row" style="margin-top:20px"><button class="btn" id="fin">Finish and see my score</button></div><div class="card result" id="result" hidden></div>
+<footer><p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p>Your answers are saved on this device only. Nothing is sent anywhere.</p><p>${DATA.attrib}</p></footer></div></main>`;
+ ITEMS.forEach(it=>{const el=document.getElementById('q'+it.id);wire(it,el);restore(it,el)});bar();
+ document.getElementById('fin').onclick=finish;
+ document.getElementById('reset').onclick=()=>{if(!confirm('Clear all your answers for this activity and start again?'))return;ST={a:{}};LS.del(K+':state');const p=LS.get(K)||{};delete p.answered;LS.set(K,p);render();scrollTo(0,0)};
+ if(ST.finished)finish();if(window.PT)PT.mount();}
+// ---------- print renderer
+function pq(it){const k=KEY;let body='';
+ if(it.type==='read')return `<div class="card read">${it.h?`<h3>${it.h}</h3>`:''}${it.html}</div>`;
+ if(it.type==='mcq')body=it.opts.map((o,j)=>`<div class="popt ${k&&j===it.ans?'key':''}">${L[j]}. ${o}</div>`).join('');
+ else if(it.type==='tf')body=`<div class="popt">True / False ${k?`<span class="key">→ ${it.ans?'True':'False'}</span>`:''}</div>`;
+ else if(it.type==='fill'||it.type==='num')body=k?`<div class="key">${it.type==='num'?it.ans+(it.unit?' '+it.unit:''):(it.show||it.acc[0])}</div>`:'<div class="pline"></div>';
+ else if(it.type==='match'||it.type==='order'){body=it.type==='match'?`<p style="margin:4px 0;font-size:.9rem">Options: ${it.right.join(' · ')}</p>`+it.left.map(l=>`<div class="pair"><span>${l}</span><div class="pline"></div></div>`).join(''):`<p style="margin:4px 0;font-size:.9rem">Rank 1 (${it.low}) to ${it.items.length} (${it.high}): ${it.items.join(' · ')}</p><div class="pline"></div>`;if(k)body=`<div class="key">${ansText(it)}</div>`}
+ else if(it.type==='self')body=k?`<div class="model">${it.model}</div>`:'<div class="pbox"></div>';
+ else if(it.type==='partb')body=k?`${it.work?`<div class="model">${it.work}</div>`:''}<table class="rub"><tr><th>Step</th><th>Marking criteria</th><th>Marks</th></tr>${it.rubric.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${r[0]}</td><td class="c">${r[1]}</td></tr>`).join('')}<tr><th></th><th>Total</th><th class="c">${maxOf(it)}</th></tr></table>`:'<div class="pbox" style="height:170px"></div>';
+ const why=k&&it.why&&it.type!=='partb'?`<div style="font-size:.88rem;color:var(--muted);margin-top:4px">${it.why}</div>`:'';
+ return `<div class="card"><span class="qn">${it.label?(it.type==='partb'?'Question ':'')+it.label:'Q'+it.no}</span> ${tags(it)}<div class="q">${it.q}</div>${body}${why}</div>`}
+function renderPrint(){document.body.classList.add('print');
+ document.getElementById('app').innerHTML=head()+`<main><div class="in">${KEY?'<h2 style="margin-top:6px">Answer key</h2>':`<div class="card"><p style="margin:0">${DATA.howPrint||DATA.how} A periodic table and the answer key are at the back.</p></div>`}
+ ${DATA.sections.map(s=>{const its=KEY?s.items.filter(i=>i.type!=='read'):s.items;if(!its.length)return'';return `<h2>${s.h}</h2>${!KEY&&s.intro?`<p class="secintro">${s.intro}</p>`:''}${its.map(pq).join('')}`}).join('')}
+ <footer><p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p>${DATA.attrib}</p></footer></div></main>`}
+PRINT?renderPrint():render();
+</script></body></html>
