@@ -26,6 +26,20 @@ const css=`
 #ink-bar .lbl{display:none}
 #ink-bar [data-a=done]{grid-column:1/-1;width:86px}
 #ink-bar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#ink-bar .hd{grid-column:1/-1;width:100%;display:flex;align-items:center;justify-content:space-between;gap:6px}
+#ink-bar .grip{flex:1;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;color:rgba(255,255,255,.7);font-size:18px;letter-spacing:2px;background:rgba(255,255,255,.06)}
+#ink-bar.dragging .grip{cursor:grabbing;background:rgba(240,178,74,.35)}
+#ink-bar .hd button{width:30px;height:30px}
+#ink-bar.moved{transform:none}
+#ink-bar.mini{display:flex;align-items:center;gap:5px;padding:6px;border-radius:14px;overflow:visible}
+#ink-bar.mini>*:not(.hd):not(.keep){display:none!important}
+#ink-bar.mini .hd{width:auto;grid-column:auto}
+#ink-bar.mini .grip{flex:none;width:30px}
+#ink-bar.mini button{width:36px;height:36px}
+#ink-bar.mini [data-a=done]{width:auto;padding:0 10px}
+#ink-bar .now{display:none}
+#ink-bar.mini .now{display:inline-flex;width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.5);flex:none}
+#ink-bar[hidden]{display:none!important}
 #ink-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:21;background:rgba(27,42,65,.92);color:#fff;font:600 13px Lexend,system-ui,sans-serif;padding:8px 14px;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .25s}
 @media (max-height:620px){#ink-bar{grid-template-columns:repeat(3,36px)}#ink-bar button{width:36px;height:36px}#ink-bar [data-a=done]{width:120px}}
 @media print{#ink-bar,#ink-toast{display:none}}`;
@@ -80,34 +94,49 @@ function paint(){if(!bar)return;bar.querySelectorAll('[data-tool]').forEach(b=>b
  bar.querySelectorAll('[data-c]').forEach(b=>{b.hidden=tool==='hl'?!HCOLS.includes(b.dataset.c):!COLS.includes(b.dataset.c);b.setAttribute('aria-pressed',b.dataset.c===(tool==='hl'?hcol:col))});
  bar.querySelectorAll('[data-s]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===size));
  const h=bar.querySelector('[data-a=hide]');h.setAttribute('aria-pressed',hidden);const f=bar.querySelector('[data-a=finger]');f.hidden=!penSeen;f.setAttribute('aria-pressed',fingerDraw);
- live.classList.toggle('er',tool==='er')}
+ live.classList.toggle('er',tool==='er');const nw=bar.querySelector('.now');if(nw){nw.style.background=tool==='er'?'transparent':tool==='laser'?'#FF2828':(tool==='hl'?hcol:col)}
+ const mb=bar.querySelector('[data-a=min]');if(mb){const m=bar.classList.contains('mini');mb.textContent=m?'⤢':'–';mb.setAttribute('aria-label',m?'Show all drawing tools':'Minimise toolbar');mb.title=m?'Show all tools':'Minimise (keep drawing)'}}
 function build(){bar=document.createElement('div');bar.id='ink-bar';bar.hidden=true;bar.setAttribute('role','toolbar');bar.setAttribute('aria-label','Drawing tools');
- bar.innerHTML=`<button data-tool="pen" aria-label="Pen" title="Pen">${I.pen}<span class="lbl">Pen</span></button><button data-tool="hl" aria-label="Highlighter" title="Highlighter">${I.hl}<span class="lbl">Highlight</span></button><button data-tool="laser" aria-label="Laser pointer" title="Laser pointer">${I.laser}<span class="lbl">Laser</span></button><button data-tool="er" aria-label="Eraser" title="Eraser">${I.er}<span class="lbl">Erase</span></button><span class="sep"></span>
+ bar.innerHTML=`<div class="hd"><span class="grip" title="Drag to move the toolbar" aria-label="Drag to move the toolbar">⠿</span><span class="now" aria-hidden="true"></span><button data-a="min" aria-label="Minimise toolbar" title="Minimise (keep drawing)">–</button></div><button data-tool="pen" aria-label="Pen" title="Pen">${I.pen}<span class="lbl">Pen</span></button><button data-tool="hl" aria-label="Highlighter" title="Highlighter">${I.hl}<span class="lbl">Highlight</span></button><button data-tool="laser" aria-label="Laser pointer" title="Laser pointer">${I.laser}<span class="lbl">Laser</span></button><button data-tool="er" aria-label="Eraser" title="Eraser">${I.er}<span class="lbl">Erase</span></button><span class="sep"></span>
  ${COLS.concat(HCOLS).map(c=>`<button class="sw" data-c="${c}" style="background:${c}" aria-label="Colour ${c}"></button>`).join('')}<span class="sep"></span>
  ${[0,1,2].map(s=>`<button data-s="${s}" aria-label="${['Thin','Medium','Thick'][s]}"><span style="display:inline-block;width:${[5,9,14][s]}px;height:${[5,9,14][s]}px;border-radius:50%;background:currentColor"></span></button>`).join('')}<span class="sep"></span>
- <button data-a="undo" aria-label="Undo">${I.undo}</button><button data-a="clear" aria-label="Clear this slide">${I.clr}</button><button data-a="hide" aria-label="Hide or show ink">${I.eye}</button><button data-a="finger" aria-label="Allow finger drawing" hidden>${I.hand}</button><span class="sep"></span>
- <button data-a="prev" aria-label="Previous slide">←</button><button data-a="next" aria-label="Next slide">→</button><button data-a="side" aria-label="Move toolbar to the other side">⇄</button><button data-a="done" aria-label="Stop drawing">Done</button>`;
+ <button data-a="undo" class="keep" aria-label="Undo">${I.undo}</button><button data-a="clear" aria-label="Clear this slide">${I.clr}</button><button data-a="hide" aria-label="Hide or show ink">${I.eye}</button><button data-a="finger" aria-label="Allow finger drawing" hidden>${I.hand}</button><span class="sep"></span>
+ <button data-a="prev" class="keep" aria-label="Previous slide">←</button><button data-a="next" class="keep" aria-label="Next slide">→</button><button data-a="side" aria-label="Move toolbar to the other side">⇄</button><button data-a="done" class="keep" aria-label="Stop drawing">Done</button>`;
  document.body.appendChild(bar);
  ['pointerdown','pointerup','click','touchstart','touchend'].forEach(t=>bar.addEventListener(t,e=>e.stopPropagation()));
  bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   if(b.dataset.tool){tool=b.dataset.tool}else if(b.dataset.c){if(tool==='hl')hcol=b.dataset.c;else{col=b.dataset.c;if(tool!=='pen')tool='pen'}}else if(b.dataset.s)size=+b.dataset.s;
   else{const a=b.dataset.a;if(a==='undo'){strokesNow().pop();save();redraw()}else if(a==='clear'){if(strokesNow().length&&confirm('Clear all drawing on this slide?')){ink[cur()]=[];save();redraw()}}
    else if(a==='hide'){hidden=!hidden;redraw()}else if(a==='finger'){fingerDraw=!fingerDraw;toast(fingerDraw?'Finger drawing on':'Finger drawing off (pencil only)')}
-   else if(a==='prev'||a==='next'){const n=document.getElementById(a==='prev'?'bPrev':'bNext');n&&n.click();setTimeout(redraw,60)}else if(a==='side'){bar.classList.toggle('right')}else if(a==='done')toggle(false)}
-  paint()});paint()}
+   else if(a==='prev'||a==='next'){const n=document.getElementById(a==='prev'?'bPrev':'bNext');n&&n.click();setTimeout(redraw,60)}else if(a==='side'){bar.classList.remove('moved');bar.style.left=bar.style.top='';bar.classList.toggle('right');savePos()}else if(a==='min'){setMini(!bar.classList.contains('mini'))}else if(a==='done')toggle(false)}
+  paint()});initDrag();restorePos();paint()}
+const PKEY='phd115-inkbar';
+function savePos(){try{const mv=bar.classList.contains('moved');localStorage.setItem(PKEY,JSON.stringify({x:mv?parseFloat(bar.style.left):null,y:mv?parseFloat(bar.style.top):null,right:bar.classList.contains('right'),mini:bar.classList.contains('mini')}))}catch(_){}}
+function clampBar(){if(!bar||!bar.classList.contains('moved')||bar.hidden)return;const r=bar.getBoundingClientRect();let x=parseFloat(bar.style.left)||0,y=parseFloat(bar.style.top)||0;
+ x=Math.max(4,Math.min(innerWidth-r.width-4,x));y=Math.max(4,Math.min(innerHeight-r.height-4,y));bar.style.left=x+'px';bar.style.top=y+'px'}
+function setMini(m){bar.classList.toggle('mini',m);paint();requestAnimationFrame(clampBar);savePos()}
+function restorePos(){let o=null;try{o=JSON.parse(localStorage.getItem(PKEY)||'null')}catch(_){}if(!o)return;
+ if(o.right)bar.classList.add('right');if(o.mini)bar.classList.add('mini');if(o.x!=null&&o.y!=null){bar.classList.add('moved');bar.style.left=o.x+'px';bar.style.top=o.y+'px'}}
+function initDrag(){const g=bar.querySelector('.grip');let d=null;
+ g.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();const r=bar.getBoundingClientRect();d={id:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top};
+  bar.classList.add('moved','dragging');bar.classList.remove('right');bar.style.left=r.left+'px';bar.style.top=r.top+'px';try{g.setPointerCapture(e.pointerId)}catch(_){}});
+ g.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;e.preventDefault();bar.style.left=(e.clientX-d.dx)+'px';bar.style.top=(e.clientY-d.dy)+'px';clampBar()});
+ const up=e=>{if(!d||e.pointerId!==d.id)return;d=null;bar.classList.remove('dragging');clampBar();savePos()};g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
+ g.addEventListener('dblclick',e=>{e.stopPropagation();setMini(!bar.classList.contains('mini'))})}
 let tt=0;function toast(m){let t=document.getElementById('ink-toast');if(!t){t=document.createElement('div');t.id='ink-toast';document.body.appendChild(t)}t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,2600)}
 function toggle(v){on=v===undefined?!on:v;if(!bar)build();bar.hidden=!on;live.classList.toggle('on',on);document.querySelectorAll('.ink-toggle').forEach(b=>b.setAttribute('aria-pressed',on));
- if(on){if(hidden){hidden=false;redraw()}toast('Drawing on. Slides do not change when you tap. Press D or Done to stop.')}else{lc.clearRect(0,0,live.width,live.height)}paint()}
+ if(on){requestAnimationFrame(clampBar);if(hidden){hidden=false;redraw()}toast('Drawing on. Drag ⠿ to move the toolbar, – to shrink it. Press D or Done to stop.')}else{lc.clearRect(0,0,live.width,live.height)}paint()}
 // ---- launcher button and keys
 function mount(){if(document.querySelector('.ink-toggle'))return;const slot=document.querySelector('[data-ink-slot]')||document.getElementById('ctl');const b=document.createElement('button');b.type='button';b.className='ink-btn ink-toggle';
  b.setAttribute('aria-pressed','false');b.setAttribute('aria-label','Draw on slide');b.innerHTML='✎ Draw';b.addEventListener('click',e=>{e.stopPropagation();toggle()});
  if(slot){slot.insertBefore(b,slot.firstChild)}else{b.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9';document.body.appendChild(b)}}
 document.addEventListener('keydown',e=>{const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return;
  if((e.key==='d'||e.key==='D')&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();e.stopImmediatePropagation();toggle();return}
+ if(on&&bar&&(e.key==='m'||e.key==='M')&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();e.stopImmediatePropagation();setMini(!bar.classList.contains('mini'));return}
  if(on&&e.key==='Escape'){e.stopImmediatePropagation();toggle(false);return}
  if(on&&(e.ctrlKey||e.metaKey)&&(e.key==='z'||e.key==='Z')){e.preventDefault();strokesNow().pop();save();redraw()}
  if(on&&(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown'||e.key==='PageUp'))setTimeout(redraw,60)},true);
-addEventListener('resize',()=>setTimeout(resize,60));document.addEventListener('fullscreenchange',()=>setTimeout(resize,120));document.addEventListener('webkitfullscreenchange',()=>setTimeout(resize,120));
+addEventListener('resize',()=>setTimeout(()=>{resize();clampBar()},60));document.addEventListener('fullscreenchange',()=>setTimeout(resize,120));document.addEventListener('webkitfullscreenchange',()=>setTimeout(resize,120));
 window.INK={toggle,clearAll(){ink={};save();redraw()},resize};
 const init=()=>{mount();resize()};document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
 })();
