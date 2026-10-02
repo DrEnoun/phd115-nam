@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PHD115 · EM · Tutorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;--ok:#2E7D4F;--ok-soft:#E3F3E9;--bad:#B3261E;--bad-soft:#FBE7E5;color-scheme:light}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:400}
+b,strong{font-weight:600}
+.in{max-width:860px;margin:0 auto;padding:0 16px}
+header{background:var(--ink);color:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 0 22px}
+header a.home{display:inline-block;color:#fff;text-decoration:none;font-size:.85rem;border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:5px 10px;margin-bottom:12px}
+header .kick{margin:0;color:#A3B1C2;font-size:.85rem}
+header h1{margin:4px 0 4px;font-size:clamp(1.5rem,5.5vw,2.2rem);line-height:1.15}
+header .brand{margin:0;color:#F0B24A;font-weight:600;font-size:.9rem}
+header .sub{margin:10px 0 0;color:#C9D3DC;font-size:.92rem}
+.bar{position:sticky;top:0;z-index:5;background:rgba(242,246,249,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar .in{display:flex;align-items:center;gap:10px;padding-top:8px;padding-bottom:8px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.prog{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cold),var(--heat));transition:width .3s}
+.bar .n{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.btn{font:inherit;font-weight:600;font-size:.92rem;border:0;border-radius:10px;padding:9px 14px;background:var(--cold);color:#fff;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:var(--cold);border:1.5px solid var(--cold)}.btn.warn{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.btn.small{padding:6px 11px;font-size:.85rem}
+main{padding:14px 0 40px}
+h2{font-size:1.2rem;margin:28px 0 6px}
+.secintro{color:var(--muted);margin:0 0 12px;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+.read{border-left:5px solid var(--cold)}.read h3{margin:0 0 6px;font-size:1.05rem;color:var(--cold)}
+.read p{margin:.5em 0}.read ul{margin:.4em 0;padding-left:1.2em}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;color:var(--cold);background:var(--cold-soft);border-radius:99px;padding:2px 9px;margin-right:6px}
+.tag.m{color:var(--heat);background:var(--heat-soft)}
+.qn{font-weight:600;color:var(--muted);font-size:.85rem}
+.q{margin:6px 0 10px;font-size:1rem}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.opt b{color:var(--cold)}.opt:hover{border-color:var(--cold)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{margin-top:10px;border-radius:12px;padding:10px 14px;font-size:.93rem}.fb.ok{background:var(--ok-soft)}.fb.no{background:var(--bad-soft)}.fb.info{background:var(--heat-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
+input[type=text],select{font:inherit;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);min-width:0}
+input[type=text]{flex:1;min-width:140px}
+.pair{display:grid;grid-template-columns:1fr minmax(120px,48%);gap:8px;align-items:center;margin:6px 0}
+.pair span{font-size:.95rem}
+table.rub{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:8px}
+table.rub th,table.rub td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.rub th{background:var(--cold-soft);font-weight:600}
+table.rub td.c{text-align:center;width:64px}
+details{margin-top:10px}summary{cursor:pointer;color:var(--cold);font-weight:600}
+.hint{background:var(--heat-soft);border-radius:12px;padding:10px 14px;margin-top:8px;font-size:.93rem}
+.model{background:var(--ok-soft);border-radius:12px;padding:10px 14px;margin-top:8px;font-size:.93rem}
+.result{border-left:5px solid var(--heat)}
+.lobar{display:grid;grid-template-columns:90px 1fr 60px;gap:8px;align-items:center;font-size:.88rem;margin:5px 0}
+.lobar div{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.lobar i{display:block;height:100%;background:var(--cold)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:14px 0 calc(24px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.8rem}
+footer .brand{color:var(--cold);font-weight:600}
+.done-note{font-size:.8rem;color:var(--muted)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #F0B24A;outline-offset:2px}
+[hidden]{display:none!important}
+/* print */
+body.print{background:#fff}body.print header{background:#fff;color:var(--ink);border-bottom:2px solid var(--ink);padding:10px 0}
+body.print header .kick,body.print header .sub{color:var(--muted)}body.print header .brand{color:var(--heat)}
+.pline{border-bottom:1px solid #9aa7b5;height:26px}
+.pbox{border:1px solid #9aa7b5;border-radius:6px;height:90px;margin-top:6px}
+.popt{margin:3px 0 3px 4px}
+.key{color:var(--ok);font-weight:600}
+@media print{.card{break-inside:avoid}h2{break-after:avoid}}
+</style></head><body>
+<div id="app"></div>
+<script src="../../js/ptable.js"></script>
+<script>
+const DATA={"topic": "em", "act": "tut", "topicTitle": "Energy &amp; Matters", "title": "Tutorial: exam-style practice", "sub": "Part A: 10 multiple-choice questions (1 mark each). Part B: 5 structured questions (27 marks). Same format as the final exam.", "how": "Tap <b>Periodic table</b> in the top bar whenever you need it. Part A marks itself. For Part B, write your full answer on paper first, then open <b>Worked solution and self-marking</b> and tick each marking step you earned. Use the hint only if you are stuck. Press <b>Finish</b> for your total out of 37.", "howPrint": "Answer Part A by circling one option. Answer Part B in full, showing your working.", "pdf": "../../downloads/PHD115_EM_Tutorial.pdf", "attrib": "Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 7.0–7.5. Shared under the same licence for non-commercial teaching.", "next": "Next topic: Chemical Reactions I.", "sections": [{"h": "Part A · Multiple choice", "items": [{"type": "mcq", "lo": "EM-LO1", "q": "Which statement best describes <b>heat</b>?", "opts": ["The total energy stored in an object", "The transfer of energy between objects because of a temperature difference", "The temperature of an object", "The energy stored in chemical bonds"], "ans": 1, "why": "Heat is energy in transit: it flows from the hotter object to the colder one. An object contains energy; heat is what flows.", "label": "A1", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO1", "q": "A snack provides 250 Cal (nutritional Calories). What is this in kJ? (1 Cal = 1 kcal = 4.184 kJ)", "opts": ["59.8 kJ", "250 kJ", "1.05 × 10<sup>3</sup> kJ", "1.05 × 10<sup>6</sup> kJ"], "ans": 2, "why": "250 kcal × 4.184 kJ/kcal = 1046 kJ = 1.05 × 10<sup>3</sup> kJ. (1.05 × 10<sup>6</sup> is the value in joules.)", "label": "A2", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO2", "q": "Normal body temperature is 37.0 °C. What is this in kelvin?", "opts": ["236.2 K", "98.6 K", "310.2 K", "273.2 K"], "ans": 2, "why": "K = °C + 273.15 = 37.0 + 273.15 = 310.2 K.", "label": "A3", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO2", "q": "The same amount of heat is added to 10 g samples of water, ethanol, aluminium and copper, all starting at 25 °C. Which shows the largest temperature rise?", "opts": ["water (4.184 J/g·°C)", "ethanol (2.418 J/g·°C)", "aluminium (0.900 J/g·°C)", "copper (0.385 J/g·°C)"], "ans": 3, "why": "ΔT = q ÷ (m × c). With the same q and m, the smallest specific heat gives the largest ΔT.", "label": "A4", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO3", "q": "Which phase change is <b>exothermic</b>?", "opts": ["Melting", "Boiling", "Sublimation", "Freezing"], "ans": 3, "why": "Freezing removes heat from the substance, so it releases heat (exothermic). Melting, boiling and sublimation all absorb heat.", "label": "A5", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO3", "q": "How much heat is needed to vaporise 10.0 g of water at 100 °C? (ΔH<sub>vap</sub> = 2260 J/g)", "opts": ["3.34 kJ", "2.26 kJ", "22.6 kJ", "41.8 kJ"], "ans": 2, "why": "q = m × ΔH<sub>vap</sub> = 10.0 g × 2260 J/g = 22 600 J = 22.6 kJ.", "label": "A6", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO4", "q": "On the heating curve of water, what is happening along a flat (horizontal) segment?", "opts": ["The temperature rises steadily", "Heat is added but the temperature stays constant while the phase changes", "No heat is being added", "The substance is cooling down"], "ans": 1, "why": "On a plateau the added heat is used to change the phase (melting or boiling), not to raise the temperature.", "label": "A7", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO4", "q": "Which segment of water's heating curve is calculated with q = m × ΔH<sub>vap</sub>?", "opts": ["The rising line below 0 °C", "The plateau at 0 °C", "The plateau at 100 °C", "The rising line above 100 °C"], "ans": 2, "why": "The plateau at 100 °C is boiling (liquid → gas), which uses the heat of vaporisation. The plateau at 0 °C uses ΔH<sub>fus</sub>; the rising lines use q = mcΔT.", "label": "A8", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO5", "q": "In a reaction, breaking the bonds in the reactants needs 2000 kJ and forming the bonds in the products releases 2400 kJ. What is ΔH?", "opts": ["+400 kJ, endothermic", "−400 kJ, exothermic", "+4400 kJ, endothermic", "−4400 kJ, exothermic"], "ans": 1, "why": "ΔH ≈ Σ(bonds broken) − Σ(bonds formed) = 2000 − 2400 = −400 kJ. Negative, so exothermic.", "label": "A9", "topic": "Energy &amp; Matters"}, {"type": "mcq", "lo": "EM-LO6", "q": "Glucose is oxidised in the body: C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O, releasing about 670 kcal/mol. Which statement is correct?", "opts": ["The reaction is endothermic and ΔH is positive", "The reaction is exothermic and ΔH is negative", "The reaction absorbs energy from ATP", "No bonds are broken in the reaction"], "ans": 1, "why": "Energy is released, so the reaction is exothermic and ΔH is negative. The bonds formed in CO<sub>2</sub> and H<sub>2</sub>O are stronger overall than the bonds broken.", "label": "A10", "topic": "Energy &amp; Matters"}]}, {"h": "Part B · Structured questions", "intro": "Show all working. The marks and Bloom's level are shown for each question.", "items": [{"type": "partb", "label": "B1", "topic": "Energy &amp; Matters", "lo": "EM-LO1", "marks": 5, "level": "C3", "q": "(a) Define <b>energy</b> and <b>heat</b>. (2 marks) (b) An oral nutrition snack bar contains 8.0 g of fat, 30. g of carbohydrate and 5.0 g of protein. Using the average fuel values (fat 9 Cal/g; carbohydrate and protein 4 Cal/g), calculate its energy content in Calories and in kJ. (3 marks)", "hint": "(b) Multiply each mass by its fuel value, add them, then use 1 Cal = 4.184 kJ.", "work": "(a) <b>Energy</b>: the ability to do work. <b>Heat</b>: the transfer of energy between objects because they have different temperatures. (b) Fat: 8.0 g × 9 Cal/g = 72 Cal. Carbohydrate + protein: (30. + 5.0) g × 4 Cal/g = 140 Cal. Total = <b>212 Cal</b>. 212 Cal × 4.184 kJ/Cal = <b>887 kJ</b>.", "rubric": [["Energy: the ability to do work", 1], ["Heat: energy transferred because of a temperature difference", 1], ["Fat: 72 Cal", 1], ["Carbohydrate + protein: 140 Cal", 1], ["212 Cal and 887 kJ", 1]]}, {"type": "partb", "label": "B2", "topic": "Energy &amp; Matters", "lo": "EM-LO2", "marks": 6, "level": "C3", "q": "(a) A patient's temperature is 101.3 °F. Convert it to °C and to K, and state whether the patient has a fever. (2 marks) (b) Calculate the heat, in kJ, needed to warm 250. g of water from 22.0 °C to 85.0 °C (c = 4.184 J/g·°C). (2 marks) (c) A 40.0 g metal sample absorbs 900. J and its temperature rises from 18.0 °C to 43.0 °C. Calculate its specific heat and identify the metal using the specific heat table in the slides. (2 marks)", "hint": "(a) °C = (°F − 32) × 5/9; K = °C + 273.15. (b) q = mcΔT. (c) Rearrange: c = q ÷ (m × ΔT).", "work": "(a) °C = (101.3 − 32) × 5/9 = <b>38.5 °C</b>; K = 38.5 + 273.15 = <b>311.7 K</b>. Above 37.8 °C, so <b>yes, a fever</b>. (b) ΔT = 85.0 − 22.0 = 63.0 °C; q = 250. g × 4.184 J/g·°C × 63.0 °C = 65 898 J = <b>65.9 kJ</b>. (c) ΔT = 43.0 − 18.0 = 25.0 °C; c = 900. J ÷ (40.0 g × 25.0 °C) = <b>0.900 J/g·°C</b>, which matches <b>aluminium</b>.", "rubric": [["38.5 °C and fever stated", 1], ["311.7 K", 1], ["ΔT = 63.0 °C with correct q = mcΔT set-up", 1], ["65.9 kJ", 1], ["c = 0.900 J/g·°C", 1], ["Aluminium", 1]]}, {"type": "partb", "label": "B3", "topic": "Energy &amp; Matters", "lo": "EM-LO3", "marks": 6, "level": "C3", "q": "A 25.0 g ice pack is taken from a freezer at −10.0 °C and left until it becomes liquid water at 25.0 °C. (a) Name the three stages of the heating curve involved. (1 mark) (b) Calculate the total heat absorbed, in kJ. (c of ice = 2.06 J/g·°C; ΔH<sub>fus</sub> = 334 J/g; c of water = 4.184 J/g·°C) (4 marks) (c) Explain why the temperature stays at 0 °C while the ice melts. (1 mark)", "hint": "Treat each stage separately: q = mcΔT for warming, q = mΔH<sub>fus</sub> for melting. Then add.", "work": "(a) Ice warms from −10.0 °C to 0 °C → ice melts at 0 °C → water warms from 0 °C to 25.0 °C. (b) q<sub>1</sub> = 25.0 × 2.06 × 10.0 = 515 J. q<sub>2</sub> = 25.0 × 334 = 8350 J. q<sub>3</sub> = 25.0 × 4.184 × 25.0 = 2615 J. Total = 11 480 J = <b>11.5 kJ</b>. (c) The heat is used to overcome the forces holding the molecules in the solid (to change the phase), not to raise the temperature.", "rubric": [["Three stages named in order", 1], ["q<sub>1</sub> = 515 J", 1], ["q<sub>2</sub> = 8350 J", 1], ["q<sub>3</sub> = 2615 J", 1], ["Total 11.5 kJ", 1], ["Heat used to change the phase, not raise the temperature", 1]]}, {"type": "partb", "label": "B4", "topic": "Energy &amp; Matters", "lo": "EM-LO5", "marks": 5, "level": "C3", "q": "(a) Define <b>bond energy</b>. (1 mark) (b) Use the bond energies below to estimate ΔH for: H<sub>2</sub>(g) + Cl<sub>2</sub>(g) → 2HCl(g). Bond energies (kJ/mol): H–H 439, Cl–Cl 243, H–Cl 431. (3 marks) (c) State whether the reaction is endothermic or exothermic, and whether heat is written on the reactant or product side of the equation. (1 mark)", "hint": "ΔH ≈ Σ(bonds broken) − Σ(bonds formed). Count the bonds: 2HCl means two H–Cl bonds.", "work": "(a) Bond energy: the energy needed to break one mole of a particular bond (the same amount is released when that bond forms). (b) Broken: H–H + Cl–Cl = 439 + 243 = 682 kJ. Formed: 2 H–Cl = 2 × 431 = 862 kJ. ΔH ≈ 682 − 862 = <b>−180 kJ</b>. (c) ΔH is negative, so <b>exothermic</b>; heat is written on the <b>product side</b>.", "rubric": [["Bond energy defined", 1], ["Bonds broken: 682 kJ", 1], ["Bonds formed: 862 kJ", 1], ["ΔH ≈ −180 kJ", 1], ["Exothermic, heat on the product side", 1]]}, {"type": "partb", "label": "B5", "topic": "Energy &amp; Matters", "lo": "EM-LO6", "marks": 5, "level": "C3", "q": "(a) A patient receives 25.0 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, 180.2 g/mol). Calculate the energy released when it is fully oxidised, in kJ and in kcal. (Glucose releases 2800 kJ/mol, or 670 kcal/mol.) (3 marks) (b) Describe what happens to the bonds when ATP is converted to ADP, and state the approximate energy change. (2 marks)", "hint": "(a) g → mol → energy. (b) Think about which O–P and O–H bonds break and form.", "work": "(a) Moles = 25.0 g ÷ 180.2 g/mol = 0.139 mol. Energy = 0.139 mol × 2800 kJ/mol = <b>388 kJ</b>; 0.139 mol × 670 kcal/mol = <b>93.0 kcal</b>. (b) An O–P bond breaks, and an O–P bond and two O–H bonds form. Overall about <b>7.5 kcal/mol (31 kJ/mol) is released</b>, which the cell uses to drive other reactions.", "rubric": [["0.139 mol glucose", 1], ["388 kJ", 1], ["93.0 kcal", 1], ["O–P broken; O–P and two O–H formed", 1], ["About 7.5 kcal/mol (31 kJ/mol) released", 1]]}]}]};
+const P=new URLSearchParams(location.search);const PRINT=P.has('print'),KEY=P.has('key');
+const K='phd115:'+DATA.topic+':'+DATA.act;
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let ST=LS.get(K+':state')||{a:{}};
+const L=['A','B','C','D','E','F'];
+const norm=(s,cs)=>{s=String(s).replace(/[₀-₉]/g,c=>'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(c)]).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,' ').trim();s=s.replace(/\s*([+\-])\s*$/,'$1');return cs?s.replace(/ /g,''):s.toLowerCase().replace(/[.]$/,'')};
+// flatten items
+const ITEMS=[];DATA.sections.forEach((s,si)=>s.items.forEach((it,ii)=>{if(it.type!=='read'){it.id=si+'_'+ii;it.no=ITEMS.length+1;ITEMS.push(it)}}));
+const maxOf=it=>it.type==='partb'?it.rubric.reduce((a,r)=>a+r[1],0):1;
+const TOTAL=ITEMS.reduce((a,it)=>a+maxOf(it),0);
+function save(){LS.set(K+':state',ST);const got=score();const answered=ITEMS.filter(it=>ST.a[it.id]&&ST.a[it.id].done).length;
+ const p=LS.get(K)||{};p.total=TOTAL;p.t=Date.now();p.answered=answered;if(ST.finished&&answered===ITEMS.length){p.done=true;p.best=Math.max(p.best||0,got)}LS.set(K,p);
+ LS.set('phd115:last',{topic:DATA.topic,act:DATA.act,t:Date.now()});bar()}
+function score(){return ITEMS.reduce((a,it)=>{const s=ST.a[it.id];if(!s)return a;if(it.type==='partb')return a+(s.ticks||[]).reduce((x,t,i)=>x+(t?it.rubric[i][1]:0),0);return a+(s.ok?1:0)},0)}
+function bar(){const done=ITEMS.filter(it=>ST.a[it.id]&&ST.a[it.id].done).length;const e=document.querySelector('.prog i');if(e)e.style.width=(100*done/ITEMS.length)+'%';const n=document.getElementById('cnt');if(n)n.textContent=done+' / '+ITEMS.length+' done'}
+function head(){return `<header><div class="in">${PRINT?'':`<a class="home" href="../../#${DATA.topic}">⌂ Study hub</a>`}
+<p class="kick">PHD115 Fundamentals of Chemistry · ${DATA.topicTitle}</p><h1>${DATA.title}</h1>
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p class="sub">${DATA.sub}</p></div></header>`}
+function tags(it){return `${it.topic?`<span class="tag">Topic: ${it.topic}</span>`:''}${it.lo?`<span class="tag">${it.lo}</span>`:''}${it.marks?`<span class="tag m">${it.marks} marks${it.level?', '+it.level:''}</span>`:''}`}
+// ---------- interactive renderers
+const R={
+ read:it=>`<div class="card read">${it.h?`<h3>${it.h}</h3>`:''}${it.html}</div>`,
+ mcq:it=>`<div class="opts">${it.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${L[j]}</b><span>${o}</span></button>`).join('')}</div>`,
+ tf:it=>`<div class="opts" style="grid-template-columns:1fr 1fr"><button class="opt" data-j="0"><b>T</b><span>True</span></button><button class="opt" data-j="1"><b>F</b><span>False</span></button></div>`,
+ fill:it=>`${it.cs?'<p class="done-note" style="margin:2px 0 4px">Type formulas on one line: numbers become subscripts automatically (CO2 = CO₂, SO42- = SO₄²⁻).</p>':''}<div class="row"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${it.ph||'Type your answer'}"><button class="btn small chk">Check</button></div>`,
+ num:it=>`<div class="row"><input type="text" inputmode="decimal" placeholder="number" style="max-width:180px">${it.unit?`<span>${it.unit}</span>`:''}<button class="btn small chk">Check</button></div>`,
+ match:it=>`${it.left.map((l,i)=>`<div class="pair"><span>${l}</span><select data-i="${i}"><option value="">choose…</option>${it.right.map((r,j)=>`<option value="${j}">${r}</option>`).join('')}</select></div>`).join('')}<div class="row"><button class="btn small chk">Check</button></div>`,
+ order:it=>`${it.items.map((l,i)=>`<div class="pair"><span>${l}</span><select data-i="${i}"><option value="">rank…</option>${it.items.map((_,j)=>`<option value="${j+1}">${j+1}${j==0?' ('+it.low+')':j==it.items.length-1?' ('+it.high+')':''}</option>`).join('')}</select></div>`).join('')}<div class="row"><button class="btn small chk">Check</button></div>`,
+ self:it=>`<textarea rows="3" style="width:100%;font:inherit;border:1.5px solid var(--line);border-radius:10px;padding:8px" placeholder="Write your answer here (optional), then reveal the model answer."></textarea><div class="row"><button class="btn small ghost rev">Show model answer</button></div><div class="model" hidden>${it.model}<div class="row"><span>Did your answer match?</span><button class="btn small yes">Yes</button><button class="btn small ghost no">Not yet</button></div></div>`,
+ partb:it=>`${it.hint?`<details><summary>Hint</summary><div class="hint">${it.hint}</div></details>`:''}<details class="sol"><summary>Worked solution and self-marking</summary><div class="model">${it.work||''}</div>
+ <p class="done-note">Tick each row you earned. Your marks are added to your score.</p><table class="rub"><tr><th>Step</th><th>Marking criteria</th><th>Marks</th><th>Got it</th></tr>${it.rubric.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${r[0]}</td><td class="c">${r[1]}</td><td class="c"><input type="checkbox" data-i="${i}" aria-label="Step ${i+1} earned"></td></tr>`).join('')}<tr><th></th><th>Total</th><th class="c">${maxOf(it)}</th><th class="c tk">0</th></tr></table></details>`
+};
+function qcard(it){if(it.type==='read')return R.read(it);
+ return `<div class="card" id="q${it.id}"><span class="qn">${it.label?(it.type==='partb'?'Question ':'')+it.label:'Q'+it.no}</span> ${tags(it)}<div class="q">${it.q}</div>${R[it.type](it)}<div class="fbx"></div></div>`}
+function fb(el,ok,it,extra){const x=el.querySelector('.fbx');x.innerHTML=`<div class="fb ${ok===null?'info':ok?'ok':'no'}">${ok===null?'':ok?'<b>Correct.</b> ':'<b>Not quite.</b> '}${extra||''}${it.why?' '+it.why:''}</div>`}
+function mark(it,ok,val){ST.a[it.id]={done:true,ok,val};save()}
+function restore(it,el){const s=ST.a[it.id];if(!s)return;
+ if(it.type==='mcq'||it.type==='tf'){const a=it.type==='tf'?(it.ans?0:1):it.ans;el.querySelectorAll('.opt').forEach(b=>{const j=+b.dataset.j;if(j===a)b.classList.add('right');else if(j===s.val)b.classList.add('wrong')});fb(el,s.ok,it,s.ok?'':`Answer: <b>${it.type==='tf'?(it.ans?'True':'False'):L[a]}</b>.`)}
+ else if(it.type==='fill'||it.type==='num'){el.querySelector('input').value=s.val||'';fb(el,s.ok,it,s.ok?'':`Answer: <b>${it.type==='num'?it.ans+(it.unit?' '+it.unit:''):it.show||it.acc[0]}</b>.`)}
+ else if(it.type==='match'||it.type==='order'){el.querySelectorAll('select').forEach((sl,i)=>sl.value=(s.val||[])[i]??'');fb(el,s.ok,it,s.ok?'':'Correct: '+ansText(it)+'.')}
+ else if(it.type==='self'){el.querySelector('textarea').value=s.val||'';el.querySelector('.model').hidden=false;fb(el,s.ok?true:null,it,s.ok?'Marked as matched.':'Marked as not yet. Review this and try again later.')}
+ else if(it.type==='partb'){(s.ticks||[]).forEach((t,i)=>{const c=el.querySelector(`input[data-i="${i}"]`);if(c)c.checked=!!t});el.querySelector('.tk').textContent=(s.ticks||[]).reduce((x,t,i)=>x+(t?it.rubric[i][1]:0),0)}}
+function ansText(it){if(it.type==='match')return it.left.map((l,i)=>`${l} → <b>${it.right[it.ans[i]]}</b>`).join('; ');if(it.type==='order'){const o=it.items.map((l,i)=>[it.ans[i],l]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);return o.join(' &lt; ')+` (${it.low} → ${it.high})`}return ''}
+function wire(it,el){
+ if(it.type==='mcq'||it.type==='tf')el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(ST.a[it.id])return;const j=+b.dataset.j;const a=it.type==='tf'?(it.ans?0:1):it.ans;mark(it,j===a,j);restore(it,el)});
+ if(it.type==='fill')el.querySelector('.chk').onclick=()=>{const v=el.querySelector('input').value;if(!v.trim())return;const ok=it.acc.some(a=>norm(a,it.cs)===norm(v,it.cs));mark(it,ok,v);restore(it,el)};
+ if(it.type==='num')el.querySelector('.chk').onclick=()=>{const v=el.querySelector('input').value;const x=parseFloat(v.replace(',','.').replace(/[\u2212\u2013]/g,'-').replace(/\s/g,''));if(isNaN(x))return;mark(it,Math.abs(x-it.ans)<=(it.tol||0.01),v);restore(it,el)};
+ if(it.type==='match'||it.type==='order')el.querySelector('.chk').onclick=()=>{const v=[...el.querySelectorAll('select')].map(s=>s.value);if(v.some(x=>x===''))return;const ok=v.every((x,i)=>+x===it.ans[i]);mark(it,ok,v);restore(it,el)};
+ if(it.type==='self'){el.querySelector('.rev').onclick=()=>{el.querySelector('.model').hidden=false};el.querySelector('.yes').onclick=()=>{mark(it,true,el.querySelector('textarea').value);restore(it,el)};el.querySelector('.no').onclick=()=>{mark(it,false,el.querySelector('textarea').value);restore(it,el)}}
+ if(it.type==='partb')el.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{const t=[...el.querySelectorAll('input[type=checkbox]')].map(x=>x.checked);ST.a[it.id]={done:true,ticks:t};save();restore(it,el)});
+}
+function finish(){ST.finished=true;save();const got=score();const by={};ITEMS.forEach(it=>{const lo=it.lo||'—';by[lo]=by[lo]||[0,0];by[lo][1]+=maxOf(it);const s=ST.a[it.id];if(s)by[lo][0]+=it.type==='partb'?(s.ticks||[]).reduce((x,t,i)=>x+(t?it.rubric[i][1]:0),0):(s.ok?1:0)});
+ const weak=Object.entries(by).filter(([k,v])=>v[0]/v[1]<0.7).map(([k])=>k);
+ const r=document.getElementById('result');r.hidden=false;r.innerHTML=`<h3 style="margin:0 0 6px">Your score: ${got} / ${TOTAL} (${Math.round(100*got/TOTAL)}%)</h3>
+ ${Object.entries(by).map(([k,v])=>`<div class="lobar"><span>${k}</span><div><i style="width:${100*v[0]/v[1]}%"></i></div><span>${v[0]}/${v[1]}</span></div>`).join('')}
+ <p>${weak.length?`Revise: <b>${weak.join(', ')}</b>. The slides for these outcomes are in the study hub.`:'Well done. You are ready for the next step.'} ${DATA.next||''}</p>
+ <p class="done-note">Your best score is saved on this device. You can reset and try again at any time.</p>`;r.scrollIntoView({behavior:'smooth'})}
+function render(){document.body.classList.remove('print');
+ document.getElementById('app').innerHTML=head()+`<div class="bar"><div class="in"><div class="prog"><i></i></div><span class="n" id="cnt"></span><span data-pt-slot=""></span><button class="btn small warn" id="reset">Reset</button></div></div>
+<main><div class="in"><div class="card" style="border-left:5px solid var(--heat)"><p style="margin:0">${DATA.how}</p>${DATA.pdf?`<p style="margin:8px 0 0"><a href="${DATA.pdf}" download>Download the printable version (PDF, with answer key)</a></p>`:''}</div>
+${DATA.sections.map(s=>`<h2>${s.h}</h2>${s.intro?`<p class="secintro">${s.intro}</p>`:''}${s.items.map(qcard).join('')}`).join('')}
+<div class="row" style="margin-top:20px"><button class="btn" id="fin">Finish and see my score</button></div><div class="card result" id="result" hidden></div>
+<footer><p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p>Your answers are saved on this device only. Nothing is sent anywhere.</p><p>${DATA.attrib}</p></footer></div></main>`;
+ ITEMS.forEach(it=>{const el=document.getElementById('q'+it.id);wire(it,el);restore(it,el)});bar();
+ document.getElementById('fin').onclick=finish;
+ document.getElementById('reset').onclick=()=>{if(!confirm('Clear all your answers for this activity and start again?'))return;ST={a:{}};LS.del(K+':state');const p=LS.get(K)||{};delete p.answered;LS.set(K,p);render();scrollTo(0,0)};
+ if(ST.finished)finish();if(window.PT)PT.mount();}
+// ---------- print renderer
+function pq(it){const k=KEY;let body='';
+ if(it.type==='read')return `<div class="card read">${it.h?`<h3>${it.h}</h3>`:''}${it.html}</div>`;
+ if(it.type==='mcq')body=it.opts.map((o,j)=>`<div class="popt ${k&&j===it.ans?'key':''}">${L[j]}. ${o}</div>`).join('');
+ else if(it.type==='tf')body=`<div class="popt">True / False ${k?`<span class="key">→ ${it.ans?'True':'False'}</span>`:''}</div>`;
+ else if(it.type==='fill'||it.type==='num')body=k?`<div class="key">${it.type==='num'?it.ans+(it.unit?' '+it.unit:''):(it.show||it.acc[0])}</div>`:'<div class="pline"></div>';
+ else if(it.type==='match'||it.type==='order'){body=it.type==='match'?`<p style="margin:4px 0;font-size:.9rem">Options: ${it.right.join(' · ')}</p>`+it.left.map(l=>`<div class="pair"><span>${l}</span><div class="pline"></div></div>`).join(''):`<p style="margin:4px 0;font-size:.9rem">Rank 1 (${it.low}) to ${it.items.length} (${it.high}): ${it.items.join(' · ')}</p><div class="pline"></div>`;if(k)body=`<div class="key">${ansText(it)}</div>`}
+ else if(it.type==='self')body=k?`<div class="model">${it.model}</div>`:'<div class="pbox"></div>';
+ else if(it.type==='partb')body=k?`${it.work?`<div class="model">${it.work}</div>`:''}<table class="rub"><tr><th>Step</th><th>Marking criteria</th><th>Marks</th></tr>${it.rubric.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${r[0]}</td><td class="c">${r[1]}</td></tr>`).join('')}<tr><th></th><th>Total</th><th class="c">${maxOf(it)}</th></tr></table>`:'<div class="pbox" style="height:170px"></div>';
+ const why=k&&it.why&&it.type!=='partb'?`<div style="font-size:.88rem;color:var(--muted);margin-top:4px">${it.why}</div>`:'';
+ return `<div class="card"><span class="qn">${it.label?(it.type==='partb'?'Question ':'')+it.label:'Q'+it.no}</span> ${tags(it)}<div class="q">${it.q}</div>${body}${why}</div>`}
+function renderPrint(){document.body.classList.add('print');
+ document.getElementById('app').innerHTML=head()+`<main><div class="in">${KEY?'<h2 style="margin-top:6px">Answer key</h2>':`<div class="card"><p style="margin:0">${DATA.howPrint||DATA.how} A periodic table and the answer key are at the back.</p></div>`}
+ ${DATA.sections.map(s=>{const its=KEY?s.items.filter(i=>i.type!=='read'):s.items;if(!its.length)return'';return `<h2>${s.h}</h2>${!KEY&&s.intro?`<p class="secintro">${s.intro}</p>`:''}${its.map(pq).join('')}`}).join('')}
+ <footer><p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p>${DATA.attrib}</p></footer></div></main>`}
+PRINT?renderPrint():render();
+</script></body></html>
