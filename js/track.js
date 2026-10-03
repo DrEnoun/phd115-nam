@@ -120,8 +120,11 @@ function chip(){if(!isHub)return;const id=get(IDK);const h=document.querySelecto
  c.innerHTML=`<span>Signed in as <b>${esc(id.name)}</b> · ${esc(id.cls)}</span><button id="named">My details</button>`;
  c.querySelector('#named').onclick=()=>showSignIn('',true)}
 
+// One scrollbar only: freeze the page behind while a sign-in or survey box is open.
+function lockScroll(){const on=!!document.querySelector('.namov');document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
+function watchOverlay(){try{new MutationObserver(lockScroll).observe(document.body,{childList:true})}catch(e){}lockScroll()}
 // ---------- start ----------
-function boot(){const id=get(IDK);
+function boot(){watchOverlay();const id=get(IDK);
  if(!id||!id.ok)showSignIn('');else{chip();checkFlags()}
  enqueue({k:'view:'+vid,type:'view',page,vid,t:Date.now(),ref:document.referrer?'1':''});
  setTimeout(flush,3000);setInterval(()=>{timeEv();flush()},FLUSH_MS)}
