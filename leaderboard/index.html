@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-public>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game leaderboard · PHD115 Study Hub</title>
+<script src="../js/track.js"></script>
+<script src="../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2A41;--muted:#56657A;--paper:#F2F6F9;--card:#fff;--line:#D7E0E8;--cold:#2F6F9F;--cold-soft:#E1EEF7;--heat:#B86E00;--heat-soft:#FBEFD9;color-scheme:light}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;font-weight:350}
+b{font-weight:600}
+.in{max-width:820px;margin:0 auto;padding:0 18px}
+header{background:var(--ink);color:#fff;padding:20px 0 24px}
+header a{color:#fff;text-decoration:none;font-size:.85rem;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:5px 10px;display:inline-block;margin-bottom:12px}
+header p{margin:0;color:#C9D3DC}
+h1{font-size:clamp(1.8rem,6vw,2.6rem);margin:2px 0 6px;line-height:1.1;font-weight:600}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 10px}
+.tabs button{font:inherit;font-weight:500;font-size:.9rem;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+select{font:inherit;font-size:.9rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 18px}
+ol{list-style:none;margin:0;padding:0}
+li{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+li:last-child{border:0}
+.r{font-weight:600;font-size:1.1rem;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+li.top .r{color:#fff;background:var(--heat);border-radius:50%;width:36px;height:36px;display:grid;place-items:center;justify-self:center;font-size:1rem}
+.n{font-weight:500;font-size:1.05rem}.c{display:block;font-size:.8rem;color:var(--muted)}
+.s{font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+li.me{background:var(--heat-soft);border-radius:10px;padding-left:6px;padding-right:8px}
+.mut{color:var(--muted)}
+.empty{padding:22px 0;color:var(--muted)}
+footer{color:var(--muted);font-size:.82rem;padding:18px 0 calc(24px + env(safe-area-inset-bottom,0px))}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--heat);outline-offset:2px}
+</style>
+</head>
+<body>
+<header><div class="in">
+<a href="../">⌂ Study hub</a>
+<h1>Game leaderboard</h1>
+<p>Best Pharmacy Shift score per student. Open all semester; play again any time to raise your score.</p>
+<p id="rw" style="margin-top:10px;color:#F0B24A;font-weight:500" hidden></p>
+</div></header>
+<main class="in">
+<div class="tabs" role="group" aria-label="Board" id="tabs"></div>
+<div class="bar"><span class="mut" id="info"></span><label class="mut" style="font-size:.9rem">Class <select id="cls"><option value="">All classes</option></select></label></div>
+<div class="card"><ol id="list"><li class="empty" style="display:block">Loading…</li></ol></div>
+<p class="mut" id="mine" style="font-size:.92rem"></p>
+</main>
+<footer><div class="in">
+<p>Shows first name and class only. Overall is the sum of your best score in each topic. Scores refresh about once a minute. The game is practice and is not part of your marks.</p>
+<p>Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+</div></footer>
+<script>
+const BOARDS=[['all','Overall'],['ic1','Ionic & Covalent I'],['ic2','Ionic & Covalent II'],['em','Energy & Matters'],['cr1','Chemical Reactions I'],['cr2','Chemical Reactions II'],['sol','Solution']];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cur=(location.hash||'#all').slice(1);if(!BOARDS.some(b=>b[0]===cur))cur='all';
+let data=null;
+(window.NAMTRACK&&NAMTRACK.CLASSES||[]).forEach(c=>{const o=document.createElement('option');o.textContent=c;document.getElementById('cls').appendChild(o)});
+function tabs(){document.getElementById('tabs').innerHTML=BOARDS.map(b=>`<button data-b="${b[0]}" aria-pressed="${b[0]===cur}">${b[1]}</button>`).join('');
+ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.b;history.replaceState(null,'','#'+cur);tabs();load()})}
+function jsonp(q){return new Promise((ok,no)=>{const T=window.NAMTRACK;if(!T||!T.ENDPOINT)return no(new Error('no endpoint'));const cb='lbcb'+Date.now().toString(36);const s=document.createElement('script');let done=false;
+ const end=()=>{done=true;try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()};window[cb]=j=>{end();ok(j)};s.onerror=()=>{if(!done){end();no(new Error('load'))}};
+ setTimeout(()=>{if(!done){end();no(new Error('timeout'))}},15000);s.src=T.ENDPOINT+'?'+q+'&callback='+cb+'&hub_t='+Date.now();document.head.appendChild(s)})}
+function render(){const L=document.getElementById('list'),cls=document.getElementById('cls').value;if(!data)return;
+ let rows=data.rows||[];if(cls){let rank=0,prev=null;rows=rows.filter(r=>r.c===cls).map((r,i)=>{if(r.s!==prev){rank=i+1;prev=r.s}return Object.assign({},r,{rank})})}
+ document.getElementById('info').textContent=data.count?`${data.count} student${data.count>1?'s':''} on this board${cls?'; ranks within '+cls:''}`:'';
+ L.innerHTML=rows.length?rows.map(r=>`<li class="${r.rank<=3?'top':''} ${r.me?'me':''}"><span class="r">${r.rank}</span><span><span class="n">${esc(r.n)}</span><span class="c">${esc(r.c)}</span></span><span class="s">${r.s}</span></li>`).join('')
+  :`<li class="empty" style="display:block">No scores yet${cls?' for this class':''}. Finish a Pharmacy Shift to be first on this board.</li>`;
+ document.getElementById('mine').innerHTML=data.me?`You are <b>#${data.me.rank}</b> of ${data.count} on this board with <b>${data.me.s}</b> points.`:''}
+async function load(){const L=document.getElementById('list');L.innerHTML='<li class="empty" style="display:block">Loading…</li>';const id=window.NAMTRACK&&NAMTRACK.id&&NAMTRACK.id();
+ try{data=await jsonp('hub_op=board&hub_topic='+cur+(id&&id.ok?'&hub_matric='+encodeURIComponent(id.matric)+'&hub_class='+encodeURIComponent(id.cls):''));if(!data||!data.ok)throw 0;render()}
+ catch(e){data=null;L.innerHTML='<li class="empty" style="display:block">The leaderboard is not reachable right now. Check your internet connection, then reload the page.</li>'}}
+document.getElementById('cls').onchange=render;
+const RW=window.NAMTRACK&&NAMTRACK.REWARD;if(RW){const e=document.getElementById('rw');e.textContent='🏆 '+RW;e.hidden=false}
+tabs();load();setInterval(()=>{if(document.visibilityState==='visible')load()},90000);
+</script>
+</body>
+</html>

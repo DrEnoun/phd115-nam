@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game · Energy & Matters · PHD115 Study Hub</title>
+<script src="../../js/track.js"></script>
+<script src="../../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#F2F6F9;color:#1B2A41;font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+footer{border-top:1px solid #D7E0E8;margin-top:10px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:#56657A;font-size:.82rem}
+footer .brand{color:#2F6F9F;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<footer><div class="in">
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Your best score is saved on this device and sent to the Study Hub leaderboard, which shows your first name and class only. The game is for practice and is not part of your marks.</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 7.0–7.5. Shared under the same licence for non-commercial teaching.</p>
+</div></footer>
+
+<script src="../../js/shift.js"></script>
+<script>
+/* Energy & Matters content for the Pharmacy Shift engine.
+   Bank items: o[0] is always the correct option (the engine shuffles).
+   rx:true shows the item as a prescription slip, otherwise as a patient at the counter.
+   at: stations the item may appear in (if omitted, any station whose pool includes its LO). */
+NAMSHIFT.start({
+ topic:'em',
+ title:'Energy & Matters game',
+ kicker:'PHD115 · Topic 3 · Energy & Matters',
+ blurb:'You are the pharmacist on duty. Patients bring questions and prescriptions about heat, temperature, phase changes and the energy in food and cells. Five stations, about 8 minutes.',
+ hub:'../../#em', slides:'../slides/', board:'../../leaderboard/#em',
+ los:[
+  ['EM-LO1','Define energy and heat, and convert between joules, calories and nutritional Calories'],
+  ['EM-LO2','Convert between temperature scales and calculate heat gained or lost using q = mcΔT'],
+  ['EM-LO3','Describe phase changes and calculate the energy involved using heats of fusion and vaporisation'],
+  ['EM-LO4','Interpret the heating curve of water'],
+  ['EM-LO5','Define bond energy, estimate ΔH from bond energies, and classify reactions as endothermic or exothermic'],
+  ['EM-LO6','Relate energy changes to biochemical reactions such as glucose oxidation and ATP hydrolysis']],
+ levels:[
+  {id:'counter',name:'Front counter',blurb:'Units of energy and body temperature.',intro:'The morning queue. Patients ask about food labels, energy units and thermometer readings.',pool:['EM-LO1','EM-LO2'],n:5,secs:25},
+  {id:'bench',name:'Compounding bench',blurb:'Heat calculations and phase changes.',intro:'Prescriptions that need a calculation: warming fluids, cold compresses and steam. Have a calculator ready.',pool:['EM-LO2','EM-LO3'],n:5,secs:40},
+  {id:'curve',name:'Steriliser check',type:'drag',blurb:'Hands-on: label the heating curve of water.',intro:'The autoclave log shows water being heated from ice to steam. Drag each label onto the right segment of the heating curve.',secs:75},
+  {id:'ward',name:'Ward round',blurb:'Bond energy, reactions and energy in the body.',intro:'On the ward: cold packs, energy diagrams, glucose and ATP.',pool:['EM-LO5','EM-LO6'],n:5,secs:35},
+  {id:'rush',name:'Rush hour',blurb:'Six quick patients, one from every outcome. Points ×1.5.',intro:'The queue is out the door. One patient for each outcome, less time each, and every right answer earns 1.5 times the points.',pool:['EM-LO1','EM-LO2','EM-LO3','EM-LO4','EM-LO5','EM-LO6'],n:6,secs:15,mult:1.5}],
+ hands:{
+  lo:'EM-LO4',title:'Heating curve of water',
+  how:'Drag a label onto a lettered segment, or tap a label and then tap a segment. Two labels do not belong anywhere.',
+  svg:`<svg viewBox="0 0 420 220" role="img" aria-label="Heating curve of water. Temperature against heat added, with five segments A to E: a slope from below 0 °C, a flat section at 0 °C, a slope from 0 to 100 °C, a long flat section at 100 °C, and a final slope above 100 °C.">
+<defs><linearGradient id="emhc" x1="0" x2="1"><stop offset="0" stop-color="#2F6F9F"/><stop offset="1" stop-color="#B86E00"/></linearGradient></defs>
+<line x1="56" y1="14" x2="56" y2="200" stroke="#A3B1C2"/><line x1="56" y1="200" x2="412" y2="200" stroke="#A3B1C2"/>
+<line x1="56" y1="150" x2="100" y2="150" stroke="#D7E0E8" stroke-dasharray="3 3"/><line x1="56" y1="70" x2="220" y2="70" stroke="#D7E0E8" stroke-dasharray="3 3"/>
+<polyline points="60,190 100,150 150,150 220,70 360,70 402,30" fill="none" stroke="url(#emhc)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="50" y="154" font-size="11" text-anchor="end" fill="#56657A">0 °C</text><text x="50" y="74" font-size="11" text-anchor="end" fill="#56657A">100 °C</text>
+<text x="234" y="216" font-size="11" text-anchor="middle" fill="#56657A">heat added →</text>
+<text x="16" y="108" font-size="11" fill="#56657A" transform="rotate(-90 16 108)" text-anchor="middle">temperature</text></svg>`,
+  zones:[{id:'A',x:15.5,y:72},{id:'B',x:29.8,y:58},{id:'C',x:38.5,y:42},{id:'D',x:69,y:21},{id:'E',x:88,y:13}],
+  chips:[
+   {t:'Ice warming',s:'q = mcΔT, c of ice',z:0},
+   {t:'Ice melting at 0 °C',s:'q = mΔHfus',z:1},
+   {t:'Liquid water warming',s:'q = mcΔT, c of water',z:2},
+   {t:'Water boiling at 100 °C',s:'q = mΔHvap',z:3},
+   {t:'Steam warming',s:'q = mcΔT, c of steam',z:4},
+   {t:'Steam condensing',s:'heat released',z:-1},
+   {t:'Ice subliming',s:'q = mΔHsub',z:-1}],
+  why:'Sloping sections are one phase warming up, so use q = mcΔT with the specific heat of that phase. Flat sections are phase changes at constant temperature, so use q = mΔH. The boiling section (D) is the longest because ΔH<sub>vap</sub> (2260 J/g) is about 7 times ΔH<sub>fus</sub> (334 J/g). Condensing and subliming do not happen while water is being heated from ice to steam.'},
+ bank:[
+ // ---------- EM-LO1 · energy, heat and units ----------
+ {lo:'EM-LO1',who:'Puan Rosnah',role:'Reading a snack label',q:'"This biscuit packet says 150 Calories, with a capital C. Is that a lot of small calories?" How much is 150 Calories?',
+  o:['150 kcal','150 cal','150 kJ','150 J'],why:'A nutritional Calorie (capital C) is 1 kcal = 1000 cal. So 150 Cal = 150 kcal = 150 000 cal.'},
+ {lo:'EM-LO1',who:'Encik Hafiz',role:'Comparing two labels',q:'"One label uses kcal, the other uses kJ." What is 1 kcal in kilojoules?',
+  o:['4.184 kJ','4.184 J','1000 kJ','0.239 kJ'],why:'1 cal = 4.184 J, so 1 kcal = 4.184 kJ. (0.239 is the other way round: 1 kJ = 0.239 kcal.)'},
+ {lo:'EM-LO1',who:'Cik Mei Ling',role:'Gym member',q:'"Which of these is the biggest amount of energy?"',
+  o:['1 kcal','1 kJ','1000 J','100 cal'],why:'1 kcal = 4.184 kJ = 4184 J. 1 kJ and 1000 J are equal, and 100 cal is only 418.4 J.'},
+ {lo:'EM-LO1',who:'Encik Rajesh',role:'Cold pack for an ankle sprain',q:'"The pack feels cold, so cold must be flowing into my ankle, right?" Which statement is correct?',
+  o:['Heat flows from the warmer ankle into the colder pack','Cold flows from the pack into the ankle','No energy moves; the pack just creates cold','Heat flows from the colder pack into the ankle'],
+  why:'Heat is energy transferred because of a temperature difference, always from hotter to colder. The ankle loses heat to the pack, so it feels cold. "Cold" is not something that flows.'},
+ {lo:'EM-LO1',who:'Dietitian, Ward 5',role:'Oral nutrition supplement',rx:true,q:'A bottle of oral nutrition supplement provides 330 kcal. What is this in kJ? (1 kcal = 4.184 kJ)',
+  o:['1.38 × 10<sup>3</sup> kJ','78.9 kJ','330 kJ','1.38 × 10<sup>6</sup> kJ'],why:'330 kcal × 4.184 kJ/kcal = 1380.7 kJ = 1.38 × 10<sup>3</sup> kJ. Dividing instead of multiplying gives 78.9 kJ.'},
+ {lo:'EM-LO1',who:'Diabetes clinic',role:'Daily energy plan',rx:true,q:'A patient\'s meal plan allows 1800 kcal a day. What is this in kJ?',
+  o:['7.53 × 10<sup>3</sup> kJ','430 kJ','1.80 × 10<sup>3</sup> kJ','7.53 × 10<sup>6</sup> kJ'],why:'1800 kcal × 4.184 kJ/kcal = 7531 kJ = 7.53 × 10<sup>3</sup> kJ.'},
+ {lo:'EM-LO1',who:'Adik Farah',role:'Science homework',q:'"My teacher says 418.4 J. How many calories is that?"',
+  o:['100. cal','1.00 cal','0.100 cal','1750 cal'],why:'1 cal = 4.184 J, so 418.4 J ÷ 4.184 J/cal = 100. cal. Multiplying instead of dividing gives 1750.'},
+
+ // ---------- EM-LO2 · temperature scales (counter) ----------
+ {lo:'EM-LO2',at:['counter','rush'],who:'Mr. Thompson',role:'Tourist with a fever',q:'"My thermometer reads 102.2 °F." What is this in °C, and is it a fever?',
+  o:['39.0 °C, a fever','56.8 °C, impossible','70.2 °C, an error','37.0 °C, normal'],why:'°C = (°F − 32) × 5/9 = (102.2 − 32) × 5/9 = 39.0 °C. In adults, above 37.8 °C (100 °F) is a fever.'},
+ {lo:'EM-LO2',at:['counter','rush'],who:'Puan Aminah',role:'Checking her husband\'s temperature',q:'"Which reading means an adult has a fever?"',
+  o:['38.5 °C','37.0 °C','36.8 °C','35.0 °C'],why:'Normal is 37.0 °C, give or take about 0.5 °C. Fever is above 37.8 °C in adults. Below 35.0 °C is hypothermia.'},
+ {lo:'EM-LO2',at:['counter','rush'],who:'Encik Azlan',role:'Collecting insulin pens',q:'"Keep below 8 °C," says the label. What is 8 °C in kelvin?',
+  o:['281 K','−265 K','46 K','8 K'],why:'K = °C + 273.15 = 8 + 273.15 = 281 K. Kelvin has no negative values.'},
+ {lo:'EM-LO2',at:['counter','rush'],who:'Mrs. Lim',role:'Back from a trip abroad',q:'"Normal body temperature there was written as 98.6." 98.6 °F is how many °C?',
+  o:['37.0 °C','66.6 °C','54.8 °C','72.0 °C'],why:'°C = (98.6 − 32) × 5/9 = 66.6 × 5/9 = 37.0 °C. Forgetting × 5/9 leaves 66.6.'},
+ {lo:'EM-LO2',at:['counter','rush'],who:'Veterinary student',role:'Comparing species',q:'"A dog\'s normal temperature is 38.9 °C." What would that reading mean in a human adult?',
+  o:['A fever','Normal','Hypothermia','A thermometer error'],why:'38.9 °C is above the 37.8 °C fever threshold for adults. Normal temperatures differ between species, which matters when comparing veterinary and human medicines.'},
+
+ // ---------- EM-LO2 · q = mcΔT (bench) ----------
+ {lo:'EM-LO2',at:['bench','rush'],who:'Operating theatre',role:'IV fluid warmer',rx:true,q:'Warm 500. g of IV fluid from 25.0 °C to 37.0 °C. Treat it as water (c = 4.184 J/g·°C). How much heat is needed?',
+  o:['25.1 kJ','2.09 kJ','77.4 kJ','6.00 kJ'],why:'ΔT = 37.0 − 25.0 = 12.0 °C. q = mcΔT = 500. × 4.184 × 12.0 = 25 104 J = 25.1 kJ. Leaving out ΔT gives 2.09 kJ; leaving out c gives 6.00 kJ.'},
+ {lo:'EM-LO2',at:['bench','rush'],who:'QC laboratory',role:'Unknown metal tray',rx:true,q:'A 25.0 g metal sample absorbs 180. J and warms from 22.0 °C to 38.0 °C. What is its specific heat?',
+  o:['0.450 J/g·°C (iron)','7.20 J/g·°C','11.3 J/g·°C','2.22 J/g·°C'],why:'ΔT = 16.0 °C. c = q ÷ (m × ΔT) = 180. ÷ (25.0 × 16.0) = 0.450 J/g·°C, which matches iron (0.452).'},
+ {lo:'EM-LO2',at:['bench','rush'],who:'Ward 3 nurse',role:'Cooling IV bag',rx:true,q:'A bag of IV fluid cools from 37.0 °C to 25.0 °C. What is ΔT?',
+  o:['−12.0 °C','+12.0 °C','+62.0 °C','−62.0 °C'],why:'ΔT = T<sub>final</sub> − T<sub>initial</sub> = 25.0 − 37.0 = −12.0 °C. The minus sign shows the fluid lost heat.'},
+ {lo:'EM-LO2',at:['bench','rush'],who:'Stability lab',role:'Choosing a water bath',q:'"Why do we hold drug stability samples in a big water bath at 37 °C instead of an air oven?"',
+  o:['Water has a high specific heat, so its temperature changes slowly','Water has a low specific heat, so it heats quickly','Water cannot lose heat','Water boils at 37 °C'],
+  why:'Water\'s specific heat, 4.184 J/g·°C, is one of the highest. It must gain or lose a lot of heat to change temperature, so the bath stays steady.'},
+ {lo:'EM-LO2',at:['bench','rush'],who:'Compounding team',role:'Choosing a spatula',q:'Equal masses of copper, aluminium, iron and water each absorb the same heat. Which gets hottest?',
+  o:['Copper (c = 0.385 J/g·°C)','Water (c = 4.184 J/g·°C)','Aluminium (c = 0.900 J/g·°C)','Iron (c = 0.452 J/g·°C)'],
+  why:'ΔT = q ÷ (m × c). The smaller c is, the bigger the temperature rise. Copper has the lowest specific heat here.'},
+ {lo:'EM-LO2',at:['bench','rush'],who:'Neonatal unit',role:'Warming a feed',rx:true,q:'Warm 120. g of milk feed (treat as water, c = 4.184 J/g·°C) from 5.0 °C to 37.0 °C. Heat needed?',
+  o:['16.1 kJ','18.6 kJ','2.51 kJ','0.502 kJ'],why:'ΔT = 32.0 °C. q = 120. × 4.184 × 32.0 = 16 067 J = 16.1 kJ. Using 37.0 instead of ΔT gives 18.6 kJ.'},
+
+ // ---------- EM-LO3 · phase changes ----------
+ {lo:'EM-LO3',who:'Physiotherapy',role:'Cold compress',rx:true,q:'A cold compress holds 15.0 g of ice at 0 °C. How much heat does it absorb as it melts completely? (ΔH<sub>fus</sub> = 334 J/g)',
+  o:['5.01 kJ','33.9 kJ','0.0449 kJ','0.0628 kJ'],why:'q = m × ΔH<sub>fus</sub> = 15.0 × 334 = 5010 J = 5.01 kJ. Using ΔH<sub>vap</sub> (2260) gives 33.9 kJ. The temperature stays at 0 °C while it melts.'},
+ {lo:'EM-LO3',who:'Encik Daniel',role:'Steam burn from a kettle',q:'2.00 g of steam at 100 °C condenses on his hand. How much heat does condensation alone release onto the skin? (ΔH<sub>vap</sub> = 2260 J/g)',
+  o:['4.52 kJ released','4.52 kJ absorbed','0.668 kJ released','8.37 J released'],why:'q = m × ΔH<sub>vap</sub> = 2.00 × 2260 = 4520 J = 4.52 kJ. Condensation is exothermic, so it is released into the skin.'},
+ {lo:'EM-LO3',who:'Cik Nadia',role:'Runner after a race',q:'"Why does sweating cool me down?"',
+  o:['Evaporating sweat absorbs heat from the skin','Sweat freezes on the skin','Sweat condenses and releases heat','Sweat has a low specific heat'],
+  why:'Vaporisation is endothermic. Sweat takes its heat of vaporisation from the skin, so the skin cools.'},
+ {lo:'EM-LO3',who:'Encik Kumar',role:'Asking about phase changes',q:'"Which change of state releases heat to the surroundings?"',
+  o:['Condensation','Melting','Vaporisation','Sublimation'],why:'Freezing, condensation and deposition release heat (exothermic). Melting, vaporisation and sublimation absorb it.'},
+ {lo:'EM-LO3',who:'Pathology lab',role:'Shipping samples',q:'"Why do we ship frozen samples in dry ice?" What happens to dry ice?',
+  o:['It sublimes at −78.5 °C, solid straight to gas','It melts at 0 °C','It boils at 100 °C','It condenses at −78.5 °C'],
+  why:'Solid CO<sub>2</sub> sublimes at −78.5 °C and absorbs heat as it does. It leaves no liquid behind, so it is used to preserve and ship medical samples.'},
+ {lo:'EM-LO3',who:'Cik Aisyah',role:'Watching ice melt',q:'"I kept heating the ice in the beaker but the thermometer stayed at 0 °C." Why?',
+  o:['The heat goes into melting, so the temperature stays constant','The thermometer is broken','Ice cannot absorb heat','The heat is destroyed'],
+  why:'During a phase change, the heat added breaks the attractions between particles instead of raising the temperature. It stays at 0 °C until all the ice has melted.'},
+ {lo:'EM-LO3',who:'Ward sister',role:'Autoclave safety',q:'"Why is a steam burn at 100 °C worse than a boiling-water burn at 100 °C?"',
+  o:['Condensing steam releases 2260 J/g before it even starts to cool','Steam is hotter than 100 °C','Water has no heat to give','Steam has a higher specific heat than water'],
+  why:'Steam first condenses on the skin, releasing ΔH<sub>vap</sub> = 2260 J/g, then cools like hot water. Boiling water only gives the second part.'},
+
+ // ---------- EM-LO4 · heating curve (rush hour) ----------
+ {lo:'EM-LO4',who:'Autoclave log',role:'Heating curve, 100 °C',q:'On the heating curve of water, what is happening along the flat section at 100 °C?',
+  o:['Water is boiling at constant temperature','Steam is warming up','Ice is melting','No heat is being added'],why:'Heat is still being added, but it goes into changing liquid to gas, not into raising the temperature.'},
+ {lo:'EM-LO4',who:'Autoclave log',role:'Heating curve, plateaus',q:'Why is the plateau at 100 °C much longer than the one at 0 °C?',
+  o:['ΔH<sub>vap</sub> (2260 J/g) is much larger than ΔH<sub>fus</sub> (334 J/g)','Steam has a higher specific heat than ice','Boiling is slower because water is hotter','The temperature rises during boiling'],
+  why:'A plateau\'s length is the heat needed for that phase change. Vaporising takes about 7 times more heat per gram than melting.'},
+ {lo:'EM-LO4',who:'Autoclave log',role:'Heating curve, slopes',q:'Which equation gives the heat for a sloping section of the heating curve?',
+  o:['q = mcΔT','q = mΔH<sub>fus</sub>','q = mΔH<sub>vap</sub>','ΔH ≈ bonds broken − bonds formed'],why:'A slope is one phase warming up, so the temperature changes: use q = mcΔT with that phase\'s specific heat.'},
+ {lo:'EM-LO4',who:'Autoclave log',role:'Heating curve, two phases',q:'Where on the heating curve are two phases present together?',
+  o:['Along the flat sections','Along the sloping sections','Only at the very start','Nowhere on the curve'],why:'On the plateaus, solid and liquid (0 °C) or liquid and gas (100 °C) exist together while the phase change happens.'},
+ {lo:'EM-LO4',who:'Autoclave log',role:'Heating curve, 0 °C',q:'What is happening along the flat section at 0 °C?',
+  o:['Ice is melting at constant temperature','Water is boiling','Ice is warming up','Water is freezing as heat is added'],why:'At 0 °C the added heat melts the ice (q = mΔH<sub>fus</sub>). The temperature only rises again once all the ice has melted.'},
+
+ // ---------- EM-LO5 · bond energy and reactions ----------
+ {lo:'EM-LO5',who:'Encik Rajesh',role:'Instant cold pack',q:'"When I squeeze the pack, ammonium nitrate dissolves and it turns cold." How do we describe this process?',
+  o:['Endothermic: it absorbs heat, ΔH positive','Exothermic: it releases heat, ΔH negative','Endothermic: it releases heat','Neither: no energy changes'],
+  why:'The pack takes heat from its surroundings (your ankle), so the process is endothermic and ΔH is positive.'},
+ {lo:'EM-LO5',who:'Chemistry tutor',role:'Bond breaking',q:'Which statement about bonds is always true?',
+  o:['Breaking a bond needs energy; forming a bond releases energy','Breaking a bond releases energy','Forming a bond needs energy','Bonds can break without any energy change'],
+  why:'Bonded atoms are lower in energy. Energy must be added to pull them apart, and the same energy is released when the bond forms.'},
+ {lo:'EM-LO5',who:'Gas supplier',role:'Bunsen burner fuel',q:'Burning methane has ΔH = −890 kJ/mol. Which statement is correct?',
+  o:['It is exothermic and warms the surroundings','It is endothermic and cools the surroundings','The products are higher in energy than the reactants','Heat is written on the reactant side'],
+  why:'A negative ΔH means heat is released (exothermic). The products are lower in energy, and heat is written on the product side.'},
+ {lo:'EM-LO5',who:'Energy diagram',role:'Uphill or downhill?',q:'In an energy diagram, the products lie above the reactants. What does this tell you?',
+  o:['Endothermic, ΔH positive','Exothermic, ΔH negative','The products have stronger bonds','Heat is a product'],why:'"Uphill" means the products have more energy, so energy was absorbed: endothermic, ΔH positive.'},
+ {lo:'EM-LO5',who:'Medical gases',role:'Methane combustion',rx:true,q:'Estimate ΔH for CH<sub>4</sub> + 2 O<sub>2</sub> → CO<sub>2</sub> + 2 H<sub>2</sub>O. Bond energies (kJ/mol): C–H 418, O=O 498, C=O 795, O–H 460.',
+  o:['−762 kJ','+762 kJ','−2668 kJ','+6098 kJ'],why:'Broken: 4(418) + 2(498) = 2668 kJ. Formed: 2(795) + 4(460) = 3430 kJ. ΔH ≈ 2668 − 3430 = −762 kJ, exothermic.'},
+ {lo:'EM-LO5',who:'Fuel cell lab',role:'Hydrogen burning',rx:true,q:'Estimate ΔH for 2 H<sub>2</sub> + O<sub>2</sub> → 2 H<sub>2</sub>O. Bond energies (kcal/mol): H–H 105, O=O 119, O–H 110.',
+  o:['−111 kcal','+111 kcal','−769 kcal','−221 kcal'],why:'Broken: 2(105) + 119 = 329 kcal. Formed: 4 O–H = 4(110) = 440 kcal. ΔH ≈ 329 − 440 = −111 kcal.'},
+ {lo:'EM-LO5',who:'Chemistry tutor',role:'Comparing bonds',q:'Using the bond energy table, which bond is the strongest?',
+  o:['C≡C (837 kJ/mol)','C=C (607 kJ/mol)','C–C (356 kJ/mol)','C–O (360 kJ/mol)'],why:'Multiple bonds are stronger than single bonds: C≡C > C=C > C–C.'},
+
+ // ---------- EM-LO6 · energy in the body ----------
+ {lo:'EM-LO6',who:'Encik Zul',role:'Low blood sugar',rx:true,q:'He takes two glucose tablets of 4.50 g each. How much energy can this glucose release? (Glucose 180.2 g/mol, 2800 kJ/mol)',
+  o:['140 kJ','25 200 kJ','69.9 kJ','5.05 × 10<sup>5</sup> kJ'],why:'Mass = 9.00 g. Moles = 9.00 ÷ 180.2 = 0.0499 mol. Energy = 0.0499 × 2800 = 140 kJ. Using one tablet only gives 69.9 kJ.'},
+ {lo:'EM-LO6',who:'Puan Salmah',role:'Planning meals',q:'"Which nutrient gives the most energy per gram?"',
+  o:['Fat, about 38 kJ/g (9 kcal/g)','Carbohydrate, about 38 kJ/g','Protein, about 38 kJ/g','Water, about 17 kJ/g'],why:'Fat supplies about 38 kJ/g (9 kcal/g). Carbohydrate and protein supply about 17 kJ/g (4 kcal/g). Water supplies none.'},
+ {lo:'EM-LO6',who:'Biochemistry student',role:'Asking about ATP',q:'Which statement about ATP is correct?',
+  o:['ATP → ADP releases about 31 kJ/mol, used to drive other reactions','ATP → ADP absorbs about 31 kJ/mol','ATP releases more energy per mole than glucose','ATP → ADP involves no bond changes'],
+  why:'ATP → ADP releases about 31 kJ/mol (7.5 kcal/mol). It is small compared with glucose (2800 kJ/mol), but enough to drive other reactions in cells.'},
+ {lo:'EM-LO6',who:'Sports clinic',role:'Glucose oxidation',q:'How much energy does one mole of glucose release when it is oxidised in the body?',
+  o:['About 2800 kJ (670 kcal)','About 31 kJ (7.5 kcal)','About 17 kJ (4 kcal)','About 38 kJ (9 kcal)'],why:'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6 O<sub>2</sub> → 6 CO<sub>2</sub> + 6 H<sub>2</sub>O releases about 2800 kJ (670 kcal) per mole.'},
+ {lo:'EM-LO6',who:'Dietitian',role:'Snack bar',rx:true,q:'A snack bar has 20 g of carbohydrate and 10 g of fat. Estimate its energy. (Carbohydrate 17 kJ/g, fat 38 kJ/g)',
+  o:['720 kJ','930 kJ','510 kJ','1140 kJ'],why:'20 × 17 = 340 kJ, plus 10 × 38 = 380 kJ, total 720 kJ. Swapping the values gives 930 kJ.'},
+ {lo:'EM-LO6',who:'Nutrition class',role:'Checking a fuel value',q:'Glucose releases 670 kcal/mol and its molar mass is 180.2 g/mol. What is that per gram?',
+  o:['About 3.7 kcal/g, close to the 4 kcal/g used for carbohydrates','About 121 000 kcal/g','About 0.27 kcal/g','About 9 kcal/g, the value for fat'],why:'670 kcal/mol ÷ 180.2 g/mol = 3.7 kcal/g, which is why carbohydrates are given a fuel value of about 4 kcal/g.'},
+ {lo:'EM-LO6',who:'Physiology tutor',role:'Energy coupling',q:'Why is ATP useful to cells even though it releases much less energy than glucose?',
+  o:['Its small, quick energy release can drive other reactions in the cell','It releases more energy per mole than glucose','It does not obey the rules of chemistry','It absorbs energy when converted to ADP'],
+  why:'Cells use ATP like small change: about 31 kJ/mol at a time is enough to power individual reactions, and biological reactions still follow the basic rules of chemistry.'}
+ ]
+});
+</script>
+</body>
+</html>
