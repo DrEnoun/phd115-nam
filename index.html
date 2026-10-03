@@ -12,7 +12,10 @@
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
 .in{max-width:920px;margin:0 auto;padding:0 18px}
-header{background:var(--ink);color:#fff;padding:calc(28px + env(safe-area-inset-top,0px)) 0 26px}
+header{background:var(--ink);color:#fff;padding:calc(28px + env(safe-area-inset-top,0px)) 0 26px;
+ background-image:linear-gradient(90deg,var(--ink) 0%,rgba(27,42,65,.92) 38%,rgba(27,42,65,.45) 72%,rgba(27,42,65,.2) 100%),url(img/hub-hero.jpg);
+ background-size:cover;background-position:right center}
+@media (max-width:640px){header{background-image:linear-gradient(180deg,rgba(27,42,65,.72),rgba(27,42,65,.9)),url(img/hub-hero.jpg);background-position:60% center}}
 header .kick{margin:0;color:#A3B1C2;font-size:.9rem}
 h1{font-size:clamp(1.7rem,6vw,2.5rem);margin:6px 0 6px;line-height:1.15}
 header .brand{margin:0;color:#F0B24A;font-weight:600;font-size:.95rem}
