@@ -24,12 +24,18 @@ if(!ENDPOINT)return;
 // ---------- queue ----------
 function enqueue(ev){const q=get(QK)||[];const i=ev.k?q.findIndex(x=>x.k===ev.k):-1;if(i>=0)q[i]=ev;else q.push(ev);while(q.length>400)q.shift();put(QK,q)}
 let sending=false;
+// GET via JSONP (a <script> tag): avoids browser cross-site blocking of the reply.
+function jsonp(q){return new Promise((ok,no)=>{const cb='namcb'+rid();const s=document.createElement('script');let done=false;
+ const end=()=>{done=true;try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()};
+ window[cb]=j=>{end();ok(j)};s.onerror=()=>{if(!done){end();no(new Error('load'))}};
+ setTimeout(()=>{if(!done){end();no(new Error('timeout'))}},20000);
+ s.src=ENDPOINT+'?'+q+'&callback='+cb+'&_='+Date.now();document.head.appendChild(s)})}
+// POST without reading the reply (the data still reaches the Sheet).
+function send(body){return fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body})}
 function payload(evs){const id=get(IDK);return JSON.stringify({action:'log',m:id.matric,c:id.cls,ua:navigator.userAgent.slice(0,120),ev:evs})}
 async function flush(){const id=get(IDK);if(!id||!id.ok||sending)return;const q=get(QK)||[];if(!q.length)return;sending=true;
  const batch=q.slice(0,100);
- try{const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:payload(batch)});const j=await r.json();
-  if(j&&j.ok){const now=get(QK)||[];put(QK,now.filter(x=>!batch.some(b=>b.k===x.k&&b.t===x.t)))}
-  else if(j&&j.reauth){localStorage.removeItem(IDK);showSignIn('Please sign in again.')}}
+ try{await send(payload(batch));const now=get(QK)||[];put(QK,now.filter(x=>!batch.some(b=>b.k===x.k&&b.t===x.t)))}
  catch(e){}finally{sending=false}}
 function beacon(){const id=get(IDK);if(!id||!id.ok)return;const q=get(QK)||[];if(!q.length)return;
  try{navigator.sendBeacon(ENDPOINT,new Blob([payload(q.slice(0,100))],{type:'text/plain;charset=utf-8'}))}catch(e){}}
@@ -58,12 +64,14 @@ function surveys(f){if(!f)return;put(FK,Object.assign({},f,{at:Date.now()}));con
  const kind=!f.entry?'entry':(f.exitOpen&&!f.exit?'exit':null);if(!kind)return;
  try{if(sessionStorage.getItem('nam:skip:'+kind))return}catch(e){}
  loadSurvey(()=>NAMSURVEY.open(kind,{skippable:!f.required,
-  submit:async A=>{try{const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'survey',m:id.matric,c:id.cls,kind,answers:A})});const j=await r.json();return !!(j&&j.ok)}catch(e){return false}},
+  submit:async A=>{try{await send(JSON.stringify({action:'survey',m:id.matric,c:id.cls,kind,answers:A}));
+   for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,1500*(i+1)));const j=await jsonp('action=status&m='+encodeURIComponent(id.matric)+'&c='+encodeURIComponent(id.cls));if(j&&j.ok&&j.flags&&j.flags[kind])return true}
+   return false}catch(e){return false}},
   onDone:()=>{f[kind]=true;put(FK,Object.assign({},f,{at:Date.now()}))},
   onSkip:()=>{try{sessionStorage.setItem('nam:skip:'+kind,'1')}catch(e){}}}))}
 async function checkFlags(){const id=get(IDK);if(!id||!id.ok)return;const f=get(FK);
  if(f&&Date.now()-f.at<6*3600e3&&f.entry&&(!f.exitOpen||f.exit))return;
- try{const j=await (await fetch(ENDPOINT+'?action=status&m='+encodeURIComponent(id.matric)+'&c='+encodeURIComponent(id.cls))).json();if(j&&j.ok)surveys(j.flags);else if(j&&j.reauth){localStorage.removeItem(IDK);showSignIn('Please sign in again.')}}
+ try{const j=await jsonp('action=status&m='+encodeURIComponent(id.matric)+'&c='+encodeURIComponent(id.cls));if(j&&j.ok)surveys(j.flags);else if(j&&j.reauth){localStorage.removeItem(IDK);showSignIn('Please sign in again.')}}
  catch(e){if(f)surveys(f)}}
 
 // ---------- sign-in UI ----------
@@ -102,11 +110,10 @@ function showSignIn(msg,edit){css();const old=document.querySelector('.namov');i
   if(n.split(' ').length<2)return err('Please type your full name (at least two words).');if(!c)return err('Please choose your class.');
   if(!/^\d{10}$/.test(m))return err('Your matric number should have 10 digits.');if(!$('#namk1').checked)return err('Please tick the first box to continue.');
   $('#namgo').disabled=true;$('#namgo').textContent='Checking…';
-  try{const u=ENDPOINT+'?action=verify&m='+encodeURIComponent(m)+'&c='+encodeURIComponent(c)+'&n='+encodeURIComponent(n)+'&r='+(r?1:0);
-   const j=await (await fetch(u)).json();
+  try{const j=await jsonp('action=verify&m='+encodeURIComponent(m)+'&c='+encodeURIComponent(c)+'&n='+encodeURIComponent(n)+'&r='+(r?1:0));
    if(j.ok){const prev=get(IDK);if(prev&&prev.matric&&prev.matric!==m)put(QK,[]);put(IDK,{matric:m,cls:c,name:j.name,research:r,ok:true,v:Date.now()});d.remove();chip();flush();if(!edit)surveys(j.flags)}
    else{err(j.msg||'We could not find you yet. Please check your details and try again.');$('#namgo').disabled=false;$('#namgo').textContent=edit?'Save':'Let\'s start'}}
-  catch(e){err('Cannot reach the Study Hub server. If your internet is working, please tell Dr. NAM.');$('#namgo').disabled=false;$('#namgo').textContent=edit?'Save':'Let\'s start'}};
+  catch(e){err('Cannot reach the Study Hub server. If your internet is working, please tell Dr. NAM. (code: '+(e&&e.message||'?')+')');$('#namgo').disabled=false;$('#namgo').textContent=edit?'Save':'Let\'s start'}};
 }
 function chip(){if(!isHub)return;const id=get(IDK);const h=document.querySelector('header .in')||document.querySelector('header');if(!h||!id||!id.ok)return;css();
  let c=document.getElementById('namchip');if(!c){c=document.createElement('div');c.id='namchip';c.className='namchip';h.appendChild(c)}
