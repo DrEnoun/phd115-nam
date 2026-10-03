@@ -4,7 +4,7 @@
 (function(){
 if(window.NAMTRACK)return;
 // ===== Settings =====
-const ENDPOINT='https://script.google.com/macros/s/AKfycbxlsR76lDWpbz3-ervsIYhJV19mqV8ciL5CDiV3tOxkiLFyiI-HNuFr-IUrF2v_u5cz/exec';  // paste the Apps Script web app URL (ends in /exec) between the quotes
+const ENDPOINT='https://script.google.com/macros/s/AKfycbzj_J_NgKHASDzapBRXRfWITgwIz3uCaGJOeLtbW2sweSB4Prrx1HXA6xUv-B9VRnYf/exec';  // paste the Apps Script web app URL (ends in /exec) between the quotes
 const CLASSES=['P2PH1101A1','P2PH1101B1','P2PH1101C1','P2PH1101D1','P2PH1101E1'];
 const IDLE_MS=120000;   // stop counting time after 2 minutes with no touch, scroll or key press
 const FLUSH_MS=120000;  // send data every 2 minutes, and when the page is closed or hidden
@@ -106,7 +106,7 @@ function showSignIn(msg,edit){css();const old=document.querySelector('.namov');i
    const j=await (await fetch(u)).json();
    if(j.ok){const prev=get(IDK);if(prev&&prev.matric&&prev.matric!==m)put(QK,[]);put(IDK,{matric:m,cls:c,name:j.name,research:r,ok:true,v:Date.now()});d.remove();chip();flush();if(!edit)surveys(j.flags)}
    else{err(j.msg||'We could not find you yet. Please check your details and try again.');$('#namgo').disabled=false;$('#namgo').textContent=edit?'Save':'Let\'s start'}}
-  catch(e){err('No internet connection right now. Please try again in a moment.');$('#namgo').disabled=false;$('#namgo').textContent=edit?'Save':'Let\'s start'}};
+  catch(e){err('Cannot reach the Study Hub server. If your internet is working, please tell Dr. NAM.');$('#namgo').disabled=false;$('#namgo').textContent=edit?'Save':'Let\'s start'}};
 }
 function chip(){if(!isHub)return;const id=get(IDK);const h=document.querySelector('header .in')||document.querySelector('header');if(!h||!id||!id.ok)return;css();
  let c=document.getElementById('namchip');if(!c){c=document.createElement('div');c.id='namchip';c.className='namchip';h.appendChild(c)}
