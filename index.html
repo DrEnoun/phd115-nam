@@ -33,7 +33,18 @@ h2{font-size:1.15rem;margin:26px 0 10px}
 .seg button{flex:1;font:inherit;font-weight:600;border:0;border-radius:9px;padding:11px 8px;background:transparent;color:var(--ink);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--cold);color:#fff}
 .grid{display:grid;gap:14px}
-.topic{scroll-margin-top:16px}
+.topic{scroll-margin-top:16px;border-top:4px solid var(--tc,var(--line))}
+.topic .tag{color:var(--tc,var(--cold));background:var(--ts,var(--cold-soft))}
+.topic .bar i{background:var(--tc,var(--cold))}
+.topic a.go:hover{border-color:var(--tc,var(--cold))}
+.th{display:flex;gap:14px;align-items:center}
+.ico{flex:none;width:64px;height:64px;display:block}.ico svg{width:100%;height:100%;display:block}
+.topic:hover .ico svg,.row.tp:hover .ico svg{animation:bob .9s ease-in-out}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) rotate(-3deg)}}
+@media (prefers-reduced-motion:reduce){.topic:hover .ico svg,.row.tp:hover .ico svg{animation:none}}
+.row .ico{width:34px;height:34px;margin-right:4px}.row .l{display:flex;align-items:center;gap:8px}
+.row.tp{border-left:4px solid var(--tc,var(--line))}
+.row .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--tc);margin-right:7px;vertical-align:1px}
 .topic.flash{outline:3px solid var(--heat);outline-offset:2px}
 .tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--cold);background:var(--cold-soft);border-radius:999px;padding:2px 10px}
 .topic h3{margin:8px 0 2px;font-size:1.08rem}
@@ -109,6 +120,48 @@ const ACTS=[
  {k:'tut',  name:'Tutorial',    desc:'Exam-style questions with hints and full worked solutions.'},
  {k:'game', name:'Game',        desc:'A timed quick-fire game that shows which outcomes to revise.'}
 ];
+// ---- Cute 3D icons per topic (inline SVG; ids get a suffix so each copy has its own gradients)
+const ICON=(()=>{
+ const rg=(id,a,b)=>`<radialGradient id="${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+ const lg=(id,st)=>`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${st.map((c,i)=>`<stop offset="${i/(st.length-1)}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+ const shine=(x,y,r)=>`<ellipse cx="${x}" cy="${y}" rx="${r*.3}" ry="${r*.17}" fill="#fff" opacity=".6" transform="rotate(-28 ${x} ${y})"/>`;
+ const ball=(id,x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#${id})"/>${shine(x-r*.38,y-r*.45,r)}`;
+ const face=(x,y,k)=>`<circle cx="${x-5*k}" cy="${y}" r="${2.3*k}" fill="#1B2A41"/><circle cx="${x+5*k}" cy="${y}" r="${2.3*k}" fill="#1B2A41"/><circle cx="${x-4.2*k}" cy="${y-.9*k}" r="${.85*k}" fill="#fff"/><circle cx="${x+5.8*k}" cy="${y-.9*k}" r="${.85*k}" fill="#fff"/><path d="M${x-2.6*k} ${y+3.6*k} Q${x} ${y+6.4*k} ${x+2.6*k} ${y+3.6*k}" stroke="#1B2A41" stroke-width="${1.5*k}" fill="none" stroke-linecap="round"/><ellipse cx="${x-8.3*k}" cy="${y+3.4*k}" rx="${2.1*k}" ry="${1.2*k}" fill="#FF6F8E" opacity=".5"/><ellipse cx="${x+8.3*k}" cy="${y+3.4*k}" rx="${2.1*k}" ry="${1.2*k}" fill="#FF6F8E" opacity=".5"/>`;
+ const shadow=w=>`<ellipse cx="32" cy="60.5" rx="${w}" ry="2.8" fill="#1B2A41" opacity=".15"/>`;
+ const D={
+  ic1:u=>`<defs>${rg('cl'+u,'#B9F2C4','#2E9E52')}${rg('na'+u,'#E6D6FF','#7A4FD0')}</defs>${shadow(24)}
+   ${ball('cl'+u,40,38,17)}${face(40,38,1)}${ball('na'+u,16,33,10.5)}${face(16,32.5,.62)}
+   <text x="15" y="18" font-size="10" font-weight="800" fill="#7A4FD0" font-family="Arial">+</text><text x="49" y="17" font-size="12" font-weight="800" fill="#2E9E52" font-family="Arial">−</text>`,
+  ic2:u=>`<defs>${rg('o'+u,'#FFB3A8','#D2372B')}${rg('h'+u,'#FFFFFF','#B9C6D3')}</defs>${shadow(26)}
+   <path d="M32 30 L13 44 M32 30 L51 44" stroke="#C9D3DC" stroke-width="5" stroke-linecap="round"/>
+   ${ball('h'+u,12,45,8.5)}${ball('h'+u,52,45,8.5)}${ball('o'+u,32,29,16.5)}${face(32,30,1)}`,
+  em:u=>`<defs>${lg('f'+u,['#FFE08A','#F7A23B','#D3561C'])}${lg('fi'+u,['#FFF6D6','#FFD36B'])}</defs>${shadow(17)}
+   <path d="M32 4 C39 15 50 22 49 38 C48 51 40 58 32 58 C23 58 15 51 15 39 C15 29 22 25 25 15 C28 20 29 23 31 25 C34 18 35 11 32 4 Z" fill="url(#f${u})"/>
+   <path d="M32 30 C37 36 41 40 40 47 C39 53 35 55 32 55 C28 55 24 52 24 47 C24 41 29 37 32 30 Z" fill="url(#fi${u})" opacity=".85"/>
+   ${shine(23,32,16)}${face(32,44,.85)}`,
+  cr1:u=>`<defs>${lg('l'+u,['#FFB8C9','#C2456A'])}</defs>${shadow(22)}
+   <circle cx="40" cy="7" r="2.6" fill="#F4A6B9"/><circle cx="45" cy="13" r="1.8" fill="#F4A6B9"/><circle cx="27" cy="5" r="1.6" fill="#F4A6B9"/>
+   <path d="M26 10 H38 V24 L52 49 Q55 57 47 57 H17 Q9 57 12 49 L26 24 Z" fill="#EEF7FD" stroke="#A9BDCC" stroke-width="2"/>
+   <path d="M18.5 38 H45.5 L52 49 Q55 57 47 57 H17 Q9 57 12 49 Z" fill="url(#l${u})"/>
+   <rect x="23.5" y="7" width="17" height="5" rx="2.5" fill="#D7E3EC"/>${shine(22,30,14)}${face(32,47,.8)}`,
+  cr2:u=>`<defs>${rg('w'+u,'#EBD7FA','#8A55B8')}</defs>${shadow(20)}
+   <rect x="28" y="6" width="8" height="7" rx="2" fill="#8A55B8"/><rect x="44" y="17" width="7" height="5" rx="2" fill="#8A55B8" transform="rotate(45 47.5 19.5)"/>
+   ${ball('w'+u,32,37,21)}<circle cx="32" cy="38" r="15" fill="#fff"/>
+   <g stroke="#C9B3DD" stroke-width="2" stroke-linecap="round"><path d="M32 25 V27.5 M32 48.5 V51 M19 38 H21.5 M42.5 38 H45"/></g>
+   ${face(32,38,.85)}<path d="M53 2 L48 11 H52 L49 19 L57 8 H53 L56 2 Z" fill="#F0B24A" stroke="#B86E00" stroke-width="1" stroke-linejoin="round"/>`,
+  sol:u=>`<defs>${lg('s'+u,['#B4EEC8','#2E9E62'])}</defs>${shadow(22)}
+   <path d="M13 12 H51 V51 Q51 58 44 58 H20 Q13 58 13 51 Z" fill="#EEF7FD" stroke="#A9BDCC" stroke-width="2"/>
+   <path d="M10 12 H54" stroke="#A9BDCC" stroke-width="3" stroke-linecap="round"/>
+   <path d="M14 32 Q23 29 32 32 T50 32 V51 Q50 57 44 57 H20 Q14 57 14 51 Z" fill="url(#s${u})"/>
+   <g stroke="#A9BDCC" stroke-width="1.5"><path d="M44 18 H50 M46 24 H50"/></g>
+   <rect x="18" y="20" width="7" height="7" rx="1.5" fill="#fff" stroke="#C9D3DC" transform="rotate(-12 21 23)"/><rect x="28" y="23" width="4" height="4" rx="1" fill="#fff" stroke="#C9D3DC"/>
+   <circle cx="40" cy="37" r="1.5" fill="#E3F3E9"/><circle cx="21" cy="38" r="1" fill="#E3F3E9"/>${shine(20,22,12)}${face(32,45,.85)}`
+ };
+ let n=0;return c=>D[c]?`<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">${D[c]('_'+(n++))}</svg>`:'';
+})();
+// Topic colours: [stripe and text, soft background]
+const TC={ic1:['#2F6F9F','#E1EEF7'],ic2:['#1F7A86','#DFF1F2'],em:['#B86E00','#FBEFD9'],cr1:['#A23B54','#F8E4E9'],cr2:['#7A4E9C','#EFE6F5'],sol:['#2E7D4F','#E3F3E9']};
+const tc=c=>`--tc:${TC[c][0]};--ts:${TC[c][1]}`;
 const TOPICS=[
  {code:'ic1',n:1,title:'Ionic & Covalent Compounds I',blurb:'Ions, formulas, naming, formula mass and the properties of ionic compounds.',ppt:'downloads/PHD115_IonicCovalent1_Slides.pptx',
   a:{slides:'ic1/slides/',pre:'ic1/pre/',post:'ic1/post/',tut:'ic1/tutorial/',game:null}},
@@ -131,13 +184,13 @@ function goEl(t,A){const path=t.a[A.k];if(!path)return `<span class="go"><span c
  const s=status(t.code,A.k);return `<a class="go" href="${path}" data-t="${t.code}" data-a="${A.k}"><span class="t">${A.name}</span><span class="st ${s.cls}">${s.txt}</span></a>`}
 function renderTopics(){document.getElementById('byTopic').innerHTML=TOPICS.map(t=>{
   const av=ACTS.filter(A=>t.a[A.k]);const pct=av.length?Math.round(av.reduce((s,A)=>s+status(t.code,A.k).pct,0)/av.length):0;
-  return `<article class="card topic" id="${t.code}"><span class="tag">Topic ${t.n}</span><h3>${esc(t.title)}</h3>
+  return `<article class="card topic" id="${t.code}" style="${tc(t.code)}"><div class="th"><span class="ico">${ICON(t.code)}</span><div><span class="tag">Topic ${t.n}</span><h3>${esc(t.title)}</h3></div></div>
   <p class="b">${t.blurb}</p>${av.length?`<div class="bar" aria-label="Progress ${pct}%"><i style="width:${pct}%"></i></div>`:'<p class="small">Materials coming soon.</p>'}
   <div class="acts">${ACTS.map(A=>goEl(t,A)).join('')}</div>
   ${t.ppt?`<p class="small" style="margin:10px 0 0"><a href="${t.ppt}" download>Download the slides as PowerPoint</a></p>`:''}</article>`}).join('')}
 function renderActs(){document.getElementById('byAct').innerHTML=ACTS.map(A=>`<div class="act"><h2 style="margin-top:22px">${A.name}</h2><p class="desc">${A.desc}</p><div class="rows">${
   TOPICS.map(t=>{const path=t.a[A.k];const s=path?status(t.code,A.k):{txt:'Coming soon',cls:''};
-   return `<div class="row"><div class="l"><b>Topic ${t.n} · ${esc(t.title)}</b><span class="st ${s.cls}">${s.txt}</span></div>${path?`<a class="btn" href="${path}" data-t="${t.code}" data-a="${A.k}">Open</a>`:`<span class="btn" aria-disabled="true">Soon</span>`}</div>`}).join('')}</div></div>`).join('')}
+   return `<div class="row tp" style="${tc(t.code)}"><div class="l"><span class="ico">${ICON(t.code)}</span><span><b>Topic ${t.n} · ${esc(t.title)}</b><span class="st ${s.cls}">${s.txt}</span></span></div>${path?`<a class="btn" href="${path}" data-t="${t.code}" data-a="${A.k}">Open</a>`:`<span class="btn" aria-disabled="true">Soon</span>`}</div>`}).join('')}</div></div>`).join('')}
 function renderCont(){const l=LS.get('phd115:last');const el=document.getElementById('cont');if(!l){el.hidden=true;return}
  const t=TOPICS.find(x=>x.code===l.topic),A=ACTS.find(x=>x.k===l.act);if(!t||!A||!t.a[A.k]){el.hidden=true;return}
  el.hidden=false;el.innerHTML=`<div><p><b>Continue where you left off</b></p><p>Topic ${t.n} · ${esc(t.title)} · ${A.name}</p><small>${status(t.code,A.k).txt}</small></div><a class="btn" href="${t.a[A.k]}" data-t="${t.code}" data-a="${A.k}">Continue</a>`}
