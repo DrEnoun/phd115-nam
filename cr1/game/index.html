@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game · Chemical Reactions I · PHD115 Study Hub</title>
+<script src="../../js/track.js"></script>
+<script src="../../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#F2F6F9;color:#1B2A41;font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+footer{border-top:1px solid #D7E0E8;margin-top:10px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:#56657A;font-size:.82rem}
+footer .brand{color:#2F6F9F;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<footer><div class="in">
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Your best score is saved on this device and sent to the Study Hub leaderboard, which shows your first name and class only. The game is for practice and is not part of your marks.</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 5.0–5.6 and 6.0–6.5. Shared under the same licence for non-commercial teaching.</p>
+</div></footer>
+
+<script src="../../js/shift.js"></script>
+<script>
+/* Chemical Reactions I content for the Pharmacy Shift engine.
+   Bank items: o[0] is always the correct option (the engine shuffles).
+   rx:true shows the item as a prescription slip, otherwise as a patient at the counter.
+   at: stations the item may appear in (if omitted, any station whose pool includes its LO). */
+NAMSHIFT.start({
+ topic:'cr1',
+ title:'Chemical Reactions I game',
+ kicker:'PHD115 · Topic 4 · Chemical Reactions I',
+ blurb:'You are the pharmacist on duty. Patients and prescriptions bring equations to balance, reactions to classify, redox to untangle and moles to count. Five stations, about 9 minutes.',
+ hub:'../../#cr1', slides:'../slides/', board:'../../leaderboard/#cr1',
+ los:[
+  ['CR1-LO1','State the law of conservation of matter, and write and balance chemical equations'],
+  ['CR1-LO2','Use the coefficients of a balanced equation as ratios between reactants and products'],
+  ['CR1-LO3','Classify reactions as combination, decomposition or combustion'],
+  ['CR1-LO4','Identify oxidation and reduction (electrons, oxygen, hydrogen), write half reactions and name the oxidizing and reducing agents'],
+  ['CR1-LO5','Use the mole, Avogadro\'s number and molar mass to convert between particles, moles and mass'],
+  ['CR1-LO6','Solve mole–mole, mole–mass and mass–mass problems from a balanced equation']],
+ levels:[
+  {id:'counter',name:'Front counter',blurb:'Balancing equations and reading their ratios.',intro:'The morning queue. Patients and staff bring equations to check and balance, and ask what the coefficients mean.',pool:['CR1-LO1','CR1-LO2'],n:5,secs:30},
+  {id:'shelf',name:'Medicine shelf',blurb:'Reaction types and redox.',intro:'Restocking the shelves: antacids, antiseptics, vitamin C and pacemaker batteries. Name the reaction type, and say what is oxidized and reduced.',pool:['CR1-LO3','CR1-LO4'],n:5,secs:30},
+  {id:'antacid',name:'Antacid check',type:'drag',blurb:'Hands-on: build a mass–mass road map.',intro:'A patient asks how much stomach acid one antacid tablet can neutralize. Drag each conversion factor onto the right arrow of the road map, then pick the answer.',secs:90},
+  {id:'bench',name:'Compounding bench',blurb:'Moles, molar mass and stoichiometry.',intro:'Prescriptions that need a calculation: tablets, supplements and syntheses. Have a calculator ready.',pool:['CR1-LO5','CR1-LO6'],n:5,secs:50},
+  {id:'rush',name:'Rush hour',blurb:'Six quick patients, one from every outcome. Points ×1.5.',intro:'The queue is out the door. One patient for each outcome, less time each, and every right answer earns 1.5 times the points.',pool:['CR1-LO1','CR1-LO2','CR1-LO3','CR1-LO4','CR1-LO5','CR1-LO6'],n:6,secs:15,mult:1.5}],
+ hands:{
+  lo:'CR1-LO6',title:'Antacid road map',
+  how:'Mg(OH)<sub>2</sub> + 2HCl → MgCl<sub>2</sub> + 2H<sub>2</sub>O. How many grams of HCl can a 0.500 g Mg(OH)<sub>2</sub> tablet neutralize? (Mg(OH)<sub>2</sub> 58.33 g/mol, HCl 36.46 g/mol.) Drag a card onto a lettered spot, or tap a card and then tap a spot. Three cards do not belong anywhere.',
+  svg:`<svg viewBox="0 0 420 270" role="img" aria-label="Road map for a mass to mass calculation. Box 1, 0.500 grams of magnesium hydroxide, arrow A to box 2, moles of magnesium hydroxide. Arrow B down to box 3, moles of HCl. Arrow C back to box 4, grams of HCl. Spot D is the answer under box 4.">
+<defs><marker id="crah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#A23B54"/></marker></defs>
+<g font-family="Lexend,system-ui,sans-serif" text-anchor="middle">
+<rect x="14" y="16" width="132" height="54" rx="10" fill="#E1EEF7" stroke="#2F6F9F"/>
+<text x="80" y="39" font-size="14" font-weight="600" fill="#1B2A41">0.500 g</text><text x="80" y="58" font-size="11" fill="#56657A">Mg(OH)<tspan dy="3" font-size="8">2</tspan><tspan dy="-3"> tablet</tspan></text>
+<rect x="274" y="16" width="132" height="54" rx="10" fill="#fff" stroke="#A3B1C2"/>
+<text x="340" y="39" font-size="14" font-weight="600" fill="#1B2A41">mol</text><text x="340" y="58" font-size="11" fill="#56657A">Mg(OH)<tspan dy="3" font-size="8">2</tspan></text>
+<rect x="274" y="166" width="132" height="54" rx="10" fill="#fff" stroke="#A3B1C2"/>
+<text x="340" y="189" font-size="14" font-weight="600" fill="#1B2A41">mol</text><text x="340" y="208" font-size="11" fill="#56657A">HCl</text>
+<rect x="14" y="166" width="132" height="54" rx="10" fill="#FBEFD9" stroke="#B86E00"/>
+<text x="80" y="189" font-size="14" font-weight="600" fill="#1B2A41">grams</text><text x="80" y="208" font-size="11" fill="#56657A">HCl neutralized</text>
+<line x1="152" y1="43" x2="266" y2="43" stroke="#A23B54" stroke-width="3" marker-end="url(#crah)"/>
+<line x1="340" y1="76" x2="340" y2="158" stroke="#A23B54" stroke-width="3" marker-end="url(#crah)"/>
+<line x1="268" y1="193" x2="154" y2="193" stroke="#A23B54" stroke-width="3" marker-end="url(#crah)"/>
+<line x1="80" y1="224" x2="80" y2="232" stroke="#B86E00" stroke-dasharray="2 2"/>
+<text x="209" y="83" font-size="10" fill="#56657A">grams → moles</text><text x="388" y="121" font-size="10" fill="#56657A" transform="rotate(90 388 121)">mole ratio</text><text x="209" y="233" font-size="10" fill="#56657A">moles → grams</text>
+</g></svg>`,
+  zones:[{id:'A',x:49.8,y:16},{id:'B',x:81,y:43.5},{id:'C',x:50.2,y:71.5},{id:'D',x:19,y:91.5}],
+  chips:[
+   {t:'× 1 mol / 58.33 g',s:'molar mass of Mg(OH)<sub>2</sub>',z:0},
+   {t:'× 2 mol HCl / 1 mol Mg(OH)<sub>2</sub>',s:'mole ratio',z:1},
+   {t:'× 36.46 g / 1 mol',s:'molar mass of HCl',z:2},
+   {t:'0.625 g HCl',s:'the answer',z:3},
+   {t:'× 58.33 g / 1 mol',s:'molar mass of Mg(OH)<sub>2</sub>',z:-1},
+   {t:'× 1 mol HCl / 2 mol Mg(OH)<sub>2</sub>',s:'mole ratio',z:-1},
+   {t:'0.156 g HCl',s:'the answer',z:-1}],
+  why:'A: grams must become moles first, so divide by the molar mass: 0.500 g × (1 mol / 58.33 g) = 8.57 × 10<sup>−3</sup> mol Mg(OH)<sub>2</sub>. B: the mole ratio links moles only, with the given substance on the bottom: × (2 mol HCl / 1 mol Mg(OH)<sub>2</sub>) = 0.0171 mol HCl. C: × 36.46 g/mol = 0.625 g HCl. Turning the ratio upside down gives 0.156 g. This is why a 0.500 g tablet neutralizes more than 0.500 g of acid would suggest.'},
+ bank:[
+ // ---------- CR1-LO1 · conservation of matter and balancing ----------
+ {lo:'CR1-LO1',who:'Encik Faizal',role:'Antiseptic bottle fizzing',q:'"My old hydrogen peroxide bottle bubbles when I open it." Which is the balanced equation for H<sub>2</sub>O<sub>2</sub> → H<sub>2</sub>O + O<sub>2</sub>?',
+  o:['2H<sub>2</sub>O<sub>2</sub> → 2H<sub>2</sub>O + O<sub>2</sub>','H<sub>2</sub>O<sub>2</sub> → H<sub>2</sub>O + O<sub>2</sub>','2H<sub>2</sub>O<sub>2</sub> → 2H<sub>2</sub>O + 2O<sub>2</sub>','H<sub>2</sub>O<sub>2</sub> → H<sub>2</sub> + O<sub>2</sub>'],
+  why:'Each side of 2H<sub>2</sub>O<sub>2</sub> → 2H<sub>2</sub>O + O<sub>2</sub> has 4 H and 4 O. The skeleton has 2 O on the left but 3 on the right. H<sub>2</sub> is not a product here.'},
+ {lo:'CR1-LO1',who:'Pharmacy intern',role:'Balancing practice',q:'"To balance H<sub>2</sub> + O<sub>2</sub> → H<sub>2</sub>O, can I just write H<sub>2</sub>O<sub>2</sub> on the right?" What do you tell the intern?',
+  o:['No. Changing a subscript changes the substance; H<sub>2</sub>O<sub>2</sub> is hydrogen peroxide','Yes, as long as the atoms balance','Yes, subscripts and coefficients can both be changed','No, because H<sub>2</sub>O<sub>2</sub> has too many hydrogens'],
+  why:'Only coefficients may change. The balanced equation is 2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O.'},
+ {lo:'CR1-LO1',who:'QC laboratory',role:'Heating chalk',rx:true,q:'Heating 10.0 g of CaCO<sub>3</sub> leaves 5.6 g of CaO in the crucible. The rest leaves as CO<sub>2</sub> gas. What mass of CO<sub>2</sub> escaped?',
+  o:['4.4 g','5.6 g','10.0 g','15.6 g'],why:'Mass is conserved: 10.0 g = 5.6 g + mass of CO<sub>2</sub>, so CO<sub>2</sub> = 4.4 g. The crucible gets lighter only because a gas escaped.'},
+ {lo:'CR1-LO1',who:'Encik Kamal',role:'Camping gas for a trip',q:'"The cylinder holds propane, C<sub>3</sub>H<sub>8</sub>." Which is the balanced equation for burning it?',
+  o:['C<sub>3</sub>H<sub>8</sub> + 5O<sub>2</sub> → 3CO<sub>2</sub> + 4H<sub>2</sub>O','C<sub>3</sub>H<sub>8</sub> + O<sub>2</sub> → 3CO<sub>2</sub> + 4H<sub>2</sub>O','C<sub>3</sub>H<sub>8</sub> + 5O<sub>2</sub> → 3CO<sub>2</sub> + 8H<sub>2</sub>O','C<sub>3</sub>H<sub>8</sub> + 10O<sub>2</sub> → 3CO<sub>2</sub> + 4H<sub>2</sub>O'],
+  why:'Balance C (3 CO<sub>2</sub>), then H (4 H<sub>2</sub>O gives 8 H), then O last: 6 + 4 = 10 O atoms on the right, so 5O<sub>2</sub>.'},
+ {lo:'CR1-LO1',who:'Puan Zarina',role:'Antacid for heartburn',q:'"My antacid has magnesium hydroxide." Which equation for its reaction with stomach acid is balanced?',
+  o:['Mg(OH)<sub>2</sub> + 2HCl → MgCl<sub>2</sub> + 2H<sub>2</sub>O','Mg(OH)<sub>2</sub> + HCl → MgCl<sub>2</sub> + H<sub>2</sub>O','Mg(OH)<sub>2</sub> + 2HCl → MgCl<sub>2</sub> + H<sub>2</sub>O','Mg(OH)<sub>2</sub> + HCl → MgCl + H<sub>2</sub>O'],
+  why:'Each side has 1 Mg, 2 Cl, 4 H and 2 O. MgCl is not a real formula: magnesium forms Mg<sup>2+</sup>, so the chloride is MgCl<sub>2</sub>.'},
+ {lo:'CR1-LO1',who:'Chemistry tutor',role:'Counting polyatomic ions',q:'In Pb(NO<sub>3</sub>)<sub>2</sub> + 2NaCl → 2NaNO<sub>3</sub> + PbCl<sub>2</sub>, how many nitrate ions are on each side?',
+  o:['2','1','4','6'],why:'NO<sub>3</sub><sup>−</sup> is unchanged, so count it as one unit: Pb(NO<sub>3</sub>)<sub>2</sub> has 2, and 2NaNO<sub>3</sub> has 2.'},
+ {lo:'CR1-LO1',who:'Pharmacy intern',role:'Checking a worksheet',q:'"I wrote 4H<sub>2</sub> + 2O<sub>2</sub> → 4H<sub>2</sub>O. The atoms balance, so it is correct?"',
+  o:['It balances, but the coefficients are not in the lowest whole-number ratio','It is fully correct','It is not balanced','The subscripts are wrong'],
+  why:'8 H and 4 O on each side, so it balances. Divide every coefficient by 2 to give the proper form, 2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O.'},
+ {lo:'CR1-LO1',who:'Encik Hakim',role:'Home-brew enquiry',q:'"Yeast turns glucose into ethanol and CO<sub>2</sub>." Which coefficients balance C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> → __C<sub>2</sub>H<sub>5</sub>OH + __CO<sub>2</sub>?',
+  o:['2 and 2','1 and 4','2 and 1','3 and 3'],why:'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> → 2C<sub>2</sub>H<sub>5</sub>OH + 2CO<sub>2</sub> has 6 C, 12 H and 6 O on each side.'},
+
+ // ---------- CR1-LO2 · ratios from balanced equations ----------
+ {lo:'CR1-LO2',who:'Ammonia supplier',role:'Smelling salts',q:'In N<sub>2</sub> + 3H<sub>2</sub> → 2NH<sub>3</sub>, how many NH<sub>3</sub> molecules form from 12 H<sub>2</sub> molecules?',
+  o:['8','18','24','4'],why:'12 H<sub>2</sub> × (2 NH<sub>3</sub> / 3 H<sub>2</sub>) = 8 NH<sub>3</sub>. Put the given substance on the bottom of the ratio.'},
+ {lo:'CR1-LO2',who:'Welding workshop',role:'Acetylene torch',q:'In 2C<sub>2</sub>H<sub>2</sub> + 5O<sub>2</sub> → 4CO<sub>2</sub> + 2H<sub>2</sub>O, how many O<sub>2</sub> molecules react with 10 C<sub>2</sub>H<sub>2</sub> molecules?',
+  o:['25','4','10','50'],why:'10 C<sub>2</sub>H<sub>2</sub> × (5 O<sub>2</sub> / 2 C<sub>2</sub>H<sub>2</sub>) = 25 O<sub>2</sub>.'},
+ {lo:'CR1-LO2',who:'Puan Siti',role:'Baking for a kenduri',q:'"My recipe uses 2 cups of flour for 12 biscuits. I have 5 cups." How many biscuits can she make, using the same idea as a balanced equation?',
+  o:['30','24','10','60'],why:'5 cups × (12 biscuits / 2 cups) = 30 biscuits. A balanced equation is a recipe: its coefficients give the ratios.'},
+ {lo:'CR1-LO2',who:'Chemistry tutor',role:'Choosing a ratio',q:'Using 2C<sub>2</sub>H<sub>2</sub> + 5O<sub>2</sub> → 4CO<sub>2</sub> + 2H<sub>2</sub>O, which ratio converts molecules of C<sub>2</sub>H<sub>2</sub> into molecules of CO<sub>2</sub>?',
+  o:['4 CO<sub>2</sub> / 2 C<sub>2</sub>H<sub>2</sub>','2 C<sub>2</sub>H<sub>2</sub> / 4 CO<sub>2</sub>','4 CO<sub>2</sub> / 5 O<sub>2</sub>','2 C<sub>2</sub>H<sub>2</sub> / 5 O<sub>2</sub>'],
+  why:'The unit you start with (C<sub>2</sub>H<sub>2</sub>) goes on the bottom so it cancels, and the unit you want (CO<sub>2</sub>) goes on top.'},
+ {lo:'CR1-LO2',who:'Physiology tutor',role:'Respiration',q:'In C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O, how many CO<sub>2</sub> molecules form from 3 glucose molecules?',
+  o:['18','6','3','2'],why:'3 glucose × (6 CO<sub>2</sub> / 1 glucose) = 18 CO<sub>2</sub>.'},
+ {lo:'CR1-LO2',who:'Encik Faizal',role:'Antiseptic bottle',q:'In 2H<sub>2</sub>O<sub>2</sub> → 2H<sub>2</sub>O + O<sub>2</sub>, how many O<sub>2</sub> molecules form from 40 H<sub>2</sub>O<sub>2</sub> molecules?',
+  o:['20','40','80','10'],why:'40 H<sub>2</sub>O<sub>2</sub> × (1 O<sub>2</sub> / 2 H<sub>2</sub>O<sub>2</sub>) = 20 O<sub>2</sub>.'},
+ {lo:'CR1-LO2',who:'Pharmacy intern',role:'Using coefficients',q:'"Why must I check the equation is balanced before I use its coefficients as ratios?"',
+  o:['The coefficients only give the true ratios when the equation is balanced','Unbalanced equations have no coefficients','Ratios come from the subscripts, not the coefficients','It does not matter; any equation works'],
+  why:'An unbalanced equation gives wrong ratios, and every answer built on them is wrong.'},
+
+ // ---------- CR1-LO3 · types of reactions ----------
+ {lo:'CR1-LO3',who:'Pharmaceutical supplier',role:'Making quicklime',q:'CaCO<sub>3</sub>(s) → CaO(s) + CO<sub>2</sub>(g) is which type of reaction?',
+  o:['Decomposition','Combination','Combustion','None of these'],why:'One reactant breaks into two or more products: decomposition.'},
+ {lo:'CR1-LO3',who:'Puan Lina',role:'Kitchen fire',q:'"I threw baking soda on a small pan fire and it went out." 2NaHCO<sub>3</sub> → Na<sub>2</sub>CO<sub>3</sub> + CO<sub>2</sub> + H<sub>2</sub>O is which type?',
+  o:['Decomposition','Combination','Combustion','None of these'],why:'One reactant gives three products. The CO<sub>2</sub> and H<sub>2</sub>O help smother the flames. Sodium bicarbonate is also used as an antacid.'},
+ {lo:'CR1-LO3',who:'Ward sister',role:'Hand-sanitizer safety',q:'Alcohol hand rub is flammable. C<sub>2</sub>H<sub>5</sub>OH + 3O<sub>2</sub> → 2CO<sub>2</sub> + 3H<sub>2</sub>O is which type?',
+  o:['Combustion','Combination','Decomposition','None of these'],why:'A substance reacts with O<sub>2</sub> to form oxides of its elements (CO<sub>2</sub> and H<sub>2</sub>O): combustion.'},
+ {lo:'CR1-LO3',who:'Iron supplement maker',role:'Classifying reactions',q:'Which one is a combination reaction?',
+  o:['Fe<sub>2</sub>O<sub>3</sub> + 3SO<sub>3</sub> → Fe<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub>','2KClO<sub>3</sub> → 2KCl + 3O<sub>2</sub>','CH<sub>4</sub> + 2O<sub>2</sub> → CO<sub>2</sub> + 2H<sub>2</sub>O','2NaHCO<sub>3</sub> → Na<sub>2</sub>CO<sub>3</sub> + CO<sub>2</sub> + H<sub>2</sub>O'],
+  why:'Two reactants make one product. KClO<sub>3</sub> and NaHCO<sub>3</sub> decompose; methane burning is combustion.'},
+ {lo:'CR1-LO3',who:'Chemistry tutor',role:'Definitions',q:'Which describes a decomposition reaction?',
+  o:['One reactant substance gives two or more products','Two or more reactants give one product','A substance reacts with oxygen to form oxides','Electrons move between two metals'],
+  why:'Decomposition: one → many. Combination: many → one. Combustion: + O<sub>2</sub> → oxides.'},
+ {lo:'CR1-LO3',who:'Encik Rizal',role:'Magnesium ribbon in class',q:'2Mg + O<sub>2</sub> → 2MgO gives a bright white flame. Which type is it?',
+  o:['Combination','Decomposition','Single replacement','None of these'],why:'Two reactants make one product, so it is a combination. It is also a combustion: a reaction can belong to more than one type.'},
+ {lo:'CR1-LO3',who:'Oxygen supply',role:'Old laboratory method',q:'2KClO<sub>3</sub> → 2KCl + 3O<sub>2</sub> was once used to make oxygen. Which type is it?',
+  o:['Decomposition','Combination','Combustion','None of these'],why:'One reactant, potassium chlorate, gives two products.'},
+
+ // ---------- CR1-LO4 · oxidation and reduction ----------
+ {lo:'CR1-LO4',who:'Chemistry tutor',role:'OIL RIG',q:'Zn → Zn<sup>2+</sup> + 2e<sup>−</sup> is:',
+  o:['Oxidation, because zinc loses electrons','Reduction, because zinc loses electrons','Oxidation, because zinc gains electrons','Reduction, because zinc gains electrons'],why:'OIL RIG: Oxidation Is Loss, Reduction Is Gain of electrons. Zinc loses 2 electrons.'},
+ {lo:'CR1-LO4',who:'Galvanising plant',role:'Zinc and copper ions',q:'In Cu<sup>2+</sup> + Zn → Cu + Zn<sup>2+</sup>, what is the reducing agent?',
+  o:['Zn','Cu<sup>2+</sup>','Cu','Zn<sup>2+</sup>'],why:'Zn loses electrons (it is oxidized), so it causes the reduction of Cu<sup>2+</sup>: Zn is the reducing agent.'},
+ {lo:'CR1-LO4',who:'Cardiology clinic',role:'Pacemaker battery',q:'Pacemakers run on 2Li + I<sub>2</sub> → 2LiI. What is the oxidizing agent?',
+  o:['I<sub>2</sub>','Li','LiI','Li<sup>+</sup>'],why:'Iodine gains electrons (I<sub>2</sub> → 2I<sup>−</sup>), so it is reduced and is the oxidizing agent. Lithium is oxidized.'},
+ {lo:'CR1-LO4',who:'Cik Hana',role:'Vitamin C tablets',q:'"Vitamin C is an antioxidant." What does it do, in redox terms?',
+  o:['It acts as a reducing agent and is oxidized itself','It acts as an oxidizing agent and is reduced','It adds oxygen to other molecules','It is neither oxidized nor reduced'],
+  why:'Antioxidants are reducing agents: they are oxidized themselves, protecting other molecules from oxidation.'},
+ {lo:'CR1-LO4',who:'Traffic police',role:'Breathalyzer',q:'In the Breathalyzer, ethanol (CH<sub>3</sub>CH<sub>2</sub>OH) becomes acetaldehyde (CH<sub>3</sub>CHO). What happens to ethanol?',
+  o:['It is oxidized, because it loses hydrogen','It is reduced, because it loses hydrogen','It is oxidized, because it gains oxygen','It is reduced, because it gains hydrogen'],
+  why:'Ethanol goes from 6 H to 4 H. Losing hydrogen is oxidation. The dichromate (Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup> → Cr<sup>3+</sup>) loses oxygen and is reduced.'},
+ {lo:'CR1-LO4',who:'Margarine factory',role:'Hydrogenation',q:'CH<sub>2</sub>=CH<sub>2</sub> + H<sub>2</sub> → CH<sub>3</sub>CH<sub>3</sub>. What happens to the ethylene?',
+  o:['It is reduced, because it gains hydrogen','It is oxidized, because it gains hydrogen','It is reduced, because it loses oxygen','It is neither oxidized nor reduced'],
+  why:'Without counting electrons: gaining H or losing O is reduction; losing H or gaining O is oxidation.'},
+ {lo:'CR1-LO4',who:'Antiperspirant maker',role:'Half reactions',q:'Which is the correct half reaction for aluminium being oxidized to Al<sup>3+</sup>?',
+  o:['Al → Al<sup>3+</sup> + 3e<sup>−</sup>','Al + 3e<sup>−</sup> → Al<sup>3+</sup>','Al → Al<sup>3+</sup> + e<sup>−</sup>','Al<sup>3+</sup> → Al + 3e<sup>−</sup>'],
+  why:'In an oxidation, the lost electrons are written as products. The charge balances: 0 = 3+ + 3(1−).'},
+ {lo:'CR1-LO4',who:'Silver dressing supplier',role:'Balancing redox',q:'Why is the balanced equation 3Ag<sup>+</sup> + Al → 3Ag + Al<sup>3+</sup> and not Ag<sup>+</sup> + Al → Ag + Al<sup>3+</sup>?',
+  o:['Al loses 3 electrons, so 3 Ag<sup>+</sup> are needed to gain them','Silver atoms always come in threes','Al<sup>3+</sup> has three atoms','It is not a redox reaction'],
+  why:'The electrons lost must equal the electrons gained. Ag<sup>+</sup> + Al → Ag + Al<sup>3+</sup> has a charge of +1 on the left and +3 on the right.'},
+ {lo:'CR1-LO4',who:'Herbal garden',role:'Photosynthesis',q:'In 6CO<sub>2</sub> + 6H<sub>2</sub>O → C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub>, which statement is correct?',
+  o:['CO<sub>2</sub> is reduced to glucose and water is oxidized to O<sub>2</sub>','CO<sub>2</sub> is oxidized and water is reduced','Nothing is oxidized or reduced','Glucose is the oxidizing agent'],
+  why:'Carbon gains hydrogen (reduction); water loses hydrogen to become O<sub>2</sub> (oxidation). Photosynthesis is the reverse of respiration.'},
+
+ // ---------- CR1-LO5 · the mole and molar mass ----------
+ {lo:'CR1-LO5',who:'Pharmacy intern',role:'What is a mole?',q:'"A mole is like a dozen." How many particles are in one mole?',
+  o:['6.022 × 10<sup>23</sup>','12','6.022 × 10<sup>−23</sup>','1.00 × 10<sup>23</sup>'],why:'One mole is 6.022 × 10<sup>23</sup> particles, Avogadro\'s number. Always say what the particles are: atoms, molecules, formula units or ions.'},
+ {lo:'CR1-LO5',who:'IV fluids store',role:'Molar mass of water',q:'What is the molar mass of water, H<sub>2</sub>O? (H 1.01, O 16.00)',
+  o:['18.02 g/mol','17.01 g/mol','33.01 g/mol','2.00 g/mol'],why:'2 × 1.01 + 16.00 = 18.02 g/mol. Forgetting the subscript 2 gives 17.01.'},
+ {lo:'CR1-LO5',who:'Medical gases',role:'Nitrogen cylinder',q:'1 mol of N<sub>2</sub> contains how many nitrogen atoms?',
+  o:['1.204 × 10<sup>24</sup>','6.022 × 10<sup>23</sup>','3.011 × 10<sup>23</sup>','2'],why:'1 mol N<sub>2</sub> is 6.022 × 10<sup>23</sup> molecules. Each has 2 N atoms, so 2 mol N = 1.204 × 10<sup>24</sup> atoms.'},
+ {lo:'CR1-LO5',who:'Diabetes clinic',role:'Atoms in glucose',q:'How many moles of oxygen atoms are in 3.0 mol of glucose, C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>?',
+  o:['18 mol','3.0 mol','6.0 mol','36 mol'],why:'1 mol C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> contains 6 mol O atoms. 3.0 × 6 = 18 mol O. (36 mol is the H atoms.)'},
+ {lo:'CR1-LO5',at:['bench'],who:'Formulation lab',role:'Aspirin',rx:true,q:'Calculate the molar mass of aspirin, C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>. (C 12.01, H 1.01, O 16.00)',
+  o:['180.17 g/mol','172.09 g/mol','164.17 g/mol','29.02 g/mol'],why:'9(12.01) + 8(1.01) + 4(16.00) = 108.09 + 8.08 + 64.00 = 180.17 g/mol. Leaving out H gives 172.09.'},
+ {lo:'CR1-LO5',at:['bench'],who:'Encik Daud',role:'Paracetamol 500 mg',rx:true,q:'One tablet contains 500. mg of paracetamol, C<sub>8</sub>H<sub>9</sub>NO<sub>2</sub> (151.18 g/mol). How many moles is that?',
+  o:['3.31 × 10<sup>−3</sup> mol','3.31 mol','75.6 mol','0.302 mol'],why:'500. mg = 0.500 g. 0.500 g × (1 mol / 151.18 g) = 3.31 × 10<sup>−3</sup> mol. Forgetting to change mg to g gives 3.31 mol.'},
+ {lo:'CR1-LO5',at:['bench'],who:'Antacid production',role:'Molar mass with brackets',rx:true,q:'Calculate the molar mass of Mg(OH)<sub>2</sub>. (Mg 24.31, O 16.00, H 1.01)',
+  o:['58.33 g/mol','41.32 g/mol','57.32 g/mol','40.31 g/mol'],why:'The 2 outside the brackets applies to O and H: 24.31 + 2(16.00) + 2(1.01) = 58.33 g/mol. Ignoring the brackets gives 41.32.'},
+ {lo:'CR1-LO5',at:['bench'],who:'Saline preparation',role:'Counting ions',rx:true,q:'How many ions are in 2.00 mol of NaCl?',
+  o:['2.41 × 10<sup>24</sup>','1.20 × 10<sup>24</sup>','6.022 × 10<sup>23</sup>','4.82 × 10<sup>24</sup>'],why:'2.00 mol × 6.022 × 10<sup>23</sup> = 1.20 × 10<sup>24</sup> formula units. Each NaCl gives 2 ions (Na<sup>+</sup> and Cl<sup>−</sup>), so 2.41 × 10<sup>24</sup> ions.'},
+ {lo:'CR1-LO5',at:['bench'],who:'Women\'s health clinic',role:'Iron needs',rx:true,q:'A woman needs about 18 mg of iron a day. How many moles of Fe is that? (Fe 55.85 g/mol)',
+  o:['3.2 × 10<sup>−4</sup> mol','0.32 mol','1.0 × 10<sup>3</sup> mol','3.1 mol'],why:'18 mg = 0.018 g. 0.018 g ÷ 55.85 g/mol = 3.2 × 10<sup>−4</sup> mol. Multiplying by the molar mass gives 1.0 × 10<sup>3</sup>.'},
+ {lo:'CR1-LO5',at:['bench'],who:'Compounding team',role:'Weighing baking soda',rx:true,q:'Weigh out 0.250 mol of NaHCO<sub>3</sub> (84.01 g/mol). What mass is needed?',
+  o:['21.0 g','336 g','2.98 × 10<sup>−3</sup> g','84.0 g'],why:'Moles → grams: multiply by the molar mass. 0.250 mol × 84.01 g/mol = 21.0 g.'},
+ {lo:'CR1-LO5',at:['bench'],who:'Water for injection',role:'Counting molecules',rx:true,q:'How many water molecules are in 9.01 g of water (18.02 g/mol)?',
+  o:['3.01 × 10<sup>23</sup>','6.022 × 10<sup>23</sup>','5.43 × 10<sup>24</sup>','0.500'],why:'9.01 g ÷ 18.02 g/mol = 0.500 mol. 0.500 × 6.022 × 10<sup>23</sup> = 3.01 × 10<sup>23</sup> molecules. 0.500 is the moles, not the molecules.'},
+
+ // ---------- CR1-LO6 · stoichiometry with moles and mass ----------
+ {lo:'CR1-LO6',who:'Chemistry tutor',role:'The road map',q:'The mole ratio from a balanced equation links which quantities?',
+  o:['Moles of one substance and moles of another','Grams of one substance and grams of another','Grams and moles of the same substance','Molecules and grams'],
+  why:'Coefficients are mole ratios, never mass ratios. In a mass–mass problem, change grams to moles first.'},
+ {lo:'CR1-LO6',who:'Fuel cell lab',role:'Mole–mole',q:'In 2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O, how many moles of O<sub>2</sub> react with 4.0 mol of H<sub>2</sub>?',
+  o:['2.0 mol','4.0 mol','8.0 mol','1.0 mol'],why:'4.0 mol H<sub>2</sub> × (1 mol O<sub>2</sub> / 2 mol H<sub>2</sub>) = 2.0 mol O<sub>2</sub>.'},
+ {lo:'CR1-LO6',who:'Puan Zarina',role:'Chalk antacid',q:'CaCO<sub>3</sub> + 2HCl → CaCl<sub>2</sub> + CO<sub>2</sub> + H<sub>2</sub>O. How many moles of HCl does 0.10 mol of CaCO<sub>3</sub> neutralize?',
+  o:['0.20 mol','0.10 mol','0.050 mol','2.0 mol'],why:'0.10 mol CaCO<sub>3</sub> × (2 mol HCl / 1 mol CaCO<sub>3</sub>) = 0.20 mol HCl.'},
+ {lo:'CR1-LO6',who:'Ammonia plant',role:'Mole–mole',q:'In N<sub>2</sub> + 3H<sub>2</sub> → 2NH<sub>3</sub>, how many moles of N<sub>2</sub> are needed to make 6.0 mol of NH<sub>3</sub>?',
+  o:['3.0 mol','6.0 mol','12 mol','2.0 mol'],why:'6.0 mol NH<sub>3</sub> × (1 mol N<sub>2</sub> / 2 mol NH<sub>3</sub>) = 3.0 mol N<sub>2</sub>.'},
+ {lo:'CR1-LO6',at:['bench'],who:'Gastro clinic',role:'Calcium carbonate tablet',rx:true,q:'A tablet has 500. mg of CaCO<sub>3</sub> (100.09 g/mol). CaCO<sub>3</sub> + 2HCl → CaCl<sub>2</sub> + CO<sub>2</sub> + H<sub>2</sub>O. How many moles of HCl can it neutralize?',
+  o:['9.99 × 10<sup>−3</sup> mol','5.00 × 10<sup>−3</sup> mol','2.50 × 10<sup>−3</sup> mol','1.00 mol'],why:'0.500 g ÷ 100.09 g/mol = 4.996 × 10<sup>−3</sup> mol CaCO<sub>3</sub>. × (2 mol HCl / 1 mol CaCO<sub>3</sub>) = 9.99 × 10<sup>−3</sup> mol HCl.'},
+ {lo:'CR1-LO6',at:['bench'],who:'Encik Azman',role:'Burping after antacids',rx:true,q:'How many grams of CO<sub>2</sub> (44.01 g/mol) form when 1.00 g of CaCO<sub>3</sub> (100.09 g/mol) reacts completely with stomach acid? CaCO<sub>3</sub> + 2HCl → CaCl<sub>2</sub> + CO<sub>2</sub> + H<sub>2</sub>O',
+  o:['0.440 g','0.880 g','1.00 g','2.27 g'],why:'1.00 g ÷ 100.09 = 9.99 × 10<sup>−3</sup> mol CaCO<sub>3</sub> → 9.99 × 10<sup>−3</sup> mol CO<sub>2</sub> (1 : 1) × 44.01 = 0.440 g. Using the HCl coefficient (2) gives 0.880 g.'},
+ {lo:'CR1-LO6',at:['bench'],who:'Physiology lab',role:'Oxygen for respiration',rx:true,q:'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O. What mass of O<sub>2</sub> (32.00 g/mol) oxidizes 9.01 g of glucose (180.18 g/mol)?',
+  o:['9.60 g','1.60 g','0.300 g','9.01 g'],why:'9.01 ÷ 180.18 = 0.0500 mol glucose. × 6 = 0.300 mol O<sub>2</sub>. × 32.00 = 9.60 g. Skipping the mole ratio gives 1.60 g; stopping at moles gives 0.300.'},
+ {lo:'CR1-LO6',at:['bench'],who:'Synthesis lab',role:'Making aspirin',rx:true,q:'C<sub>7</sub>H<sub>6</sub>O<sub>3</sub> + C<sub>4</sub>H<sub>6</sub>O<sub>3</sub> → C<sub>9</sub>H<sub>8</sub>O<sub>4</sub> + C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>. What mass of aspirin (180.17 g/mol) forms from 2.00 g of salicylic acid, C<sub>7</sub>H<sub>6</sub>O<sub>3</sub> (138.13 g/mol)?',
+  o:['2.61 g','2.00 g','1.53 g','0.0145 g'],why:'2.00 ÷ 138.13 = 0.01448 mol salicylic acid → 0.01448 mol aspirin (1 : 1) × 180.17 = 2.61 g. Masses are not conserved substance by substance, only moles follow the ratio.'},
+ {lo:'CR1-LO6',at:['bench'],who:'Herbal garden',role:'Photosynthesis',rx:true,q:'6CO<sub>2</sub> + 6H<sub>2</sub>O → C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub>. What mass of glucose (180.18 g/mol) forms from 3.00 mol of CO<sub>2</sub>?',
+  o:['90.1 g','541 g','3.24 × 10<sup>3</sup> g','0.500 g'],why:'3.00 mol CO<sub>2</sub> × (1 mol glucose / 6 mol CO<sub>2</sub>) = 0.500 mol. × 180.18 g/mol = 90.1 g.'}
+ ]
+});
+</script>
+</body>
+</html>
