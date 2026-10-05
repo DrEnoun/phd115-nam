@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game · Solution · PHD115 Study Hub</title>
+<script src="../../js/track.js"></script>
+<script src="../../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#F2F6F9;color:#1B2A41;font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+footer{border-top:1px solid #D7E0E8;margin-top:10px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:#56657A;font-size:.82rem}
+footer .brand{color:#2F6F9F;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<footer><div class="in">
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Your best score is saved on this device and sent to the Study Hub leaderboard, which shows your first name and class only. The game is for practice and is not part of your marks.</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 9.0–9.4 and 9.7. Shared under the same licence for non-commercial teaching.</p>
+</div></footer>
+
+<script src="../../js/shift.js"></script>
+<script>
+/* Solution content for the Pharmacy Shift engine.
+   Bank items: o[0] is always the correct option (the engine shuffles).
+   rx:true shows the item as a prescription slip, otherwise as a patient at the counter.
+   at: stations the item may appear in (if omitted, any station whose pool includes its LO). */
+NAMSHIFT.start({
+ topic:'sol',
+ title:'Solution game',
+ kicker:'PHD115 · Topic 6 · Solution',
+ blurb:'You are the pharmacist on duty. Patients, prescriptions and the ward bring questions on solubility, concentration, dilution, electrolytes and IV fluids. Five stations, about 9 minutes.',
+ hub:'../../#sol', slides:'../slides/', board:'../../leaderboard/#sol',
+ los:[
+  ['SOL-LO1','Define solution terms and predict solubility using “like dissolves like”'],
+  ['SOL-LO2','Calculate concentration as %, ppm/ppb and molarity'],
+  ['SOL-LO3','Perform dilution calculations'],
+  ['SOL-LO4','Describe the dissolution process and electrolytes, and explain colligative properties'],
+  ['SOL-LO5','Explain osmosis, osmolarity and tonicity using IV fluids']],
+ levels:[
+  {id:'counter',name:'Front counter',blurb:'Solutes, solvents and what dissolves in what.',intro:'The morning queue. Customers ask why some things dissolve and others do not, and what the words on a label mean.',pool:['SOL-LO1'],n:5,secs:30},
+  {id:'bench',name:'Compounding bench',blurb:'Percent, ppm, molarity and dilution.',intro:'Prescriptions that need a calculation: syrups, hand rubs, IV fluids and stock solutions. Have a calculator ready.',pool:['SOL-LO2','SOL-LO3'],n:6,secs:50},
+  {id:'iv',name:'IV room',type:'drag',blurb:'Hands-on: set up a dilution.',intro:'The ward needs a dextrose bag made up from a concentrated stock. Drag each value onto the right spot of the set-up, then check your board.',secs:90},
+  {id:'ward',name:'Ward round',blurb:'Electrolytes, colligative properties and tonicity.',intro:'Round with the medical team. Electrolytes, boiling and freezing points, osmosis and which IV fluid is safe for red blood cells.',pool:['SOL-LO4','SOL-LO5'],n:6,secs:40},
+  {id:'rush',name:'Rush hour',blurb:'Five quick patients, one from every outcome. Points ×1.5.',intro:'The queue is out the door. One patient for each outcome, less time each, and every right answer earns 1.5 times the points.',pool:['SOL-LO1','SOL-LO2','SOL-LO3','SOL-LO4','SOL-LO5'],n:5,secs:15,mult:1.5}],
+ hands:{
+  lo:'SOL-LO3',title:'Making up D10 from D50',
+  how:'The ward needs 250 mL of 10% m/v dextrose (D10). You have 50% m/v dextrose stock (D50). Use C<sub>1</sub>V<sub>1</sub> = C<sub>2</sub>V<sub>2</sub> (percent works like molarity here). Drag a card onto a lettered spot, or tap a card and then tap a spot. Three cards do not belong anywhere.',
+  svg:`<svg viewBox="0 0 420 270" role="img" aria-label="Dilution set-up. A stock vial on the left with spot A for its concentration. An arrow labelled draw up, with spot D for the volume of stock. A water container at the bottom with spot E for the water added. An IV bag on the right with spot B for its concentration and spot C for its final volume.">
+<defs><marker id="solah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2E7D4F"/></marker></defs>
+<g font-family="Lexend,system-ui,sans-serif" text-anchor="middle">
+<rect x="56" y="22" width="38" height="18" rx="4" fill="#A3B1C2"/>
+<rect x="22" y="40" width="106" height="150" rx="14" fill="#E3F3E9" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M22 130 h106 v46 a14 14 0 0 1 -14 14 h-78 a14 14 0 0 1 -14 -14 z" fill="#B4EEC8" opacity=".7"/>
+<text x="75" y="66" font-size="14" font-weight="600" fill="#1B2A41">D50 stock</text>
+<text x="75" y="166" font-size="11" fill="#56657A">C<tspan dy="3" font-size="8">1</tspan></text>
+<rect x="292" y="28" width="112" height="176" rx="20" fill="#fff" stroke="#2F6F9F" stroke-width="1.5"/>
+<path d="M292 120 h112 v64 a20 20 0 0 1 -20 20 h-72 a20 20 0 0 1 -20 -20 z" fill="#E1EEF7" opacity=".8"/>
+<text x="348" y="56" font-size="14" font-weight="600" fill="#1B2A41">D10 bag</text>
+<text x="308" y="108" font-size="12" fill="#56657A">C<tspan dy="3" font-size="8">2</tspan></text>
+<text x="308" y="184" font-size="12" fill="#56657A">V<tspan dy="3" font-size="8">2</tspan></text>
+<line x1="348" y1="204" x2="348" y2="246" stroke="#A3B1C2" stroke-width="3"/>
+<line x1="136" y1="115" x2="282" y2="115" stroke="#2E7D4F" stroke-width="3" marker-end="url(#solah)"/>
+<text x="210" y="80" font-size="10" fill="#56657A">draw up V<tspan dy="3" font-size="7">1</tspan></text>
+<path d="M176 196 h68 l-6 52 h-56 z" fill="#E1EEF7" stroke="#2F6F9F"/>
+<text x="210" y="262" font-size="10" fill="#56657A">water added</text>
+<line x1="248" y1="200" x2="284" y2="172" stroke="#2F6F9F" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#solah)"/>
+</g></svg>`,
+  zones:[{id:'A',x:17.9,y:44.4},{id:'B',x:82.9,y:38.5},{id:'C',x:82.9,y:66.7},{id:'D',x:50,y:42.6},{id:'E',x:50,y:82.2}],
+  chips:[
+   {t:'50% m/v',s:'stock concentration',z:0},
+   {t:'10% m/v',s:'concentration wanted',z:1},
+   {t:'250 mL',s:'final volume',z:2},
+   {t:'50 mL',s:'D50 to draw up',z:3},
+   {t:'200 mL',s:'water to add',z:4},
+   {t:'1,250 mL',s:'D50 to draw up',z:-1},
+   {t:'250 mL',s:'water to add',z:-1},
+   {t:'2% m/v',s:'concentration wanted',z:-1}],
+  why:'C<sub>1</sub>V<sub>1</sub> = C<sub>2</sub>V<sub>2</sub>: (50%) V<sub>1</sub> = (10%)(250 mL), so V<sub>1</sub> = 2,500 ÷ 50 = 50 mL of D50 (A, B, C, D). Make it up to 250 mL: 250 − 50 = 200 mL of water (E). Swapping C<sub>1</sub> and C<sub>2</sub> gives 1,250 mL, more than the bag holds. Adding 250 mL of water would give 300 mL, not 250 mL.'},
+ bank:[
+ // ---------- SOL-LO1 · solution terms and solubility ----------
+ {lo:'SOL-LO1',who:'Puan Aminah',role:'Teh tarik with sugar',q:'"I stirred two spoons of sugar into my tea." In this solution, which is the solvent?',
+  o:['Water','Sugar','The sweet tea','The cup'],why:'The solvent is the major component; sugar is the solute, the minor component that dissolves. The sweet tea is the solution.'},
+ {lo:'SOL-LO1',who:'Cik Nadia',role:'Iodine stain',q:'Iodine, I<sub>2</sub>, is a nonpolar molecule. Which solvent dissolves it best?',
+  o:['Hexane (nonpolar)','Water (polar)','Salt water','Vinegar'],why:'Like dissolves like: nonpolar I<sub>2</sub> dissolves in nonpolar hexane. Polar water does not dissolve it well.'},
+ {lo:'SOL-LO1',who:'Encik Hafiz',role:'Shaking salt into water',q:'NaCl dissolves to 36.0 g per 100 mL of water at 25 °C. He stirs 40.0 g into 100 mL of water at 25 °C. What does he get?',
+  o:['A saturated solution with about 4.0 g of solid left undissolved','An unsaturated solution with no solid left','A supersaturated solution with no solid left','A saturated solution with no solid left'],
+  why:'Only 36.0 g can dissolve, so the solution is saturated (at its limit) and 40.0 − 36.0 = 4.0 g stays as solid.'},
+ {lo:'SOL-LO1',who:'Pharmacy intern',role:'What counts as a solution?',q:'Which of these is a solution?',
+  o:['0.9% saline','Sand stirred into water','Oil and water shaken together','A mix of salt and pepper'],why:'A solution is homogeneous: the same throughout, with no visible particles. In the others you can see the separate parts.'},
+ {lo:'SOL-LO1',who:'Ward sister',role:'Alcohol swabs',q:'Ethanol and water mix in any proportion and never form two layers. The two liquids are:',
+  o:['Miscible','Immiscible','Insoluble','Saturated'],why:'Liquids that dissolve in each other in all proportions are miscible. Oil and water, which form layers, are immiscible.'},
+ {lo:'SOL-LO1',who:'Medical gases',role:'Air in the cylinder',q:'Air is about 80% N<sub>2</sub> and 20% O<sub>2</sub>. In this gaseous solution, the solvent is:',
+  o:['N<sub>2</sub>','O<sub>2</sub>','Both are solutes','There is no solvent in a gas mixture'],why:'Solutions come in all phases. The major component, N<sub>2</sub>, is the solvent; O<sub>2</sub> is the solute.'},
+ {lo:'SOL-LO1',who:'Chemistry tutor',role:'Saturation words',q:'A solution holds more dissolved solute than its solubility limit, and crystals suddenly appear when it is disturbed. It was:',
+  o:['Supersaturated','Saturated','Unsaturated','Dilute'],why:'Supersaturated solutions hold more than the limit and are unstable. Saturated is exactly at the limit; unsaturated is below it.'},
+ {lo:'SOL-LO1',who:'Diabetes clinic',role:'Glucose drink',q:'Which substance is most likely to dissolve in water?',
+  o:['Glucose','Candle wax','Cooking oil','Hexane'],why:'Glucose is polar with many –OH groups that hydrogen-bond with water. Wax, oil and hexane are nonpolar.'},
+ {lo:'SOL-LO1',who:'Encik Rahman',role:'Vitamin C tablets',q:'"Why does my vitamin C tablet dissolve in water?"',
+  o:['It is polar, with –OH groups that hydrogen-bond with water','It is nonpolar, like water','It is a gas','Water is nonpolar, like vitamin C'],
+  why:'Water is polar and forms hydrogen bonds, so it dissolves polar substances. Like dissolves like.'},
+ {lo:'SOL-LO1',who:'Chemistry tutor',role:'Choosing a pair',q:'Which pair of substances would form a solution?',
+  o:['Hexane and iodine','Water and olive oil','Water and hexane','Water and candle wax'],why:'Hexane and I<sub>2</sub> are both nonpolar. Each of the other pairs is polar water with a nonpolar substance.'},
+
+ // ---------- SOL-LO2 · percent, ppm/ppb and molarity ----------
+ {lo:'SOL-LO2',who:'Puan Lim',role:'Reading an IV bag',q:'"The bag says 0.9% NaCl." What does that mean?',
+  o:['0.9 g of NaCl in every 100 mL of solution','0.9 g of NaCl in 100 g of water','0.9 mL of NaCl in 100 mL of solution','0.9 mol of NaCl per litre'],
+  why:'IV fluids use % m/v: grams of solute per 100 mL of solution. Note it is per 100 mL of solution, not of solvent.'},
+ {lo:'SOL-LO2',who:'Clinic nurse',role:'Hand rub',q:'A 250 mL bottle of hand rub is 70% v/v ethanol. How much ethanol does it contain?',
+  o:['175 mL','70 mL','25 mL','357 mL'],why:'250 mL × (70 mL ÷ 100 mL) = 175 mL. Dividing by 0.70 instead gives 357 mL.'},
+ {lo:'SOL-LO2',who:'Water treatment officer',role:'Lead in tap water',q:'Tap water contains 0.20 mg of lead per litre. Its concentration is about:',
+  o:['0.20 ppm','0.20 ppb','2.0 ppm','20 ppm'],why:'In water, 1 mg/L ≈ 1 ppm, so 0.20 mg/L ≈ 0.20 ppm.'},
+ {lo:'SOL-LO2',who:'Pharmacy intern',role:'What is molarity?',q:'Molarity is defined as:',
+  o:['Moles of solute per litre of solution','Moles of solute per litre of solvent','Grams of solute per litre of solution','Grams of solute per 100 mL of solution'],
+  why:'M = mol solute ÷ L solution. Grams per 100 mL is % m/v.'},
+ {lo:'SOL-LO2',who:'Renal ward',role:'Calcium on a lab report',q:'A solution is 1 mol/L in Ca<sup>2+</sup>. How many equivalents per litre of Ca<sup>2+</sup> is that?',
+  o:['2 Eq/L','1 Eq/L','0.5 Eq/L','4 Eq/L'],why:'Eq/L = mol/L × size of the charge. Each Ca<sup>2+</sup> carries 2+, so 1 mol/L × 2 = 2 Eq/L.'},
+ {lo:'SOL-LO2',who:'Chemistry tutor',role:'Which percent?',q:'Which concentration unit is used on IV fluids, syrups and injections?',
+  o:['% m/v','% m/m','% v/v','ppb'],why:'% m/v (g per 100 mL) is used for IV fluids, syrups and injections. % m/m is for creams and ointments; % v/v for alcohol and hand rubs.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Compounding team',role:'Sucrose syrup',rx:true,q:'15.0 g of sucrose is dissolved to give 250. g of solution. What is the % m/m?',
+  o:['6.00% m/m','6.38% m/m','0.0600% m/m','60.0% m/m'],why:'(15.0 g ÷ 250. g) × 100% = 6.00%. Dividing by the mass of water (235 g) instead of the solution gives 6.38%.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Encik Tan',role:'Paracetamol syrup',rx:true,q:'The label says 120 mg of paracetamol per 5 mL. What is its % m/v?',
+  o:['2.4% m/v','24% m/v','0.024% m/v','0.24% m/v'],why:'120 mg = 0.120 g. (0.120 g ÷ 5 mL) × 100% = 2.4% m/v. Forgetting to change mg to g gives 2,400%.'},
+ {lo:'SOL-LO2',at:['bench'],who:'IV preparation',role:'Glucose in D5W',rx:true,q:'How many grams of glucose are in a 500 mL bag of 5% m/v dextrose (D5W)?',
+  o:['25 g','2.5 g','250 g','100 g'],why:'500 mL × (5 g ÷ 100 mL) = 25 g. A percent is a conversion factor: 5 g per 100 mL.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Laboratory',role:'NaOH solution',rx:true,q:'4.00 g of NaOH (40.00 g/mol) is dissolved to make 250 mL of solution. What is the molarity?',
+  o:['0.400 M','0.100 M','0.0160 M','1.00 M'],why:'4.00 g ÷ 40.00 g/mol = 0.100 mol. 0.100 mol ÷ 0.250 L = 0.400 M. Stopping at moles gives 0.100.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Compounding team',role:'Weighing NaCl',rx:true,q:'What mass of NaCl (58.44 g/mol) is needed for 250 mL of 0.150 M NaCl?',
+  o:['2.19 g','8.77 g','2,190 g','0.0375 g'],why:'mol = M × L = 0.150 × 0.250 = 0.0375 mol. × 58.44 g/mol = 2.19 g. Using 250 instead of 0.250 L gives 2,190 g.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Potassium supplement',role:'Measuring a volume',rx:true,q:'What volume of 0.500 M KCl contains 0.0250 mol of KCl?',
+  o:['50.0 mL','12.5 mL','20.0 mL','0.0500 mL'],why:'L = mol ÷ M = 0.0250 ÷ 0.500 = 0.0500 L = 50.0 mL. Multiplying instead gives 12.5 mL.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Toxicology',role:'Cobalt in the body',rx:true,q:'Cobalt in the human body is about 21 ppb. What mass of Co is in a 70.0 kg person?',
+  o:['1.5 mg','1.5 g','1.5 µg','15 mg'],why:'70.0 kg = 7.00 × 10<sup>4</sup> g. 7.00 × 10<sup>4</sup> g × (21 ÷ 10<sup>9</sup>) = 1.5 × 10<sup>−3</sup> g = 1.5 mg.'},
+ {lo:'SOL-LO2',at:['bench'],who:'Cik Mei Ling',role:'Caffeine in coffee',rx:true,q:'A 350 mL cup of coffee contains 0.150 g of caffeine. What is its % m/v?',
+  o:['0.0429% m/v','0.429% m/v','2.33% m/v','42.9% m/v'],why:'(0.150 g ÷ 350 mL) × 100% = 0.0429% m/v.'},
+
+ // ---------- SOL-LO3 · dilution ----------
+ {lo:'SOL-LO3',who:'Pharmacy intern',role:'What stays the same?',q:'When water is added to dilute a solution, what does not change?',
+  o:['The amount (moles) of solute','The concentration','The volume','The % m/v'],why:'Dilution adds solvent only: same solute, more volume, lower concentration. That is why M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub>.'},
+ {lo:'SOL-LO3',who:'Ward nurse',role:'Doubling the volume',q:'A solution is diluted with water to twice its original volume. Its molarity becomes:',
+  o:['Half the original','Twice the original','The same','A quarter of the original'],why:'M<sub>2</sub> = M<sub>1</sub>V<sub>1</sub> ÷ V<sub>2</sub>. Twice the volume gives half the concentration.'},
+ {lo:'SOL-LO3',who:'Chemistry tutor',role:'The dilution equation',q:'Which equation is used for dilution calculations?',
+  o:['M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub>','M<sub>1</sub>V<sub>2</sub> = M<sub>2</sub>V<sub>1</sub>','M<sub>1</sub> + V<sub>1</sub> = M<sub>2</sub> + V<sub>2</sub>','M<sub>1</sub> ÷ V<sub>1</sub> = M<sub>2</sub> ÷ V<sub>2</sub>'],
+  why:'M × V = moles of solute, which stays the same before and after diluting.'},
+ {lo:'SOL-LO3',who:'Laboratory',role:'Diluting acid',q:'100. mL of 2.0 M HCl is diluted with water to 500. mL. What is the new molarity?',
+  o:['0.40 M','10 M','2.0 M','0.20 M'],why:'(2.0 M × 100. mL) ÷ 500. mL = 0.40 M: five times the volume, one fifth of the concentration.'},
+ {lo:'SOL-LO3',at:['bench'],who:'Saline preparation',role:'Final concentration',rx:true,q:'A 125 mL sample of 0.900 M NaCl is diluted to 1,125 mL. What is the final concentration?',
+  o:['0.100 M','8.10 M','0.800 M','0.900 M'],why:'M<sub>2</sub> = (0.900 M × 125 mL) ÷ 1,125 mL = 0.100 M.'},
+ {lo:'SOL-LO3',at:['bench'],who:'Laboratory',role:'Stock acid',rx:true,q:'What volume of 6.0 M HCl is needed to make 500 mL of 0.30 M HCl?',
+  o:['25 mL','2.5 mL','475 mL','1.0 × 10<sup>4</sup> mL'],why:'V<sub>1</sub> = (0.30 M × 500 mL) ÷ 6.0 M = 25 mL, made up to 500 mL with water. Swapping the concentrations gives 1.0 × 10<sup>4</sup> mL.'},
+ {lo:'SOL-LO3',at:['bench'],who:'Infection control',role:'70% alcohol from 95%',rx:true,q:'What volume of 95% v/v ethanol is needed to make 100 mL of 70% v/v ethanol?',
+  o:['73.7 mL','136 mL','26.3 mL','70.0 mL'],why:'C<sub>1</sub>V<sub>1</sub> = C<sub>2</sub>V<sub>2</sub>: V<sub>1</sub> = (70% × 100 mL) ÷ 95% = 73.7 mL, made up to 100 mL. 26.3 mL is the water, not the stock.'},
+ {lo:'SOL-LO3',at:['bench'],who:'Laboratory',role:'Final volume',rx:true,q:'20.0 mL of 1.50 M KBr is diluted until it is 0.250 M. What is the final volume?',
+  o:['120 mL','100 mL','3.33 mL','7.50 mL'],why:'V<sub>2</sub> = (1.50 M × 20.0 mL) ÷ 0.250 M = 120 mL. The water added is 120 − 20.0 = 100 mL.'},
+
+ // ---------- SOL-LO4 · dissolving, electrolytes and colligative properties ----------
+ {lo:'SOL-LO4',who:'Chemistry tutor',role:'Dissolving salt',q:'What happens when NaCl dissolves in water?',
+  o:['Water molecules surround the separated Na<sup>+</sup> and Cl<sup>−</sup> ions (solvation)','NaCl molecules float unchanged in the water','Na and Cl become neutral atoms','The water turns into HCl'],
+  why:'In solvation, solute particles become surrounded by solvent particles. Ionic NaCl separates into ions.'},
+ {lo:'SOL-LO4',who:'Ward pharmacist',role:'Electrolyte or not?',q:'Which solute is a nonelectrolyte?',
+  o:['Glucose','KCl','NaCl','MgCl<sub>2</sub>'],why:'Ionic solutes dissociate into ions (electrolytes). Covalent molecules such as glucose stay as neutral molecules and do not conduct.'},
+ {lo:'SOL-LO4',who:'Puan Rosnah',role:'Vinegar test',q:'A vinegar solution makes the bulb of a conductivity tester glow only dimly. Acetic acid is a weak electrolyte because it:',
+  o:['Dissociates only partly into ions','Dissociates completely into ions','Does not dissolve in water','Stays as neutral molecules only'],why:'Strong electrolytes dissociate completely; weak electrolytes, like acetic acid, only partly; nonelectrolytes not at all.'},
+ {lo:'SOL-LO4',who:'Cardiology ward',role:'Potassium level',q:'A patient has a high level of K<sup>+</sup> in the blood. Which danger is the team most worried about?',
+  o:['Cardiac arrhythmias','Fluid retention','Muscle spasms from low calcium','Bone weakness'],why:'Electrolyte balance is crucial for nerves, muscles and the heart. High K<sup>+</sup> can cause arrhythmias.'},
+ {lo:'SOL-LO4',who:'Paediatric clinic',role:'Diarrhoea at home',q:'Why do oral rehydration salts (ORS) contain Na<sup>+</sup> and K<sup>+</sup>?',
+  o:['To replace electrolytes lost with water in diarrhoea','To raise blood sugar only','To make the drink taste salty','To act as an antibiotic'],why:'ORS replaces lost water and electrolytes, and has saved millions of children\'s lives.'},
+ {lo:'SOL-LO4',who:'Chemistry tutor',role:'Colligative properties',q:'Colligative properties such as boiling point elevation depend on:',
+  o:['The number of solute particles, not their identity','The identity of the solute only','The colour of the solution','The mass of the container'],why:'Colligative properties count particles. 1 M NaCl (2 particles) has twice the effect of 1 M glucose (1 particle).'},
+ {lo:'SOL-LO4',who:'Pharmacy intern',role:'Counting particles',q:'How many particles does one formula unit of CaCl<sub>2</sub> give in water?',
+  o:['3','1','2','4'],why:'CaCl<sub>2</sub> → Ca<sup>2+</sup> + 2Cl<sup>−</sup>: 1 + 2 = 3 particles.'},
+ {lo:'SOL-LO4',who:'Chemistry tutor',role:'Lowest freezing point',q:'Which 1 M solution has the lowest freezing point?',
+  o:['CaCl<sub>2</sub>','Glucose','NaCl','KCl'],why:'CaCl<sub>2</sub> gives 3 particles per formula unit, the most particles, so the largest freezing point depression.'},
+ {lo:'SOL-LO4',who:'Chemistry tutor',role:'Vapour pressure',q:'Adding a nonvolatile solute to water makes its vapour pressure:',
+  o:['Lower, because solute particles block some water molecules from evaporating','Higher, because there are more particles','Unchanged','Zero'],why:'Fewer solvent molecules can escape, so the vapour pressure falls. This is why the boiling point rises.'},
+ {lo:'SOL-LO4',at:['ward'],who:'Laboratory',role:'Boiling point',rx:true,q:'Estimate the boiling point of 0.2 M CaCl<sub>2</sub>. (Use +0.5 °C per mol of particles per litre.)',
+  o:['100.3 °C','100.1 °C','100.6 °C','99.7 °C'],why:'CaCl<sub>2</sub> gives 3 particles: 0.2 × 3 = 0.6 mol particles/L. 0.6 × 0.5 °C = 0.3 °C rise, so about 100.3 °C. Forgetting the 3 particles gives 100.1 °C.'},
+ {lo:'SOL-LO4',at:['ward'],who:'Laboratory',role:'Freezing point',rx:true,q:'Estimate the freezing point of 0.3 M CaCl<sub>2</sub>. (Use −1.9 °C per mol of particles per litre.)',
+  o:['About −1.7 °C','About −0.57 °C','About +1.7 °C','About −0.9 °C'],why:'0.3 × 3 = 0.9 mol particles/L. 0.9 × 1.9 °C = 1.7 °C lower, so about −1.7 °C. The freezing point goes down, never up.'},
+
+ // ---------- SOL-LO5 · osmosis, osmolarity and tonicity ----------
+ {lo:'SOL-LO5',who:'Chemistry tutor',role:'Osmosis',q:'In osmosis, water moves across a semipermeable membrane:',
+  o:['From lower osmolarity to higher osmolarity','From higher osmolarity to lower osmolarity','Only when both sides are equal','Together with the solute particles'],why:'Water follows the particles: it moves toward the side with more dissolved particles. The solute cannot cross the membrane.'},
+ {lo:'SOL-LO5',who:'Pharmacy intern',role:'Osmolarity',q:'What is the osmolarity of 0.50 M NaCl?',
+  o:['1.0 osmol','0.50 osmol','0.25 osmol','1.5 osmol'],why:'osmol = M × i. NaCl → Na<sup>+</sup> + Cl<sup>−</sup>, i = 2: 0.50 × 2 = 1.0 osmol.'},
+ {lo:'SOL-LO5',who:'IV pharmacist',role:'Sterile water',q:'Why is sterile water never given directly into a vein?',
+  o:['It is hypotonic: water enters red blood cells, which swell and burst (haemolysis)','It is hypertonic: red blood cells shrink','It is isotonic but tastes bad','It contains too many electrolytes'],
+  why:'Sterile water has 0 osmol. Water moves into the cells (higher osmolarity), so they swell and burst.'},
+ {lo:'SOL-LO5',who:'Haematology lab',role:'Shrunken red cells',q:'Red blood cells are placed in 3% NaCl and shrivel (crenation). The 3% NaCl is:',
+  o:['Hypertonic','Hypotonic','Isotonic','Saturated'],why:'3% NaCl (about 1.0 osmol) is much higher than blood (about 0.30 osmol), so water leaves the cells and they shrink.'},
+ {lo:'SOL-LO5',who:'Encik Azlan',role:'Lost at sea',q:'"Why should a person in a lifeboat not drink seawater?"',
+  o:['Seawater is hypertonic, so water leaves the cells and dehydration gets worse','Seawater is hypotonic, so cells burst','Seawater is isotonic, so it does nothing','Seawater has no electrolytes'],
+  why:'Seawater has about three times the osmolarity of body fluids. Water moves out of the cells into the salty fluid.'},
+ {lo:'SOL-LO5',who:'IV pharmacist',role:'Isotonic fluids',q:'Isotonic NaCl is about 0.16 M, while isotonic glucose is about 0.31 M. Why the difference?',
+  o:['Each NaCl gives 2 particles, so half the molarity gives the same osmolarity','NaCl is heavier than glucose','Glucose is an electrolyte','NaCl does not dissolve completely'],
+  why:'0.16 M × 2 ≈ 0.31 M × 1 ≈ 0.30 osmol, the same as blood plasma.'},
+ {lo:'SOL-LO5',at:['ward'],who:'Medical team',role:'Which way does water flow?',rx:true,q:'0.50 M NaCl and 0.30 M Ca(NO<sub>3</sub>)<sub>2</sub> are on opposite sides of a semipermeable membrane. Which way does water flow?',
+  o:['From the Ca(NO<sub>3</sub>)<sub>2</sub> side into the NaCl side','From the NaCl side into the Ca(NO<sub>3</sub>)<sub>2</sub> side','No flow; they are isotonic','Only the ions move, not the water'],
+  why:'NaCl: 0.50 × 2 = 1.0 osmol. Ca(NO<sub>3</sub>)<sub>2</sub>: 0.30 × 3 = 0.90 osmol. Water flows toward the higher osmolarity, the NaCl side.'},
+ {lo:'SOL-LO5',at:['ward'],who:'Medical team',role:'Glucose against Al(NO<sub>3</sub>)<sub>3</sub>',rx:true,q:'1.5 M glucose and 0.40 M Al(NO<sub>3</sub>)<sub>3</sub> are separated by a semipermeable membrane. Which way does water flow?',
+  o:['From the glucose side into the Al(NO<sub>3</sub>)<sub>3</sub> side','From the Al(NO<sub>3</sub>)<sub>3</sub> side into the glucose side','No flow; they are isotonic','Water does not move'],
+  why:'Glucose: 1.5 × 1 = 1.5 osmol. Al(NO<sub>3</sub>)<sub>3</sub> → Al<sup>3+</sup> + 3NO<sub>3</sub><sup>−</sup>: 0.40 × 4 = 1.6 osmol. Water flows to the higher side.'},
+ {lo:'SOL-LO5',at:['ward'],who:'IV pharmacist',role:'Is normal saline isotonic?',rx:true,q:'0.9% m/v NaCl (58.44 g/mol). Blood is about 0.30 osmol. What is the osmolarity of normal saline?',
+  o:['0.31 osmol: isotonic','0.15 osmol: hypotonic','0.62 osmol: hypertonic','9.0 osmol: hypertonic'],
+  why:'9.0 g/L ÷ 58.44 = 0.154 M. × 2 particles = 0.31 osmol, about the same as blood. Forgetting the 2 particles gives 0.15.'},
+ {lo:'SOL-LO5',at:['ward'],who:'ICU team',role:'3% NaCl',rx:true,q:'3% m/v NaCl (58.44 g/mol) is used only in special cases. What is its osmolarity and tonicity?',
+  o:['About 1.0 osmol: hypertonic','About 0.51 osmol: isotonic','About 0.31 osmol: isotonic','About 3.0 osmol: hypotonic'],
+  why:'30 g/L ÷ 58.44 = 0.51 M. × 2 = 1.0 osmol, more than three times blood (0.30 osmol): hypertonic.'}
+ ]
+});
+</script>
+</body>
+</html>
