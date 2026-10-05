@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game · Ionic &amp; Covalent Compounds II · PHD115 Study Hub</title>
+<script src="../../js/track.js"></script>
+<script src="../../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#F2F6F9;color:#1B2A41;font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+footer{border-top:1px solid #D7E0E8;margin-top:10px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:#56657A;font-size:.82rem}
+footer .brand{color:#2F6F9F;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<footer><div class="in">
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Your best score is saved on this device and sent to the Study Hub leaderboard, which shows your first name and class only. The game is for practice and is not part of your marks.</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 4.0–4.5 and 8.1. Shared under the same licence for non-commercial teaching.</p>
+</div></footer>
+
+<script src="../../js/shift.js"></script>
+<script>
+/* Ionic & Covalent Compounds II content for the Pharmacy Shift engine.
+   Bank items: o[0] is always the correct option (the engine shuffles).
+   rx:true shows the item as a prescription slip, otherwise as a patient at the counter.
+   at: stations the item may appear in (if omitted, any station whose pool includes its LO). */
+NAMSHIFT.start({
+ topic:'ic2',
+ title:'Ionic & Covalent II game',
+ kicker:'PHD115 · Topic 2 · Ionic & Covalent Compounds II',
+ blurb:'You are the pharmacist on duty. Patients and colleagues ask about laughing gas, cholesterol, why water boils so high and why some drugs dissolve. Every answer is about sharing electrons. Five stations, about 9 minutes.',
+ hub:'../../#ic2', slides:'../slides/', board:'../../leaderboard/#ic2',
+ los:[
+  ['IC2-LO1','Describe how covalent bonds form, apply the octet and duet rules, and predict how many bonds an atom forms'],
+  ['IC2-LO2','Tell ionic, covalent and mixed bonding apart (including polyatomic ions), and write formulas and names of binary covalent compounds'],
+  ['IC2-LO3','Draw Lewis structures of molecules and polyatomic ions, including double and triple bonds'],
+  ['IC2-LO4','Relate bond length to bond type, and use electronegativity to classify bonds as nonpolar, polar or ionic'],
+  ['IC2-LO5','Calculate molecular mass, predict molecular shape with VSEPR, and decide whether a molecule is polar'],
+  ['IC2-LO6','Identify dispersion forces, dipole–dipole forces and hydrogen bonds, and use them to explain boiling points and solubility']],
+ levels:[
+  {id:'counter',name:'Front counter',blurb:'Covalent bonds, and naming covalent compounds.',intro:'The morning queue. Patients ask about gases on the ward, bottle labels and why some compounds are not salts.',pool:['IC2-LO1','IC2-LO2'],n:5,secs:30},
+  {id:'desk',name:'Structure desk',blurb:'Lewis structures, bond length and electronegativity.',intro:'The R&D team needs Lewis structures checked and bonds classified. Count electrons carefully; electronegativity values are given when you need them.',pool:['IC2-LO3','IC2-LO4'],n:5,secs:40},
+  {id:'models',name:'Model kit',type:'drag',blurb:'Hands-on: give each molecule its shape and polarity.',intro:'The teaching lab has built six molecular models. Drag the right shape-and-polarity label onto each one.',secs:90},
+  {id:'lab',name:'Formulation lab',blurb:'Molecular mass, shape, polarity and intermolecular forces.',intro:'Formulating a new product: molecular masses, which molecules are polar, and what will dissolve in water. Have a calculator ready.',pool:['IC2-LO5','IC2-LO6'],n:5,secs:40},
+  {id:'rush',name:'Rush hour',blurb:'Six quick patients, one from every outcome. Points ×1.5.',intro:'The queue is out the door. One patient for each outcome, less time each, and every right answer earns 1.5 times the points.',pool:['IC2-LO1','IC2-LO2','IC2-LO3','IC2-LO4','IC2-LO5','IC2-LO6'],n:6,secs:15,mult:1.5}],
+ hands:{
+  lo:'IC2-LO5',title:'Shape and polarity of six molecules',
+  how:'Drag a label onto a lettered model, or tap a label and then tap a letter. Lone pairs are shown only on the central atom; a wedge points towards you and a dashed bond points away. Two labels do not belong anywhere.',
+  svg:`<svg viewBox="0 0 420 330" role="img" aria-label="Six molecule models in two rows, lettered A to F: A carbon dioxide, B boron trifluoride, C carbon tetrachloride, D ammonia, E water, F chloromethane. Lone pairs are shown only on the central atom. A wedge means a bond towards you; a dashed bond points away."><rect x="4" y="4" width="132" height="150" rx="12" fill="#fff" stroke="#D7E0E8" stroke-width="1.5"/><rect x="144" y="4" width="132" height="150" rx="12" fill="#fff" stroke="#D7E0E8" stroke-width="1.5"/><rect x="284" y="4" width="132" height="150" rx="12" fill="#fff" stroke="#D7E0E8" stroke-width="1.5"/><rect x="4" y="164" width="132" height="150" rx="12" fill="#fff" stroke="#D7E0E8" stroke-width="1.5"/><rect x="144" y="164" width="132" height="150" rx="12" fill="#fff" stroke="#D7E0E8" stroke-width="1.5"/><rect x="284" y="164" width="132" height="150" rx="12" fill="#fff" stroke="#D7E0E8" stroke-width="1.5"/><line x1="70.0" y1="61.5" x2="28.0" y2="61.5" stroke="#56657A" stroke-width="2.6"/><line x1="70.0" y1="54.5" x2="28.0" y2="54.5" stroke="#56657A" stroke-width="2.6"/><line x1="70.0" y1="54.5" x2="112.0" y2="54.5" stroke="#56657A" stroke-width="2.6"/><line x1="70.0" y1="61.5" x2="112.0" y2="61.5" stroke="#56657A" stroke-width="2.6"/><circle cx="28" cy="58" r="13" fill="#D2372B" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="28" y="62" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">O</text><circle cx="112" cy="58" r="13" fill="#D2372B" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="112" y="62" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">O</text><circle cx="70" cy="58" r="13" fill="#3B4A5C" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="70" y="62" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">C</text><text x="70" y="116" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">CO₂</text><line x1="210" y1="58" x2="210" y2="22" stroke="#56657A" stroke-width="3"/><line x1="210" y1="58" x2="179" y2="76" stroke="#56657A" stroke-width="3"/><line x1="210" y1="58" x2="241" y2="76" stroke="#56657A" stroke-width="3"/><circle cx="210" cy="22" r="12" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="210" y="26" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">F</text><circle cx="179" cy="76" r="12" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="179" y="80" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">F</text><circle cx="241" cy="76" r="12" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="241" y="80" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">F</text><circle cx="210" cy="58" r="13" fill="#E39A8B" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="210" y="62" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">B</text><text x="210" y="116" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">BF₃</text><line x1="350" y1="58" x2="350" y2="22" stroke="#56657A" stroke-width="3"/><line x1="350" y1="58" x2="312" y2="72" stroke="#56657A" stroke-width="3"/><line x1="350" y1="58" x2="388" y2="68" stroke="#56657A" stroke-width="2.6" stroke-dasharray="3 3"/><polygon points="350,58 349.0,90.6 359.0,89.4" fill="#56657A"/><circle cx="350" cy="22" r="14" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="350" y="26" font-size="10" font-weight="600" text-anchor="middle" fill="#fff">Cl</text><circle cx="312" cy="72" r="14" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="312" y="76" font-size="10" font-weight="600" text-anchor="middle" fill="#fff">Cl</text><circle cx="388" cy="68" r="14" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="388" y="72" font-size="10" font-weight="600" text-anchor="middle" fill="#fff">Cl</text><circle cx="354" cy="90" r="14" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="354" y="94" font-size="10" font-weight="600" text-anchor="middle" fill="#fff">Cl</text><circle cx="350" cy="58" r="13" fill="#3B4A5C" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="350" y="62" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">C</text><text x="350" y="116" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">CCl₄</text><line x1="70" y1="218" x2="38" y2="238" stroke="#56657A" stroke-width="3"/><line x1="70" y1="218" x2="102" y2="236" stroke="#56657A" stroke-width="2.6" stroke-dasharray="3 3"/><polygon points="70,218 71.1,250.9 80.9,249.1" fill="#56657A"/><circle cx="66.8" cy="197.0" r="2.3" fill="#1B2A41"/><circle cx="73.2" cy="197.0" r="2.3" fill="#1B2A41"/><circle cx="38" cy="238" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="38" y="242" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="102" cy="236" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="102" y="240" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="76" cy="250" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="76" y="254" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="70" cy="218" r="13" fill="#2F6F9F" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="70" y="222" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">N</text><text x="70" y="276" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">NH₃</text><line x1="210" y1="218" x2="179" y2="240" stroke="#56657A" stroke-width="3"/><line x1="210" y1="218" x2="241" y2="240" stroke="#56657A" stroke-width="3"/><circle cx="194.4" cy="200.8" r="2.3" fill="#1B2A41"/><circle cx="199.6" cy="197.2" r="2.3" fill="#1B2A41"/><circle cx="220.4" cy="197.2" r="2.3" fill="#1B2A41"/><circle cx="225.6" cy="200.8" r="2.3" fill="#1B2A41"/><circle cx="179" cy="240" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="179" y="244" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="241" cy="240" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="241" y="244" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="210" cy="218" r="13" fill="#D2372B" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="210" y="222" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">O</text><text x="210" y="276" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">H₂O</text><line x1="350" y1="218" x2="350" y2="182" stroke="#56657A" stroke-width="3"/><line x1="350" y1="218" x2="318" y2="236" stroke="#56657A" stroke-width="3"/><line x1="350" y1="218" x2="382" y2="234" stroke="#56657A" stroke-width="2.6" stroke-dasharray="3 3"/><polygon points="350,218 351.1,250.9 360.9,249.1" fill="#56657A"/><circle cx="350" cy="182" r="14" fill="#2E9E52" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="350" y="186" font-size="10" font-weight="600" text-anchor="middle" fill="#fff">Cl</text><circle cx="318" cy="236" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="318" y="240" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="382" cy="234" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="382" y="238" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="356" cy="250" r="9" fill="#FFFFFF" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="356" y="254" font-size="11" font-weight="600" text-anchor="middle" fill="#1B2A41">H</text><circle cx="350" cy="218" r="13" fill="#3B4A5C" stroke="#1B2A41" stroke-opacity=".35" stroke-width="1.2"/><text x="350" y="222" font-size="11" font-weight="600" text-anchor="middle" fill="#fff">C</text><text x="350" y="276" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">CH₃Cl</text></svg>`,
+  zones:[{id:'A',x:16.7,y:44.8},{id:'B',x:50.0,y:44.8},{id:'C',x:83.3,y:44.8},{id:'D',x:16.7,y:93.3},{id:'E',x:50.0,y:93.3},{id:'F',x:83.3,y:93.3}],
+  chips:[
+   {t:'Linear · nonpolar',s:'2 groups, dipoles opposite',z:0},
+   {t:'Trigonal planar · nonpolar',s:'3 identical groups, no lone pair',z:1},
+   {t:'Tetrahedral · nonpolar',s:'4 identical groups, no lone pair',z:2},
+   {t:'Trigonal pyramidal · polar',s:'3 bonds + 1 lone pair',z:3},
+   {t:'Bent · polar',s:'2 bonds + 2 lone pairs',z:4},
+   {t:'Tetrahedral · polar',s:'4 groups, not all the same',z:5},
+   {t:'Linear · polar',s:'2 groups, dipoles do not cancel',z:-1},
+   {t:'Bent · nonpolar',s:'2 bonds + 2 lone pairs, dipoles cancel',z:-1}],
+  why:'Count the groups and lone pairs on the central atom (a double bond counts as one group). CO<sub>2</sub>, BF<sub>3</sub> and CCl<sub>4</sub> are symmetrical with identical outer atoms and no lone pair on the centre, so their bond dipoles cancel: nonpolar. NH<sub>3</sub> (pyramidal) and H<sub>2</sub>O (bent) have lone pairs that push the bonds to one side, so they are polar. CH<sub>3</sub>Cl is tetrahedral, but one C–Cl and three C–H bonds do not cancel: polar.'},
+ bank:[
+ // ---------- IC2-LO1 · covalent bonds ----------
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'What is a covalent bond?',q:'Which describes a covalent bond?',
+  o:['A pair of electrons shared between two atoms','Electrons transferred from a metal to a nonmetal','The attraction between two oppositely charged ions','A weak attraction between two separate molecules'],
+  why:'The shared pair counts towards the valence shell of both atoms at once. Covalent bonds usually form between nonmetals.'},
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'Nitrogen',q:'In a neutral molecule, nitrogen (group 5A) usually has:',
+  o:['3 bonds and 1 lone pair','4 bonds and 0 lone pairs','2 bonds and 2 lone pairs','1 bond and 3 lone pairs'],
+  why:'Five valence electrons: three unpaired ones form three bonds, and one pair is left over. Example: NH<sub>3</sub>.'},
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'Water',q:'In H<sub>2</sub>O, what surrounds the oxygen atom?',
+  o:['2 bonding pairs and 2 lone pairs','1 bonding pair and 3 lone pairs','2 bonding pairs and no lone pairs','4 bonding pairs'],
+  why:'Oxygen (group 6A) needs two more electrons, so it forms two bonds. Bonds + lone pairs = 4 pairs = an octet.'},
+ {lo:'IC2-LO1',who:'Pharmacy student',role:'Hydrogen',q:'Why does hydrogen only ever form one covalent bond?',
+  o:['Its valence shell holds only two electrons (the duet rule), so it shares just one pair','It has no electrons','It is a metal','It always forms ions instead'],
+  why:'One shared pair gives hydrogen a full first shell. That is why H is always a terminal (outer) atom, never a central one.'},
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'Carbon',q:'How many covalent bonds does carbon usually form?',
+  o:['4','2','3','6'],
+  why:'Carbon (group 4A) has four valence electrons and needs four more: four bonds, no lone pairs, as in CH<sub>4</sub>.'},
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'Tellurium',q:'Tellurium is in group 6A, like oxygen. What is the formula of its compound with hydrogen?',
+  o:['H<sub>2</sub>Te','HTe','H<sub>4</sub>Te','H<sub>6</sub>Te'],
+  why:'Group 6A atoms form two bonds, so tellurium bonds to two H atoms, just as oxygen does in H<sub>2</sub>O.'},
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'Fluorine gas',q:'In the F<sub>2</sub> molecule, how many lone pairs does each F atom have?',
+  o:['3','1','0','4'],
+  why:'Each F shares one pair (the single bond) and keeps three pairs to itself: 2 + 6 = 8 electrons, an octet.'},
+ {lo:'IC2-LO1',who:'Chemistry tutor',role:'Bond or lone pair?',q:'Which molecule has a central atom with 3 bonds and 1 lone pair?',
+  o:['NH<sub>3</sub>','CH<sub>4</sub>','H<sub>2</sub>O','HF'],
+  why:'N forms three bonds and keeps one lone pair. C in CH<sub>4</sub> has 4 bonds and none; O in H<sub>2</sub>O has 2 and 2.'},
+
+ // ---------- IC2-LO2 · ionic, covalent or both; names ----------
+ {lo:'IC2-LO2',who:'Chemistry tutor',role:'Sort the compounds',q:'Which compound is covalent?',
+  o:['N<sub>2</sub>O<sub>4</sub>','Na<sub>2</sub>O','MgCl<sub>2</sub>','KBr'],
+  why:'N and O are both nonmetals, so N<sub>2</sub>O<sub>4</sub> is covalent. The others are a metal with a nonmetal: ionic.'},
+ {lo:'IC2-LO2',who:'Lab technician',role:'Phosphate buffer',q:'What kind of bonding is in sodium phosphate, Na<sub>3</sub>PO<sub>4</sub>?',
+  o:['Both: ionic between Na<sup>+</sup> and PO<sub>4</sub><sup>3−</sup>, covalent inside the phosphate ion','Ionic only','Covalent only','Neither: it is a metal'],
+  why:'A polyatomic ion is held together by covalent bonds inside, and attracts the other ions by ionic bonds outside.'},
+ {lo:'IC2-LO2',who:'Chemistry tutor',role:'Naming',q:'What is the name of N<sub>2</sub>O<sub>5</sub>?',
+  o:['dinitrogen pentoxide','nitrogen(V) oxide','dinitrogen pentaoxide','nitrogen pentoxide'],
+  why:'Two nonmetals: prefixes for both numbers, and the "a" of penta- is dropped before oxide. Roman numerals are only used for ionic compounds.'},
+ {lo:'IC2-LO2',who:'Chemistry tutor',role:'Naming',q:'What is the name of SCl<sub>2</sub>?',
+  o:['sulfur dichloride','sulfur(II) chloride','monosulfur dichloride','sulfur chloride'],
+  why:'Mono- is never used on the first element, the second element ends in -ide, and the prefix di- shows two chlorine atoms.'},
+ {lo:'IC2-LO2',who:'Puan Farah',role:'Labour ward',q:'"The midwife offered me gas and air: nitrous oxide." Its systematic name is dinitrogen monoxide. What is its formula?',
+  o:['N<sub>2</sub>O','NO','NO<sub>2</sub>','N<sub>2</sub>O<sub>2</sub>'],
+  why:'Di- = two N, mono- = one O. Mixed with oxygen, N<sub>2</sub>O is used for short-term pain relief.'},
+ {lo:'IC2-LO2',who:'Encik Lim',role:'Angina spray',q:'"My GTN spray works by releasing nitric oxide." Nitric oxide is nitrogen monoxide. What is its formula?',
+  o:['NO','N<sub>2</sub>O','NO<sub>2</sub>','N<sub>2</sub>O<sub>4</sub>'],
+  why:'No prefix on nitrogen means one N, and mono- means one O. NO is a signalling molecule that relaxes blood vessels.'},
+ {lo:'IC2-LO2',who:'Safety officer',role:'Gas heater',q:'What is the name of CO?',
+  o:['carbon monoxide','monocarbon monoxide','carbon oxide','carbon(II) oxide'],
+  why:'One C (no mono- on the first element) and one O (mon- + oxide). CO is a poisonous gas from incomplete burning.'},
+ {lo:'IC2-LO2',who:'Pharmacy student',role:'Why prefixes?',q:'Ionic names do not use prefixes. Why must covalent names use them?',
+  o:['Two nonmetals can combine in several ratios (NO, NO<sub>2</sub>, N<sub>2</sub>O<sub>4</sub>), so the name must show the numbers','Covalent compounds are always larger','Covalent compounds have no charges at all','Prefixes show the charge on each atom'],
+  why:'For ionic compounds charge balance fixes the ratio. For covalent compounds it does not, so prefixes give the count.'},
+ {lo:'IC2-LO2',who:'Electrical engineer',role:'Transformer gas',q:'What is the formula of sulfur hexafluoride?',
+  o:['SF<sub>6</sub>','S<sub>6</sub>F','SF<sub>5</sub>','S<sub>2</sub>F<sub>6</sub>'],
+  why:'Hexa- = six F; no prefix on sulfur means one S. SF<sub>6</sub> is so unreactive it is used to suppress sparks.'},
+ {lo:'IC2-LO2',who:'QC laboratory',role:'Unknown white powder',q:'A white powder melts at 80 °C, and its solution in water does not conduct. It is most likely:',
+  o:['a covalent (molecular) compound','an ionic compound','a metal','an ionic hydrate'],
+  why:'Low melting point and no conductivity point to neutral molecules. Ionic compounds melt high and conduct when dissolved.'},
+
+ // ---------- IC2-LO3 · Lewis structures ----------
+ {lo:'IC2-LO3',who:'R&D chemist',role:'Counting electrons',q:'How many valence electrons must the Lewis structure of CO<sub>2</sub> contain?',
+  o:['16','12','22','18'],
+  why:'C has 4 and each O has 6: 4 + 2(6) = 16.'},
+ {lo:'IC2-LO3',who:'R&D chemist',role:'Hydroxide ion',q:'How many valence electrons are in the Lewis structure of OH<sup>−</sup>?',
+  o:['8','7','9','6'],
+  why:'O 6 + H 1 = 7, plus 1 extra electron for the negative charge = 8.'},
+ {lo:'IC2-LO3',who:'R&D chemist',role:'Ammonium ion',q:'How many valence electrons are in the Lewis structure of NH<sub>4</sub><sup>+</sup>?',
+  o:['8','9','10','7'],
+  why:'N 5 + 4 H = 9, minus 1 for the positive charge = 8: four N–H bonds, no lone pair.'},
+ {lo:'IC2-LO3',who:'Chemistry tutor',role:'Nitrogen gas',q:'Which Lewis structure is correct for N<sub>2</sub>?',
+  o:['A triple bond, with one lone pair on each N','A double bond, with two lone pairs on each N','A single bond, with three lone pairs on each N','A triple bond and no lone pairs'],
+  why:'10 valence electrons. Only :N≡N: gives both atoms an octet using exactly 10 electrons. The double-bond structure would need 12.'},
+ {lo:'IC2-LO3',who:'Chemistry tutor',role:'Multiple bonds',q:'How many electrons are in a double bond?',
+  o:['4','2','6','8'],
+  why:'Each bond line is one shared pair. A double bond is two pairs = 4 electrons; a triple bond is 6.'},
+ {lo:'IC2-LO3',who:'R&D chemist',role:'Hydrogen cyanide',q:'Which Lewis structure is correct for HCN (10 valence electrons)?',
+  o:['H–C≡N: with one lone pair on N','H–C=N: with two lone pairs on N','H=C=N: with one lone pair on N','H–N≡C: with one lone pair on C'],
+  why:'Single bonds leave C with only 4 electrons, so two N lone pairs become shared: a C≡N triple bond. H can only ever form one bond.'},
+ {lo:'IC2-LO3',who:'Chemistry tutor',role:'The skeleton',q:'When drawing OF<sub>2</sub>, which atom goes in the centre?',
+  o:['O, the less electronegative atom; F is always an outer atom','F, because there are two of them','Either F atom','None: the three atoms are in a triangle'],
+  why:'Put the least electronegative atom in the centre. H and F are always terminal: F–O–F.'},
+ {lo:'IC2-LO3',who:'Pharmacy student',role:'Spot the mistake',q:'A student draws magnesium oxide as Mg=O with a double bond. What is wrong?',
+  o:['MgO is ionic: Mg transfers two electrons to O, and nothing is shared','It should be a triple bond','It should be a single bond','Nothing: the structure is correct'],
+  why:'A metal with a nonmetal forms ions, Mg<sup>2+</sup> and O<sup>2−</sup>. Lewis bond lines are only for shared pairs.'},
+ {lo:'IC2-LO3',who:'Formalin store',role:'Formaldehyde',q:'Which describes the Lewis structure of formaldehyde, CH<sub>2</sub>O (C central)?',
+  o:['A C=O double bond, two C–H single bonds and two lone pairs on O','Three single bonds and a lone pair on C','A C≡O triple bond and two C–H bonds','Two C=H double bonds and one C–O bond'],
+  why:'4 + 2(1) + 6 = 12 electrons. Single bonds leave C short of an octet, so one O lone pair becomes a second C–O bond.'},
+ {lo:'IC2-LO3',who:'Chemistry tutor',role:'Step 5',q:'All electrons are placed, but the central atom still lacks an octet. What do you do?',
+  o:['Turn lone pairs on outer atoms into shared pairs, making double or triple bonds','Add extra electrons until it has eight','Remove a hydrogen atom','Move the charge onto the central atom'],
+  why:'The total number of electrons is fixed by step 1. Sharing more pairs gives the central atom an octet without adding any.'},
+
+ // ---------- IC2-LO4 · bond length, electronegativity, bond polarity ----------
+ {lo:'IC2-LO4',who:'Chemistry tutor',role:'Bond length',q:'Which carbon–carbon bond is the shortest?',
+  o:['C≡C, triple','C=C, double','C–C, single','They are all the same length'],
+  why:'More shared electrons pull the nuclei closer: single 154 pm, double 134 pm, triple 120 pm.'},
+ {lo:'IC2-LO4',who:'Chemistry tutor',role:'Most polar bond',q:'Which bond is the most polar? (C 2.5, H 2.1, N 3.0, O 3.5, Cl 3.0)',
+  o:['O–H','C–H','N–H','C–Cl'],
+  why:'Differences: O–H 1.4, N–H 0.9, C–Cl 0.5, C–H 0.4. The larger the difference, the more polar the bond.'},
+ {lo:'IC2-LO4',who:'R&D chemist',role:'Potassium bromide',rx:true,q:'K = 0.8 and Br = 2.8. What is the electronegativity difference, and what type of bond is it?',
+  o:['2.0: ionic','2.0: polar covalent','3.6: ionic','0.4: nonpolar covalent'],
+  why:'2.8 − 0.8 = 2.0, which is greater than 1.8, so the bond is ionic. Subtract; do not add.'},
+ {lo:'IC2-LO4',who:'R&D chemist',role:'Carbon–oxygen bond',rx:true,q:'C = 2.5 and O = 3.5. Classify the C–O bond.',
+  o:['1.0: polar covalent, electrons drawn towards O','1.0: nonpolar covalent','1.0: ionic','6.0: ionic'],
+  why:'A difference of 0.4 to 1.8 is polar covalent. O is more electronegative, so it carries δ−.'},
+ {lo:'IC2-LO4',who:'Chemistry tutor',role:'Identical atoms',q:'What kind of bond holds the two atoms together in H<sub>2</sub> or Cl<sub>2</sub>?',
+  o:['Nonpolar covalent: identical atoms share the pair equally','Polar covalent','Ionic','Hydrogen bond'],
+  why:'A difference of zero means perfectly equal sharing.'},
+ {lo:'IC2-LO4',who:'Chemistry tutor',role:'Partial charges',q:'In H–Cl, where is the δ− charge?',
+  o:['On Cl','On H','Shared equally on both atoms','Nowhere: HCl is nonpolar'],
+  why:'Cl (3.0) is more electronegative than H (2.1), so electron density is greater around Cl.'},
+ {lo:'IC2-LO4',who:'Chemistry tutor',role:'Dipole arrow',q:'Which way does the dipole arrow point on a polar bond?',
+  o:['Towards the δ− end, the more electronegative atom','Towards the δ+ end','Towards the larger atom whatever its electronegativity','Always from left to right'],
+  why:'The crossed tail marks δ+ and the arrowhead points to δ−, where the electrons are pulled.'},
+ {lo:'IC2-LO4',who:'Chemistry tutor',role:'Periodic trend',q:'Where on the periodic table is electronegativity highest?',
+  o:['Upper right (fluorine is highest, 4.0)','Lower left','Bottom of each group','It is the same for all elements'],
+  why:'Electronegativity rises towards the upper right, ignoring the noble gases. Learn: F 4.0, O 3.5, N 3.0, Cl 3.0, C 2.5, H 2.1.'},
+ {lo:'IC2-LO4',who:'R&D chemist',role:'Nitrogen–hydrogen bond',rx:true,q:'N = 3.0 and H = 2.1. Classify the N–H bond.',
+  o:['0.9: polar covalent, δ− on N','0.9: nonpolar covalent','5.1: ionic','0.9: polar covalent, δ− on H'],
+  why:'3.0 − 2.1 = 0.9, between 0.4 and 1.8. N is the more electronegative atom, so N is δ− and H is δ+.'},
+
+ // ---------- IC2-LO5 · molecular mass, VSEPR, molecular polarity ----------
+ {lo:'IC2-LO5',at:['lab'],who:'Water for injection',role:'Molecular mass',rx:true,q:'What is the molecular mass of H<sub>2</sub>O? (H = 1.01, O = 16.00)',
+  o:['18.02 amu','17.01 amu','34.02 amu','16.00 amu'],
+  why:'2 × 1.01 + 16.00 = 18.02 amu. Multiply each atomic mass by its subscript, then add.'},
+ {lo:'IC2-LO5',at:['lab'],who:'Gas supplier',role:'Carbon dioxide',rx:true,q:'What is the molecular mass of CO<sub>2</sub>? (C = 12.01, O = 16.00)',
+  o:['44.01 amu','28.01 amu','60.01 amu','56.02 amu'],
+  why:'12.01 + 2 × 16.00 = 44.01 amu. 28.01 amu is CO.'},
+ {lo:'IC2-LO5',at:['lab'],who:'R&D chemist',role:'Dinitrogen pentoxide',rx:true,q:'What is the molecular mass of N<sub>2</sub>O<sub>5</sub>? (N = 14.01, O = 16.00)',
+  o:['108.02 amu','46.01 amu','94.01 amu','76.02 amu'],
+  why:'2 × 14.01 + 5 × 16.00 = 28.02 + 80.00 = 108.02 amu. 46.01 amu is NO<sub>2</sub>: same elements, different molecule.'},
+ {lo:'IC2-LO5',at:['lab'],who:'Paracetamol tablets',role:'C₈H₉NO₂',rx:true,q:'What is the molecular mass of paracetamol, C<sub>8</sub>H<sub>9</sub>NO<sub>2</sub>? (C = 12.01, H = 1.01, N = 14.01, O = 16.00)',
+  o:['151.18 amu','142.09 amu','135.18 amu','43.03 amu'],
+  why:'8(12.01) + 9(1.01) + 14.01 + 2(16.00) = 96.08 + 9.09 + 14.01 + 32.00 = 151.18 amu.'},
+ {lo:'IC2-LO5',who:'Chemistry tutor',role:'Ammonia',q:'What is the shape of NH<sub>3</sub>?',
+  o:['Trigonal pyramidal','Trigonal planar','Tetrahedral','Bent'],
+  why:'N has 3 bonds + 1 lone pair. The four pairs point to the corners of a tetrahedron, but the shape is named from the atoms only: a pyramid.'},
+ {lo:'IC2-LO5',who:'Chemistry tutor',role:'Water',q:'What is the shape of H<sub>2</sub>O?',
+  o:['Bent','Linear','Trigonal planar','Tetrahedral'],
+  why:'O has 2 bonds + 2 lone pairs. The lone pairs push the two O–H bonds into a bent shape, a little under 109.5°.'},
+ {lo:'IC2-LO5',who:'Formalin store',role:'Formaldehyde',q:'What is the shape of formaldehyde, CH<sub>2</sub>O?',
+  o:['Trigonal planar','Tetrahedral','Trigonal pyramidal','Bent'],
+  why:'C has three groups (two C–H and one C=O) and no lone pair. A double bond counts as one group: 120°, flat.'},
+ {lo:'IC2-LO5',who:'Chemistry tutor',role:'Ammonium ion',q:'What is the shape of NH<sub>4</sub><sup>+</sup>?',
+  o:['Tetrahedral','Trigonal pyramidal','Trigonal planar','Square'],
+  why:'N has 4 bonds and no lone pair, so all four positions hold atoms: tetrahedral, 109.5°.'},
+ {lo:'IC2-LO5',who:'Chemistry tutor',role:'Which is polar?',q:'Which molecule is polar?',
+  o:['NH<sub>3</sub>','CO<sub>2</sub>','CCl<sub>4</sub>','BF<sub>3</sub>'],
+  why:'NH<sub>3</sub> is pyramidal with a lone pair on N, so its bond dipoles do not cancel. The other three are symmetrical: nonpolar.'},
+ {lo:'IC2-LO5',who:'Chemistry tutor',role:'Polar bonds, nonpolar molecule',q:'CO<sub>2</sub> has two polar C=O bonds, yet it is nonpolar. Why?',
+  o:['It is linear: the two equal dipoles point in opposite directions and cancel','Its C=O bonds are not really polar','It has lone pairs on carbon','It is an ionic compound'],
+  why:'Molecular polarity depends on shape as well as bonds. In bent H<sub>2</sub>O the dipoles do not cancel, so water is polar.'},
+ {lo:'IC2-LO5',who:'Chemistry tutor',role:'Same shape, different atoms',q:'CCl<sub>4</sub> is nonpolar but CH<sub>3</sub>Cl is polar. Both are tetrahedral. Why the difference?',
+  o:['In CH<sub>3</sub>Cl the outer atoms are not all the same, so the dipoles do not cancel','CH<sub>3</sub>Cl has a lone pair on carbon','CCl<sub>4</sub> has no polar bonds','CH<sub>3</sub>Cl is ionic'],
+  why:'A symmetrical shape only cancels dipoles when all the outer atoms are identical.'},
+ {lo:'IC2-LO5',who:'R&D chemist',role:'Phosphorus trichloride',q:'Describe PCl<sub>3</sub> (P has 3 bonds and 1 lone pair).',
+  o:['Trigonal pyramidal and polar','Trigonal planar and nonpolar','Tetrahedral and nonpolar','Trigonal pyramidal and nonpolar'],
+  why:'Like NH<sub>3</sub>: the lone pair gives a pyramid, and the P–Cl dipoles do not cancel.'},
+
+ // ---------- IC2-LO6 · intermolecular forces ----------
+ {lo:'IC2-LO6',who:'Gas supplier',role:'Methane',q:'What is the strongest intermolecular force in CH<sub>4</sub>?',
+  o:['Dispersion forces','Dipole–dipole forces','Hydrogen bonding','Ionic bonding'],
+  why:'CH<sub>4</sub> is nonpolar, so dispersion forces (temporary dipoles) are the only forces between its molecules.'},
+ {lo:'IC2-LO6',who:'Chemistry tutor',role:'Hydrogen chloride',q:'What is the strongest intermolecular force in HCl?',
+  o:['Dipole–dipole forces','Hydrogen bonding','Dispersion forces only','Covalent bonds between molecules'],
+  why:'HCl is polar, but its H is bonded to Cl, not to N, O or F, so it cannot hydrogen bond.'},
+ {lo:'IC2-LO6',who:'Store keeper',role:'Ammonia solution',q:'What is the strongest intermolecular force in NH<sub>3</sub>?',
+  o:['Hydrogen bonding','Dipole–dipole forces only','Dispersion forces only','Ionic bonding'],
+  why:'H is bonded directly to N, and N has a lone pair to attract the H of a neighbouring molecule.'},
+ {lo:'IC2-LO6',who:'Chemistry tutor',role:'Hydrogen bonds',q:'Which substance forms hydrogen bonds between its own molecules?',
+  o:['HF','H<sub>2</sub>S','CH<sub>4</sub>','CO<sub>2</sub>'],
+  why:'Hydrogen bonding needs H bonded to N, O or F. In H<sub>2</sub>S the H is bonded to S, which is not small or electronegative enough.'},
+ {lo:'IC2-LO6',who:'Chemistry tutor',role:'The halogens',q:'F<sub>2</sub> is a gas but I<sub>2</sub> is a solid at room temperature. Why?',
+  o:['I<sub>2</sub> is larger with more electrons, so its dispersion forces are stronger','I<sub>2</sub> forms hydrogen bonds','I<sub>2</sub> is polar and F<sub>2</sub> is not','F<sub>2</sub> has stronger covalent bonds'],
+  why:'Both are nonpolar. Dispersion forces grow with the size and number of electrons of the molecule.'},
+ {lo:'IC2-LO6',who:'Chemistry tutor',role:'Boiling points',q:'Rank CH<sub>4</sub>, HCl and H<sub>2</sub>O from lowest to highest boiling point.',
+  o:['CH<sub>4</sub> < HCl < H<sub>2</sub>O','H<sub>2</sub>O < HCl < CH<sub>4</sub>','HCl < CH<sub>4</sub> < H<sub>2</sub>O','CH<sub>4</sub> < H<sub>2</sub>O < HCl'],
+  why:'Dispersion only (−162 °C) < dipole–dipole (−85 °C) < hydrogen bonding (100 °C).'},
+ {lo:'IC2-LO6',who:'Encik Azman',role:'Cholesterol test',q:'"Why doesn’t cholesterol just dissolve in my blood?"',
+  o:['It is mostly nonpolar C–C and C–H bonds, and like dissolves like','It is an ionic compound','It forms too many hydrogen bonds with water','Blood is a nonpolar liquid'],
+  why:'Water is polar and hydrogen bonds strongly; it does not attract nonpolar molecules. Blood carries cholesterol inside lipoprotein particles.'},
+ {lo:'IC2-LO6',who:'Chemistry tutor',role:'Boiling water',q:'When water boils, what is overcome?',
+  o:['The attractions between molecules (mainly hydrogen bonds); the O–H bonds stay intact','The covalent O–H bonds, giving H and O atoms','Ionic bonds between H<sup>+</sup> and O<sup>2−</sup>','Nothing: boiling needs no energy'],
+  why:'Steam is still H<sub>2</sub>O. Intermolecular forces are overcome on boiling; covalent bonds only break in chemical reactions.'},
+ {lo:'IC2-LO6',who:'Chemistry tutor',role:'Water without H-bonds',q:'Water boils at 100 °C. Without hydrogen bonding, it would boil at about:',
+  o:['below −80 °C','200 °C','100 °C, no change','500 °C'],
+  why:'Following the trend of H<sub>2</sub>S, H<sub>2</sub>Se and H<sub>2</sub>Te, water would be a gas far below room temperature. Hydrogen bonds keep it liquid.'},
+ {lo:'IC2-LO6',who:'Pharmacology tutor',role:'DNA and drugs',q:'What holds the two strands of DNA together?',
+  o:['Hydrogen bonds between the bases','Ionic bonds between the strands','Dispersion forces only','Covalent bonds between the strands'],
+  why:'Hydrogen bonds also fold proteins, and drugs bind to their targets mainly through intermolecular forces, especially hydrogen bonds.'},
+ {lo:'IC2-LO6',who:'Formulation scientist',role:'Will it dissolve?',q:'Which drug design feature usually helps a drug dissolve in body fluids?',
+  o:['Polar groups such as O–H and N–H that can hydrogen bond with water','A long chain of nonpolar C–H bonds','Having no polar bonds at all','A perfectly symmetrical nonpolar shape'],
+  why:'Like dissolves like. Water is polar and hydrogen bonds, so polar and hydrogen-bonding groups help a drug dissolve.'}
+ ]
+});
+</script>
+</body>
+</html>
