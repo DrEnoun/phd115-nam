@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game · Ionic &amp; Covalent Compounds I · PHD115 Study Hub</title>
+<script src="../../js/track.js"></script>
+<script src="../../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#F2F6F9;color:#1B2A41;font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+footer{border-top:1px solid #D7E0E8;margin-top:10px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:#56657A;font-size:.82rem}
+footer .brand{color:#2F6F9F;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<footer><div class="in">
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Your best score is saved on this device and sent to the Study Hub leaderboard, which shows your first name and class only. The game is for practice and is not part of your marks.</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 3.0–3.6. Shared under the same licence for non-commercial teaching.</p>
+</div></footer>
+
+<script src="../../js/shift.js"></script>
+<script>
+/* Ionic & Covalent Compounds I content for the Pharmacy Shift engine.
+   Bank items: o[0] is always the correct option (the engine shuffles).
+   rx:true shows the item as a prescription slip, otherwise as a patient at the counter.
+   at: stations the item may appear in (if omitted, any station whose pool includes its LO). */
+NAMSHIFT.start({
+ topic:'ic1',
+ title:'Ionic & Covalent I game',
+ kicker:'PHD115 · Topic 1 · Ionic & Covalent Compounds I',
+ blurb:'You are the pharmacist on duty. Patients and colleagues bring questions about saline drips, iron tablets, antacids and Epsom salts. Every one comes back to ions. Five stations, about 8 minutes.',
+ hub:'../../#ic1', slides:'../slides/', board:'../../leaderboard/#ic1',
+ los:[
+  ['IC1-LO1','Define the octet rule and describe how ionic bonds form'],
+  ['IC1-LO2','Describe cations and anions, use Lewis diagrams to show ion formation, and predict ionic charges'],
+  ['IC1-LO3','Write formulas for ionic compounds, including those with polyatomic ions, and recognise ionic compounds'],
+  ['IC1-LO4','Name ions and ionic compounds using the Stock and common systems'],
+  ['IC1-LO5','Calculate the formula mass of ionic compounds, including hydrates'],
+  ['IC1-LO6','Describe the physical properties of ionic compounds and write dissociation equations']],
+ levels:[
+  {id:'counter',name:'Front counter',blurb:'The octet rule, ions and their charges.',intro:'The morning queue. Patients ask why salt is safe in a drip and why iron comes in two kinds. Keep the periodic table handy.',pool:['IC1-LO1','IC1-LO2'],n:5,secs:30},
+  {id:'shelf',name:'Ion shelf',type:'drag',blurb:'Hands-on: match each group to the charge of its ion.',intro:'The new technician is sorting the electrolyte shelf by group. Drag each ion charge onto the group of the periodic table that forms it.',secs:75},
+  {id:'bench',name:'Dispensing bench',blurb:'Writing and naming ionic compounds.',intro:'Prescriptions and labels that use formulas and names: antacids, iron tablets, fluoride toothpaste and calcium supplements.',pool:['IC1-LO3','IC1-LO4'],n:5,secs:30},
+  {id:'lab',name:'Compounding lab',blurb:'Formula mass, hydrates and the properties of salts.',intro:'Weighing salts and hydrates for compounding, and checking why some solutions conduct. Have a calculator ready.',pool:['IC1-LO5','IC1-LO6'],n:5,secs:45},
+  {id:'rush',name:'Rush hour',blurb:'Six quick patients, one from every outcome. Points ×1.5.',intro:'The queue is out the door. One patient for each outcome, less time each, and every right answer earns 1.5 times the points.',pool:['IC1-LO1','IC1-LO2','IC1-LO3','IC1-LO4','IC1-LO5','IC1-LO6'],n:6,secs:15,mult:1.5}],
+ hands:{
+  lo:'IC1-LO2',title:'Which charge does each group form?',
+  how:'Drag a label onto a lettered group, or tap a label and then tap a letter. Two labels do not belong anywhere.',
+  svg:`<svg viewBox="0 -14 432 220" role="img" aria-label="Main-group part of the periodic table, periods 2 to 4. Columns for groups 1A, 2A, 3A, 4A, 5A, 6A, 7A and 8A, with a box for the transition metals between groups 2A and 3A in period 4. Six group columns are lettered A to F above the column."><text x="30" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">1A</text><text x="76" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">2A</text><text x="172" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">3A</text><text x="218" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">4A</text><text x="264" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">5A</text><text x="310" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">6A</text><text x="356" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">7A</text><text x="402" y="52" font-size="12" font-weight="600" text-anchor="middle" fill="#56657A">8A</text><rect x="8" y="60" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="30" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Li</text><rect x="54" y="60" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="76" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Be</text><rect x="150" y="60" width="44" height="34" rx="5" fill="#EEF0F3" stroke="#C9D0D8" stroke-width="1.5"/><text x="172" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">B</text><rect x="196" y="60" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="218" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">C</text><rect x="242" y="60" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="264" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">N</text><rect x="288" y="60" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="310" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">O</text><rect x="334" y="60" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="356" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">F</text><rect x="380" y="60" width="44" height="34" rx="5" fill="#FFFFFF" stroke="#D7E0E8" stroke-width="1.5"/><text x="402" y="82" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Ne</text><rect x="8" y="98" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="30" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Na</text><rect x="54" y="98" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="76" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Mg</text><rect x="150" y="98" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="172" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Al</text><rect x="196" y="98" width="44" height="34" rx="5" fill="#EEF0F3" stroke="#C9D0D8" stroke-width="1.5"/><text x="218" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Si</text><rect x="242" y="98" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="264" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">P</text><rect x="288" y="98" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="310" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">S</text><rect x="334" y="98" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="356" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Cl</text><rect x="380" y="98" width="44" height="34" rx="5" fill="#FFFFFF" stroke="#D7E0E8" stroke-width="1.5"/><text x="402" y="120" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Ar</text><rect x="8" y="136" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="30" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">K</text><rect x="54" y="136" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="76" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Ca</text><rect x="150" y="136" width="44" height="34" rx="5" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="172" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Ga</text><rect x="196" y="136" width="44" height="34" rx="5" fill="#EEF0F3" stroke="#C9D0D8" stroke-width="1.5"/><text x="218" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Ge</text><rect x="242" y="136" width="44" height="34" rx="5" fill="#EEF0F3" stroke="#C9D0D8" stroke-width="1.5"/><text x="264" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">As</text><rect x="288" y="136" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="310" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Se</text><rect x="334" y="136" width="44" height="34" rx="5" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="356" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Br</text><rect x="380" y="136" width="44" height="34" rx="5" fill="#FFFFFF" stroke="#D7E0E8" stroke-width="1.5"/><text x="402" y="158" font-size="14" font-weight="600" text-anchor="middle" fill="#1B2A41">Kr</text><rect x="100" y="136" width="46" height="34" rx="5" fill="#F7F3EC" stroke="#E2C89A" stroke-width="1.5" stroke-dasharray="3 3"/><text x="123" y="150" font-size="9" text-anchor="middle" fill="#56657A">transition</text><text x="123" y="162" font-size="9" text-anchor="middle" fill="#56657A">metals</text><rect x="8" y="184" width="14" height="14" rx="3" fill="#FBEFD9" stroke="#E2C89A" stroke-width="1.5"/><text x="28" y="196" font-size="11" fill="#56657A">metal</text><rect x="88" y="184" width="14" height="14" rx="3" fill="#EEF0F3" stroke="#C9D0D8" stroke-width="1.5"/><text x="108" y="196" font-size="11" fill="#56657A">semimetal</text><rect x="188" y="184" width="14" height="14" rx="3" fill="#E1EEF7" stroke="#A9C6DD" stroke-width="1.5"/><text x="208" y="196" font-size="11" fill="#56657A">nonmetal</text><rect x="282" y="184" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D7E0E8" stroke-width="1.5"/><text x="302" y="196" font-size="11" fill="#56657A">noble gas</text></svg>`,
+  zones:[{id:'A',x:6.9,y:10.0},{id:'B',x:17.6,y:10.0},{id:'C',x:39.8,y:10.0},{id:'D',x:61.1,y:10.0},{id:'E',x:71.8,y:10.0},{id:'F',x:82.4,y:10.0}],
+  chips:[
+   {t:'1+',s:'loses 1 electron',z:0},
+   {t:'2+',s:'loses 2 electrons',z:1},
+   {t:'3+',s:'loses 3 electrons',z:2},
+   {t:'3−',s:'gains 3 electrons',z:3},
+   {t:'2−',s:'gains 2 electrons',z:4},
+   {t:'1−',s:'gains 1 electron',z:5},
+   {t:'4+',s:'loses 4 electrons',z:-1},
+   {t:'5−',s:'gains 5 electrons',z:-1}],
+  why:'The charge comes from the group. Metals in 1A, 2A and 3A lose 1, 2 or 3 electrons (Na<sup>+</sup>, Mg<sup>2+</sup>, Al<sup>3+</sup>). Nonmetals in 5A, 6A and 7A gain 3, 2 or 1 to complete the octet (N<sup>3−</sup>, O<sup>2−</sup>, Cl<sup>−</sup>). Group 4A would have to lose or gain four, so carbon shares electrons instead, and no atom gains five. Write the number first, then the sign: Ca<sup>2+</sup>, not Ca<sup>+2</sup>.'},
+ bank:[
+ // ---------- IC1-LO1 · octet rule and ionic bonds ----------
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'Why atoms bond',q:'What does the octet rule say?',
+  o:['Atoms are especially stable with eight electrons in their outermost shell','Every atom forms exactly eight bonds','Atoms are stable with eight protons in the nucleus','Atoms are stable when they have eight shells'],
+  why:'The noble gases (except helium) have eight valence electrons and rarely react. Other atoms gain, lose or share electrons to reach the same arrangement.'},
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'The noble gases',q:'Why do neon and argon hardly ever form compounds?',
+  o:['They already have a full octet, so they are very stable as single atoms','They have no electrons to share','They are metals','Their nuclei are too small'],
+  why:'A full valence shell is the stable arrangement other atoms are trying to reach. Only krypton, xenon and radon have ever been made to form compounds.'},
+ {lo:'IC1-LO1',who:'Puan Rosnah',role:'Saline drip on the ward',q:'"Sodium is a reactive metal and chlorine is a poisonous gas. Why is the salt in my drip safe?"',
+  o:['In NaCl both are ions with stable octets, and the compound behaves completely differently from the elements','The sodium and chlorine are diluted so much that they cannot react','Normal saline contains no sodium','The chlorine in the drip has turned into a metal'],
+  why:'Na<sup>+</sup> and Cl<sup>−</sup> each have an octet, so they are stable. A compound has its own properties, not those of its elements.'},
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'Sodium atom',q:'A sodium atom has one valence electron. How does it most easily reach an octet?',
+  o:['It loses that 1 electron and becomes Na<sup>+</sup>','It gains 7 electrons and becomes Na<sup>7−</sup>','It loses 1 electron and becomes Na<sup>−</sup>','It gains 1 electron and becomes Na<sup>+</sup>'],
+  why:'Losing one electron is far easier than gaining seven. Losing a negative electron leaves a positive ion: 11 protons, 10 electrons, charge 1+.'},
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'Fluorine atom',q:'A fluorine atom has seven valence electrons. What does it do to reach an octet?',
+  o:['Gains 1 electron to form F<sup>−</sup>','Loses 7 electrons to form F<sup>7+</sup>','Gains 1 electron to form F<sup>+</sup>','Loses 1 electron to form F<sup>−</sup>'],
+  why:'The process with fewer electrons wins: gaining one. An extra electron gives a negative charge, F<sup>−</sup> (fluoride).'},
+ {lo:'IC1-LO1',who:'Pharmacy student',role:'Inside a salt crystal',q:'What holds Na<sup>+</sup> and Cl<sup>−</sup> together in table salt?',
+  o:['The attraction between oppositely charged ions: an ionic bond','A shared pair of electrons: a covalent bond','The attraction between two positive ions','Hydrogen bonds between the ions'],
+  why:'Electrons are transferred, not shared. The positive and negative ions then attract each other: that attraction is the ionic bond.'},
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'Two positive ions?',q:'Why is an ionic compound never made of two positively charged ions?',
+  o:['Like charges repel each other','Positive ions have no electrons','Positive ions are always too large','Two positive ions would have too many electrons'],
+  why:'An ionic bond is an attraction between opposite charges. Two cations (or two anions) push each other apart.'},
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'The duet rule',q:'Which atoms follow a duet rule instead of the octet rule?',
+  o:['H, He and Li: their outer shell is the first shell, which holds only two electrons','C, N and O','Na, Mg and Al','F, Cl and Br'],
+  why:'The first shell holds only two electrons, so for these small atoms two electrons is a full shell.'},
+ {lo:'IC1-LO1',who:'Chemistry tutor',role:'Counting particles',q:'How many protons and electrons does a sodium ion, Na<sup>+</sup>, have?',
+  o:['11 protons and 10 electrons','11 protons and 12 electrons','10 protons and 11 electrons','10 protons and 10 electrons'],
+  why:'Sodium always has 11 protons. Losing one electron leaves 10, so the overall charge is 11+ and 10− = 1+.'},
+
+ // ---------- IC1-LO2 · cations, anions, charges, Lewis diagrams ----------
+ {lo:'IC1-LO2',who:'Encik Daud',role:'Calcium supplement',q:'Calcium is in group 2A. What ion does it form?',
+  o:['Ca<sup>2+</sup>','Ca<sup>+</sup>','Ca<sup>2−</sup>','Ca<sup>6−</sup>'],
+  why:'Two valence electrons: losing both leaves an octet in the shell below, so the ion is Ca<sup>2+</sup>.'},
+ {lo:'IC1-LO2',who:'Chemistry tutor',role:'Selenium',q:'Selenium is in group 6A. What ion does it form?',
+  o:['Se<sup>2−</sup>','Se<sup>6+</sup>','Se<sup>2+</sup>','Se<sup>−</sup>'],
+  why:'Six valence electrons: gaining two completes the octet, so the ion is Se<sup>2−</sup>, like O<sup>2−</sup> and S<sup>2−</sup> in the same group.'},
+ {lo:'IC1-LO2',who:'Chemistry tutor',role:'Spot the odd ion',q:'Which ion is NOT likely to form?',
+  o:['Mg<sup>+</sup>','K<sup>+</sup>','N<sup>3−</sup>','Al<sup>3+</sup>'],
+  why:'Mg has two valence electrons, so it loses both to form Mg<sup>2+</sup>. Losing only one does not give an octet.'},
+ {lo:'IC1-LO2',who:'Chemistry tutor',role:'Same as neon',q:'Which ion is isoelectronic with neon (same electron configuration)?',
+  o:['Mg<sup>2+</sup>','K<sup>+</sup>','Cl<sup>−</sup>','S<sup>2−</sup>'],
+  why:'Mg<sup>2+</sup> has 10 electrons, 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>, like neon. K<sup>+</sup>, Cl<sup>−</sup> and S<sup>2−</sup> each have 18 electrons, like argon.'},
+ {lo:'IC1-LO2',who:'Pharmacy student',role:'Metals and nonmetals',q:'Which statement about ions is correct?',
+  o:['Metals usually lose electrons and form cations','Nonmetals usually lose electrons and form cations','Metals usually gain electrons and form anions','A cation has more electrons than protons'],
+  why:'Atoms with three or fewer valence electrons (mostly metals) lose them: fewer electrons than protons, so a positive charge. Nonmetals gain electrons to form anions.'},
+ {lo:'IC1-LO2',who:'Chemistry tutor',role:'Lewis diagram',q:'How many dots are in the Lewis diagram of a nitrogen atom (group 5A)?',
+  o:['5','3','7','2'],
+  why:'For main-group elements the number of valence electrons equals the group number, so nitrogen has five dots.'},
+ {lo:'IC1-LO2',who:'Lab report',role:'Writing a charge',q:'Which is the correct way to write the barium ion?',
+  o:['Ba<sup>2+</sup>','Ba<sup>+2</sup>','Ba<sub>2</sub><sup>+</sup>','Ba<sup>2−</sup>'],
+  why:'Write the number first, then the sign. Barium is in group 2A, so it loses two electrons: Ba<sup>2+</sup>.'},
+ {lo:'IC1-LO2',who:'Puan Siti',role:'Two kinds of iron',q:'"My iron tablets say Fe<sup>2+</sup> but my iron injection says Fe<sup>3+</sup>. Is one a mistake?"',
+  o:['No: transition metals such as iron can form ions of more than one charge','Yes: iron can only form Fe<sup>2+</sup>','Yes: iron is a nonmetal and forms anions','No: Fe<sup>3+</sup> is iron that has gained an electron'],
+  why:'Transition metals have no simple charge pattern. Iron forms both Fe<sup>2+</sup> and Fe<sup>3+</sup>, so the charge must always be stated.'},
+ {lo:'IC1-LO2',who:'Chemistry tutor',role:'The oxide ion',q:'Oxygen is 1s<sup>2</sup>2s<sup>2</sup>2p<sup>4</sup>. What is the configuration of the oxide ion, O<sup>2−</sup>?',
+  o:['1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>','1s<sup>2</sup>2s<sup>2</sup>2p<sup>2</sup>','1s<sup>2</sup>2s<sup>2</sup>','1s<sup>2</sup>2s<sup>2</sup>2p<sup>4</sup>3s<sup>2</sup>'],
+  why:'Gaining two electrons fills the 2p subshell: 2p<sup>6</sup>, an octet in the second shell, the same as neon.'},
+ {lo:'IC1-LO2',who:'Chemistry tutor',role:'Forming MgBr₂',q:'Magnesium (2 valence electrons) reacts with bromine (7 valence electrons). How are the electrons transferred?',
+  o:['One Mg gives one electron to each of two Br atoms','One Mg gives two electrons to one Br atom','Two Mg atoms each give one electron to one Br atom','Mg and Br share two pairs of electrons'],
+  why:'Each Br needs only one electron, so two Br atoms take the two electrons from one Mg. One Mg<sup>2+</sup> balances two Br<sup>−</sup>: MgBr<sub>2</sub>.'},
+
+ // ---------- IC1-LO3 · formulas ----------
+ {lo:'IC1-LO3',who:'Chemistry tutor',role:'Sodium and sulfur',q:'What is the formula of the compound of Na<sup>+</sup> and S<sup>2−</sup>?',
+  o:['Na<sub>2</sub>S','NaS','NaS<sub>2</sub>','Na<sub>2</sub>S<sub>2</sub>'],
+  why:'Two 1+ ions are needed to balance one 2− ion. No charges are written in the formula.'},
+ {lo:'IC1-LO3',who:'Store keeper',role:'Alumina powder',q:'What is the formula of aluminium oxide (Al<sup>3+</sup> and O<sup>2−</sup>)?',
+  o:['Al<sub>2</sub>O<sub>3</sub>','Al<sub>3</sub>O<sub>2</sub>','AlO','AlO<sub>3</sub>'],
+  why:'Cross the charges: 2 × 3+ = 6+ and 3 × 2− = 6−. The total charge is zero.'},
+ {lo:'IC1-LO3',who:'Puan Mei Ling',role:'Calcium supplement',rx:true,q:'The supplement contains calcium phosphate (Ca<sup>2+</sup> and PO<sub>4</sub><sup>3−</sup>). Which formula is correct?',
+  o:['Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>','Ca<sub>2</sub>(PO<sub>4</sub>)<sub>3</sub>','CaPO<sub>4</sub>','Ca<sub>3</sub>PO<sub>4</sub>'],
+  why:'Three Ca<sup>2+</sup> (6+) balance two PO<sub>4</sub><sup>3−</sup> (6−). The phosphate ion goes in brackets because there is more than one.'},
+ {lo:'IC1-LO3',who:'Encik Hafiz',role:'Milk of magnesia',rx:true,q:'The antacid is magnesium hydroxide (Mg<sup>2+</sup> and OH<sup>−</sup>). Which formula is correct?',
+  o:['Mg(OH)<sub>2</sub>','MgOH<sub>2</sub>','MgOH','Mg<sub>2</sub>OH'],
+  why:'One Mg<sup>2+</sup> needs two OH<sup>−</sup>. Brackets keep the hydroxide ion together: MgOH<sub>2</sub> would mean one O and two H.'},
+ {lo:'IC1-LO3',who:'Agriculture student',role:'Fertiliser bag',q:'What is the formula of ammonium sulfate (NH<sub>4</sub><sup>+</sup> and SO<sub>4</sub><sup>2−</sup>)?',
+  o:['(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>','NH<sub>4</sub>SO<sub>4</sub>','NH<sub>4</sub>(SO<sub>4</sub>)<sub>2</sub>','(NH<sub>4</sub>)<sub>4</sub>SO<sub>2</sub>'],
+  why:'Two NH<sub>4</sub><sup>+</sup> balance one SO<sub>4</sub><sup>2−</sup>. The ammonium goes in brackets with the subscript 2 outside.'},
+ {lo:'IC1-LO3',who:'Chemistry tutor',role:'Ionic or not?',q:'Which compound is ionic?',
+  o:['NH<sub>4</sub>Cl','PCl<sub>3</sub>','OF<sub>2</sub>','N<sub>2</sub>O'],
+  why:'NH<sub>4</sub> is the ammonium ion, so NH<sub>4</sub>Cl is ionic. The other three contain only nonmetals, so they are covalent.'},
+ {lo:'IC1-LO3',who:'Chemistry tutor',role:'Lowest ratio',q:'Lead(IV) ions, Pb<sup>4+</sup>, combine with O<sup>2−</sup>. What is the formula?',
+  o:['PbO<sub>2</sub>','Pb<sub>2</sub>O<sub>4</sub>','Pb<sub>4</sub>O<sub>2</sub>','PbO'],
+  why:'Crossing the charges gives Pb<sub>2</sub>O<sub>4</sub>, which reduces to the lowest whole-number ratio, PbO<sub>2</sub>.'},
+ {lo:'IC1-LO3',who:'Encik Rahman',role:'Heartburn powder',q:'Sodium bicarbonate is made of Na<sup>+</sup> and HCO<sub>3</sub><sup>−</sup>. What is its formula?',
+  o:['NaHCO<sub>3</sub>','Na(HCO<sub>3</sub>)<sub>2</sub>','Na<sub>2</sub>HCO<sub>3</sub>','NaH<sub>2</sub>CO<sub>3</sub>'],
+  why:'1+ and 1− balance one to one, so no subscripts or brackets are needed.'},
+ {lo:'IC1-LO3',who:'Chemistry tutor',role:'Brackets',q:'Why is barium nitrate written Ba(NO<sub>3</sub>)<sub>2</sub> and not BaNO<sub>32</sub>?',
+  o:['Two nitrate ions are needed, so the whole polyatomic ion goes in brackets with the 2 outside','Barium has two charges','The brackets show a covalent bond to barium','Nitrogen has a charge of 2+'],
+  why:'Polyatomic ions are fixed units. When more than one is needed, bracket the whole ion and put the subscript outside.'},
+ {lo:'IC1-LO3',who:'Chemistry tutor',role:'Iron and chloride',q:'What is the formula of the compound of Fe<sup>3+</sup> and Cl<sup>−</sup>?',
+  o:['FeCl<sub>3</sub>','Fe<sub>3</sub>Cl','FeCl','Fe<sub>2</sub>Cl<sub>3</sub>'],
+  why:'Three Cl<sup>−</sup> are needed to balance one Fe<sup>3+</sup>.'},
+
+ // ---------- IC1-LO4 · naming ----------
+ {lo:'IC1-LO4',who:'Puan Aminah',role:'Iron tablets',q:'Her tablets contain ferrous sulfate, FeSO<sub>4</sub>. What is its Stock name?',
+  o:['iron(II) sulfate','iron(III) sulfate','iron sulfide','iron(II) sulfite'],
+  why:'SO<sub>4</sub><sup>2−</sup> is sulfate, so the iron is Fe<sup>2+</sup>: iron(II). In the common system, -ous is the lower charge: ferrous.'},
+ {lo:'IC1-LO4',who:'Store keeper',role:'Red iron oxide',q:'What is the Stock name of Fe<sub>2</sub>O<sub>3</sub>?',
+  o:['iron(III) oxide','iron(II) oxide','diiron trioxide','iron oxide'],
+  why:'Three O<sup>2−</sup> (6−) are balanced by two Fe, so each iron is 3+. Prefixes such as di- and tri- are for covalent compounds, not ionic ones.'},
+ {lo:'IC1-LO4',who:'Dental clinic',role:'Fluoride toothpaste',q:'The toothpaste contains SnF<sub>2</sub>. Which names are correct?',
+  o:['tin(II) fluoride, also called stannous fluoride','tin(IV) fluoride, also called stannic fluoride','tin difluoride','stannic fluoride'],
+  why:'Two F<sup>−</sup> balance one tin, so tin is 2+: tin(II). The lower charge takes -ous on the Latin stem: stannous.'},
+ {lo:'IC1-LO4',who:'Pharmacy student',role:'No Roman numeral?',q:'Why is NaCl called sodium chloride and never sodium(I) chloride?',
+  o:['Sodium has only one common charge, so no Roman numeral is needed','Roman numerals are only used for anions','Sodium has no charge in NaCl','The numeral is left out to save space'],
+  why:'Roman numerals are used only for elements that can form more than one ion, such as iron, copper and tin.'},
+ {lo:'IC1-LO4',who:'Chemistry tutor',role:'Copper ions',q:'What is the name of Cu<sup>+</sup>?',
+  o:['copper(I) ion, or cuprous ion','copper(II) ion, or cupric ion','cuprous ion, which is Cu<sup>2+</sup>','copper ion'],
+  why:'Copper forms Cu<sup>+</sup> and Cu<sup>2+</sup>. The lower charge is copper(I), common name cuprous; Cu<sup>2+</sup> is cupric.'},
+ {lo:'IC1-LO4',who:'Encik Hafiz',role:'Antacid label',q:'What is the correct name of Mg(OH)<sub>2</sub>?',
+  o:['magnesium hydroxide','magnesium(II) hydroxide','magnesium dihydroxide','magnesium oxide'],
+  why:'Magnesium has only one charge (2+), so no Roman numeral, and ionic names do not use prefixes.'},
+ {lo:'IC1-LO4',who:'Product label',role:'Antioxidant',q:'An eye drop contains sodium sulfite. What is its formula?',
+  o:['Na<sub>2</sub>SO<sub>3</sub>','Na<sub>2</sub>SO<sub>4</sub>','Na<sub>2</sub>S','NaSO<sub>3</sub>'],
+  why:'Sulfite is SO<sub>3</sub><sup>2−</sup> (one O fewer than sulfate, SO<sub>4</sub><sup>2−</sup>). Two Na<sup>+</sup> balance it. Na<sub>2</sub>S is sodium sulfide.'},
+ {lo:'IC1-LO4',who:'Chemistry tutor',role:'-ide, -ate or -ite?',q:'What is the name of S<sup>2−</sup>?',
+  o:['sulfide ion','sulfate ion','sulfite ion','sulfur ion'],
+  why:'A monatomic anion takes the stem of the element plus -ide. Sulfate and sulfite are polyatomic ions that also contain oxygen.'},
+ {lo:'IC1-LO4',who:'Store keeper',role:'Blue crystals',q:'What is the Stock name of CuSO<sub>4</sub>?',
+  o:['copper(II) sulfate','copper(I) sulfate','copper sulfide','cuprous sulfate'],
+  why:'Sulfate is 2−, so the copper is 2+: copper(II) sulfate, or cupric sulfate in the common system.'},
+ {lo:'IC1-LO4',who:'Chemistry tutor',role:'Nitrate or nitrite?',q:'What is the formula of potassium nitrite?',
+  o:['KNO<sub>2</sub>','KNO<sub>3</sub>','K(NO<sub>2</sub>)<sub>2</sub>','K<sub>2</sub>NO<sub>2</sub>'],
+  why:'Nitrite is NO<sub>2</sub><sup>−</sup> and nitrate is NO<sub>3</sub><sup>−</sup>: the -ate ion has one more oxygen than the -ite ion.'},
+
+ // ---------- IC1-LO5 · formula mass ----------
+ {lo:'IC1-LO5',at:['lab'],who:'Salt substitute',role:'For a patient on low sodium',rx:true,q:'What is the formula mass of potassium chloride, KCl? (K = 39.10, Cl = 35.45)',
+  o:['74.55 amu','110.00 amu','3.65 amu','149.10 amu'],
+  why:'39.10 + 35.45 = 74.55 amu. Salt substitutes use potassium in place of sodium.'},
+ {lo:'IC1-LO5',at:['lab'],who:'Dental compounding',role:'Calcium fluoride',rx:true,q:'What is the formula mass of CaF<sub>2</sub>? (Ca = 40.08, F = 19.00)',
+  o:['78.08 amu','59.08 amu','118.16 amu','98.08 amu'],
+  why:'Ca 40.08 + 2 × F 19.00 = 40.08 + 38.00 = 78.08 amu. 59.08 forgets the subscript 2.'},
+ {lo:'IC1-LO5',at:['lab'],who:'Practical class',role:'Calcium nitrate',rx:true,q:'What is the formula mass of Ca(NO<sub>3</sub>)<sub>2</sub>? (Ca = 40.08, N = 14.01, O = 16.00)',
+  o:['164.10 amu','102.09 amu','116.10 amu','204.18 amu'],
+  why:'The 2 outside the bracket doubles everything inside: 40.08 + 2(14.01) + 6(16.00) = 40.08 + 28.02 + 96.00 = 164.10 amu.'},
+ {lo:'IC1-LO5',at:['lab'],who:'Agriculture student',role:'Ammonium phosphate',rx:true,q:'What is the formula mass of (NH<sub>4</sub>)<sub>3</sub>PO<sub>4</sub>? (N = 14.01, H = 1.01, P = 30.97, O = 16.00)',
+  o:['149.12 amu','113.02 amu','141.04 amu','121.84 amu'],
+  why:'Three NH<sub>4</sub> give 3 N and 12 H: 42.03 + 12.12. Add P 30.97 and 4 O 64.00: total 149.12 amu.'},
+ {lo:'IC1-LO5',at:['lab'],who:'Puan Aminah',role:'Iron tablet',rx:true,q:'What is the formula mass of FeSO<sub>4</sub>? (Fe = 55.84, S = 32.07, O = 16.00)',
+  o:['151.91 amu','103.91 amu','119.91 amu','399.89 amu'],
+  why:'55.84 + 32.07 + 4(16.00) = 151.91 amu. 399.89 amu is Fe<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub>, iron(III) sulfate.'},
+ {lo:'IC1-LO5',at:['lab'],who:'Encik Kamal',role:'Epsom salts',rx:true,q:'What is the formula mass of MgSO<sub>4</sub>·7H<sub>2</sub>O? (Mg = 24.31, S = 32.07, O = 16.00, H = 1.01)',
+  o:['246.52 amu','120.38 amu','138.40 amu','144.40 amu'],
+  why:'MgSO<sub>4</sub> = 24.31 + 32.07 + 64.00 = 120.38. Water = 18.02, and 7 × 18.02 = 126.14. Total = 246.52 amu. The water is part of the formula unit.'},
+ {lo:'IC1-LO5',at:['lab'],who:'Store keeper',role:'Blue vitriol',rx:true,q:'What is the formula mass of CuSO<sub>4</sub>·5H<sub>2</sub>O? (Cu = 63.55, S = 32.07, O = 16.00, H = 1.01)',
+  o:['249.72 amu','159.62 amu','177.64 amu','168.62 amu'],
+  why:'CuSO<sub>4</sub> = 63.55 + 32.07 + 64.00 = 159.62. Add 5 × 18.02 = 90.10. Total = 249.72 amu.'},
+ {lo:'IC1-LO5',who:'Pharmacy student',role:'Reading a hydrate',q:'What does "pentahydrate" mean in copper(II) sulfate pentahydrate, CuSO<sub>4</sub>·5H<sub>2</sub>O?',
+  o:['Five water units per formula unit, inside the solid crystal','The salt is dissolved in 5 L of water','There are five hydrogen atoms','There are five copper ions'],
+  why:'Hydrates are solids, not solutions. Penta- means five water units for each CuSO<sub>4</sub>, and they count in the formula mass.'},
+ {lo:'IC1-LO5',who:'Chemistry tutor',role:'Counting atoms',q:'How many oxygen atoms are in one formula unit of Ca(NO<sub>3</sub>)<sub>2</sub>?',
+  o:['6','3','5','2'],
+  why:'There are 3 O in each nitrate and the 2 outside the bracket doubles them: 2 × 3 = 6.'},
+ {lo:'IC1-LO5',who:'Orthopaedic clinic',role:'Plaster cast',q:'Plaster of Paris is CaSO<sub>4</sub>·½H<sub>2</sub>O. What does the ½ mean?',
+  o:['One water unit for every two CaSO<sub>4</sub> formula units','Half of the CaSO<sub>4</sub> has dissolved','Each formula unit has half a hydrogen atom','The water is only half as heavy'],
+  why:'Hemihydrate: a ratio of 1 water to 2 calcium sulfate. When water is added it sets into gypsum, CaSO<sub>4</sub>·2H<sub>2</sub>O.'},
+
+ // ---------- IC1-LO6 · properties and dissociation ----------
+ {lo:'IC1-LO6',who:'Chemistry tutor',role:'Melting points',q:'Sodium chloride melts at about 800 °C but water melts at 0 °C. Why?',
+  o:['Each ion is attracted to many oppositely charged neighbours, so breaking the lattice takes a lot of energy','NaCl molecules are heavier than water molecules','Water is ionic and NaCl is covalent','NaCl has covalent bonds between the ions'],
+  why:'The ionic lattice is very strong because every ion is held by many neighbours at once. Water is a molecular compound.'},
+ {lo:'IC1-LO6',who:'Store keeper',role:'Dropped crystal',q:'Ionic crystals are hard, yet a sharp blow shatters them. Why?',
+  o:['Shifting a layer brings like charges side by side; they repel and the crystal splits','The blow melts the crystal','The ions turn back into atoms','The crystal absorbs water and dissolves'],
+  why:'Hard because a large force is needed to move a layer; brittle because once it moves, cations meet cations and anions meet anions.'},
+ {lo:'IC1-LO6',who:'Practical class',role:'Conductivity test',q:'Solid NaCl does not conduct electricity. Why not?',
+  o:['Its ions are locked in the lattice and cannot move','It contains no ions','It is a covalent compound','Its electrons are all shared'],
+  why:'A current needs moving charges. The ions are only free to move when the solid is melted or dissolved.'},
+ {lo:'IC1-LO6',who:'Ward pharmacist',role:'Saline vs distilled water',q:'Why does normal saline conduct electricity while distilled water does not?',
+  o:['Saline contains Na<sup>+</sup> and Cl<sup>−</sup> ions that move freely','Saline is warmer than distilled water','Distilled water contains ions that are too large','Saline contains free electrons from the sodium'],
+  why:'Dissolving breaks the lattice into free ions, which carry the current. Pure water is a molecular compound with almost no ions.'},
+ {lo:'IC1-LO6',at:['lab'],who:'IV fluids',role:'Calcium chloride injection',rx:true,q:'Which equation shows CaCl<sub>2</sub> dissociating in water?',
+  o:['CaCl<sub>2</sub>(s) → Ca<sup>2+</sup>(aq) + 2Cl<sup>−</sup>(aq)','CaCl<sub>2</sub>(s) → Ca<sup>2+</sup>(aq) + Cl<sub>2</sub><sup>2−</sup>(aq)','CaCl<sub>2</sub>(s) → Ca<sup>+</sup>(aq) + 2Cl<sup>−</sup>(aq)','CaCl<sub>2</sub>(s) → Ca(s) + Cl<sub>2</sub>(g)'],
+  why:'One Ca<sup>2+</sup> and two separate Cl<sup>−</sup> ions. The charges on the right still balance: 2+ and 2 × 1−.'},
+ {lo:'IC1-LO6',who:'Cold pack factory',role:'Ammonium nitrate',q:'Which equation shows NH<sub>4</sub>NO<sub>3</sub> dissociating in water?',
+  o:['NH<sub>4</sub>NO<sub>3</sub>(s) → NH<sub>4</sub><sup>+</sup>(aq) + NO<sub>3</sub><sup>−</sup>(aq)','NH<sub>4</sub>NO<sub>3</sub>(s) → N<sup>3−</sup>(aq) + 4H<sup>+</sup>(aq) + NO<sub>3</sub><sup>−</sup>(aq)','NH<sub>4</sub>NO<sub>3</sub>(s) → NH<sub>4</sub><sup>−</sup>(aq) + NO<sub>3</sub><sup>+</sup>(aq)','NH<sub>4</sub>NO<sub>3</sub>(s) → N<sub>2</sub>(g) + 2H<sub>2</sub>O(ℓ)'],
+  why:'Polyatomic ions stay intact when an ionic compound dissolves: ammonium and nitrate separate, but neither breaks apart.'},
+ {lo:'IC1-LO6',who:'Pharmacy student',role:'Drug salts',q:'Why are many drugs made as sodium or hydrochloride salts?',
+  o:['Salts dissolve and dissociate well in water','Salts are always more potent','Salts are covalent and pass through fat more easily','Salts never break down'],
+  why:'A drug has to dissolve in body fluids before it can be absorbed. Ionic salts usually dissolve readily.'},
+ {lo:'IC1-LO6',who:'Chemistry tutor',role:'Counting ions',q:'How many ions does one formula unit of K<sub>2</sub>SO<sub>4</sub> give when it dissolves?',
+  o:['3: two K<sup>+</sup> and one SO<sub>4</sub><sup>2−</sup>','7: two K<sup>+</sup>, one S<sup>6+</sup> and four O<sup>2−</sup>','2: one K<sub>2</sub><sup>2+</sup> and one SO<sub>4</sub><sup>2−</sup>','None: it stays as molecules'],
+  why:'K<sub>2</sub>SO<sub>4</sub>(s) → 2K<sup>+</sup>(aq) + SO<sub>4</sub><sup>2−</sup>(aq). The sulfate ion stays in one piece.'},
+ {lo:'IC1-LO6',who:'Practical class',role:'Electrodes',q:'A current passes through NaCl solution. Where do the Na<sup>+</sup> ions go?',
+  o:['To the negative electrode','To the positive electrode','Nowhere: they stay still','They turn into sodium atoms in the solution'],
+  why:'Opposite charges attract: cations move to the negative electrode and anions (Cl<sup>−</sup>) to the positive one.'}
+ ]
+});
+</script>
+</body>
+</html>
