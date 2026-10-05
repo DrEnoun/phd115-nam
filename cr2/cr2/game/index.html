@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game · Chemical Reactions II · PHD115 Study Hub</title>
+<script src="../../js/track.js"></script>
+<script src="../../js/brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#F2F6F9;color:#1B2A41;font-family:Lexend,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;font-weight:350}
+b{font-weight:600}
+.in{max-width:760px;margin:0 auto;padding:0 18px}
+footer{border-top:1px solid #D7E0E8;margin-top:10px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:#56657A;font-size:.82rem}
+footer .brand{color:#2F6F9F;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<footer><div class="in">
+<p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p>
+<p>Your best score is saved on this device and sent to the Study Hub leaderboard, which shows your first name and class only. The game is for practice and is not part of your marks.</p>
+<p>Adapted from <i>The Basics of GOB Chemistry</i> (Ball, Hill &amp; Scott), LibreTexts, CC BY-NC-SA 3.0, sections 6.S and 7.4, with rates and equilibrium from <i>Introductory Chemistry</i> (LibreTexts), chapter 15. Shared under the same licence for non-commercial teaching.</p>
+</div></footer>
+
+<script src="../../js/shift.js"></script>
+<script>
+/* Chemical Reactions II content for the Pharmacy Shift engine.
+   Bank items: o[0] is always the correct option (the engine shuffles).
+   rx:true shows the item as a prescription slip, otherwise as a patient at the counter.
+   at: stations the item may appear in (if omitted, any station whose pool includes its LO). */
+NAMSHIFT.start({
+ topic:'cr2',
+ title:'Chemical Reactions II game',
+ kicker:'PHD115 · Topic 5 · Chemical Reactions II',
+ blurb:'You are the pharmacist on duty. Patients and colleagues bring questions about hot and cold packs, energy diagrams, why medicines expire, enzymes and equilibrium. Five stations, about 8 minutes.',
+ hub:'../../#cr2', slides:'../slides/', board:'../../leaderboard/#cr2',
+ los:[
+  ['CR2-LO1','Explain the energy changes in a reaction, classify reactions as exothermic or endothermic, and use a thermochemical equation to calculate the heat involved'],
+  ['CR2-LO2','Draw and interpret energy diagrams: reactants, products, transition state, activation energy (E<sub>a</sub>) and ΔH'],
+  ['CR2-LO3','Use collision theory (collision, energy and orientation) to explain why some collisions lead to reaction and others do not'],
+  ['CR2-LO4','Define reaction rate and explain how concentration, temperature, surface area and catalysts change it, including drug stability and storage'],
+  ['CR2-LO5','Describe how catalysts and enzymes speed up reactions without being used up, and relate enzymes and enzyme inhibitors to pharmacy'],
+  ['CR2-LO6','Describe reversible reactions and dynamic equilibrium, and use Le Châtelier\'s principle to predict how an equilibrium shifts']],
+ levels:[
+  {id:'counter',name:'Front counter',blurb:'Hot packs, cold packs and energy diagrams.',intro:'The morning queue. Patients ask about instant packs, and the prescriptions need heat calculations. Have a calculator and the periodic table ready.',pool:['CR2-LO1','CR2-LO2'],n:5,secs:40},
+  {id:'diagram',name:'Stability lab',type:'drag',blurb:'Hands-on: label an energy diagram.',intro:'The QC chemist left an energy diagram for a drug-forming reaction, with and without a catalyst. Drag each label onto the right part of the diagram.',secs:90},
+  {id:'store',name:'Medicine store',blurb:'Collision theory, reaction rates and storage.',intro:'Stock check in the store room. Why do some medicines go in the fridge, and why does aspirin smell of vinegar?',pool:['CR2-LO3','CR2-LO4'],n:5,secs:30},
+  {id:'ward',name:'Ward round',blurb:'Enzymes, inhibitors and equilibrium.',intro:'On the ward: hydrogen peroxide on a wound, enzyme-blocking drugs, and oxygen in the blood.',pool:['CR2-LO5','CR2-LO6'],n:5,secs:30},
+  {id:'rush',name:'Rush hour',blurb:'Six quick patients, one from every outcome. Points ×1.5.',intro:'The queue is out the door. One patient for each outcome, less time each, and every right answer earns 1.5 times the points.',pool:['CR2-LO1','CR2-LO2','CR2-LO3','CR2-LO4','CR2-LO5','CR2-LO6'],n:6,secs:15,mult:1.5}],
+ hands:{
+  lo:'CR2-LO2',title:'Energy diagram with a catalyst',
+  how:'Drag a label onto a lettered point, or tap a label and then tap a point. Two labels do not belong anywhere.',
+  svg:`<svg viewBox="0 0 420 240" role="img" aria-label="Energy diagram. Potential energy against reaction progress. A reactant level on the left, a high solid curve over a peak, a lower dashed curve over a smaller peak, and a product level on the right that is lower than the reactants. Two arrows: one from the reactant level up to the top of the solid peak, one from the reactant level down to the product level. Six points are lettered A to F.">
+<defs><marker id="cr2ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#56657A"/></marker></defs>
+<line x1="56" y1="14" x2="56" y2="222" stroke="#A3B1C2"/><line x1="56" y1="222" x2="412" y2="222" stroke="#A3B1C2"/>
+<line x1="100" y1="40" x2="210" y2="40" stroke="#D7E0E8" stroke-dasharray="3 3"/>
+<line x1="130" y1="120" x2="395" y2="120" stroke="#D7E0E8" stroke-dasharray="3 3"/>
+<path d="M64,120 L130,120 C170,120 180,40 210,40 C240,40 250,180 290,180 L402,180" fill="none" stroke="#7A4E9C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M130,120 C168,120 182,88 210,88 C238,88 252,180 290,180" fill="none" stroke="#2E7D4F" stroke-width="3.5" stroke-dasharray="8 6" stroke-linecap="round"/>
+<line x1="100" y1="118" x2="100" y2="46" stroke="#56657A" stroke-width="2" marker-end="url(#cr2ah)"/>
+<line x1="375" y1="122" x2="375" y2="174" stroke="#56657A" stroke-width="2" marker-end="url(#cr2ah)"/>
+<text x="234" y="238" font-size="11" text-anchor="middle" fill="#56657A">reaction progress →</text>
+<text x="16" y="118" font-size="11" fill="#56657A" transform="rotate(-90 16 118)" text-anchor="middle">potential energy</text></svg>`,
+  zones:[{id:'A',x:19,y:57},{id:'B',x:23.8,y:33},{id:'C',x:50,y:10},{id:'D',x:50,y:43},{id:'E',x:78.6,y:83},{id:'F',x:89.3,y:62.5}],
+  chips:[
+   {t:'Reactants',s:'starting energy',z:0},
+   {t:'Activation energy, E<sub>a</sub>',s:'reactants up to the peak',z:1},
+   {t:'Transition state',s:'activated complex, top of the hill',z:2},
+   {t:'Catalysed pathway',s:'lower E<sub>a</sub>, same ΔH',z:3},
+   {t:'Products',s:'final energy',z:4},
+   {t:'ΔH, negative',s:'products − reactants',z:5},
+   {t:'ΔH, positive',s:'products above reactants',z:-1},
+   {t:'Equilibrium position',s:'forward rate = reverse rate',z:-1}],
+  why:'E<sub>a</sub> is measured from the reactants up to the peak (the transition state). ΔH is products − reactants; the products are lower here, so ΔH is negative and the reaction is exothermic. The dashed catalysed path has a lower peak, so a lower E<sub>a</sub>, but it starts and ends at the same levels: a catalyst does not change ΔH. Equilibrium is not shown on an energy diagram.'},
+ bank:[
+ // ---------- CR2-LO1 · energy changes and thermochemical equations ----------
+ {lo:'CR2-LO1',who:'Encik Faizal',role:'Fresh ankle sprain',q:'"I need a pack that goes cold to bring the swelling down." Which dissolving process should be inside the pack?',
+  o:['NH<sub>4</sub>NO<sub>3</sub>, ΔH = +25.7 kJ/mol','CaCl<sub>2</sub>, ΔH = −82.8 kJ/mol','Iron rusting, ΔH = −1648 kJ','Any of them; all instant packs go cold'],
+  why:'A positive ΔH means the process is endothermic: it takes heat from the surroundings, so the pack and the ankle cool down. CaCl<sub>2</sub> and rusting iron are exothermic and are used in hot packs.'},
+ {lo:'CR2-LO1',who:'Puan Normah',role:'Stiff neck, hot pack',q:'Her hot pack contains CaCl<sub>2</sub>: CaCl<sub>2</sub>(s) → Ca<sup>2+</sup>(aq) + 2Cl<sup>−</sup>(aq), ΔH = −82.8 kJ/mol. Which statement is correct?',
+  o:['Exothermic: heat is released and the surroundings warm up','Endothermic: heat is absorbed and the surroundings warm up','Exothermic: heat is absorbed from the neck','Endothermic: ΔH is negative'],
+  why:'ΔH < 0 means heat is a product: it is released to the surroundings, so the pack feels warm.'},
+ {lo:'CR2-LO1',who:'Chemistry tutor',role:'Why does burning release heat?',q:'Burning methane is exothermic. In terms of bonds, why?',
+  o:['More energy is released forming the new bonds than is absorbed breaking the old ones','Breaking bonds releases energy','No bonds are broken when methane burns','Forming bonds absorbs energy'],
+  why:'Bond breaking absorbs energy and bond forming releases it. When the bonds formed release more than the bonds broken absorb, the balance is negative: ΔH < 0.'},
+ {lo:'CR2-LO1',who:'Thermochemistry desk',role:'Scaling an equation',q:'2H<sub>2</sub>(g) + O<sub>2</sub>(g) → 2H<sub>2</sub>O(ℓ), ΔH = −572 kJ. What is ΔH for H<sub>2</sub>(g) + ½O<sub>2</sub>(g) → H<sub>2</sub>O(ℓ)?',
+  o:['−286 kJ','−572 kJ','+286 kJ','−1144 kJ'],why:'Halving the coefficients halves ΔH: −572 ÷ 2 = −286 kJ. The sign stays the same because the direction has not changed.'},
+ {lo:'CR2-LO1',who:'Thermochemistry desk',role:'Reversing an equation',q:'N<sub>2</sub>(g) + O<sub>2</sub>(g) → 2NO(g), ΔH = +180.6 kJ. What is ΔH for 2NO(g) → N<sub>2</sub>(g) + O<sub>2</sub>(g)?',
+  o:['−180.6 kJ','+180.6 kJ','−90.3 kJ','+361.2 kJ'],why:'Reversing an equation changes the sign of ΔH but not its size: −180.6 kJ, so the reverse reaction is exothermic.'},
+ {lo:'CR2-LO1',who:'Thermochemistry desk',role:'Reverse and double',q:'2H<sub>2</sub>(g) + O<sub>2</sub>(g) → 2H<sub>2</sub>O(ℓ), ΔH = −572 kJ. What is ΔH for 4H<sub>2</sub>O(ℓ) → 4H<sub>2</sub>(g) + 2O<sub>2</sub>(g)?',
+  o:['+1144 kJ','−1144 kJ','+572 kJ','−286 kJ'],why:'Reversing changes the sign (+572 kJ) and doubling the coefficients doubles ΔH: +1144 kJ.'},
+ {lo:'CR2-LO1',who:'Chemistry tutor',role:'States matter',q:'Compared with making H<sub>2</sub>O(ℓ), what happens to the heat released if the same reaction makes H<sub>2</sub>O(g)?',
+  o:['Less heat is released','More heat is released','The same heat is released','The reaction becomes endothermic'],
+  why:'Some of the energy stays in the water as gas instead of being released, because condensing gas to liquid would release more heat. States must always be shown in a thermochemical equation.'},
+ {lo:'CR2-LO1',at:['counter'],who:'Physiotherapy',role:'Small cold pack',rx:true,q:'A cold pack contains 20.0 g of NH<sub>4</sub>NO<sub>3</sub>. Dissolving has ΔH = +25.7 kJ/mol. How much heat does the pack absorb? (N = 14.01, H = 1.01, O = 16.00)',
+  o:['6.42 kJ absorbed','6.42 kJ released','514 kJ absorbed','0.321 kJ absorbed'],
+  why:'Molar mass = 2(14.01) + 4(1.01) + 3(16.00) = 80.06 g/mol. Moles = 20.0 ÷ 80.06 = 0.250 mol. Heat = 0.250 × 25.7 = 6.42 kJ, absorbed because ΔH is positive. Multiplying grams by ΔH gives 514 kJ.'},
+ {lo:'CR2-LO1',at:['counter'],who:'Gas supplier',role:'Bunsen burner fuel',rx:true,q:'CH<sub>4</sub>(g) + 2O<sub>2</sub>(g) → CO<sub>2</sub>(g) + 2H<sub>2</sub>O(ℓ), ΔH = −890 kJ. How much heat is released when 8.00 g of CH<sub>4</sub> burns? (C = 12.01, H = 1.01)',
+  o:['444 kJ released','7.12 × 10<sup>3</sup> kJ released','444 kJ absorbed','55.5 kJ released'],
+  why:'Molar mass of CH<sub>4</sub> = 16.05 g/mol. Moles = 8.00 ÷ 16.05 = 0.498 mol. Heat = 0.498 × 890 = 444 kJ, released (ΔH negative).'},
+ {lo:'CR2-LO1',at:['counter'],who:'Sports clinic',role:'Hot pack refill',rx:true,q:'A hot pack holds 11.1 g of CaCl<sub>2</sub>. Dissolving has ΔH = −82.8 kJ/mol. How much heat is released? (Ca = 40.08, Cl = 35.45)',
+  o:['8.28 kJ released','919 kJ released','8.28 kJ absorbed','0.746 kJ released'],
+  why:'Molar mass = 40.08 + 2(35.45) = 110.98 g/mol. Moles = 11.1 ÷ 110.98 = 0.100 mol. Heat = 0.100 × 82.8 = 8.28 kJ, released.'},
+ {lo:'CR2-LO1',at:['counter'],who:'Encik Zul',role:'Low blood sugar',rx:true,q:'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O, ΔH = −2803 kJ. How much heat does the body release from 18.0 g of glucose? (Molar mass 180.18 g/mol)',
+  o:['280 kJ released','5.05 × 10<sup>4</sup> kJ released','156 kJ released','280 kJ absorbed'],
+  why:'Moles = 18.0 ÷ 180.18 = 0.0999 mol. Heat = 0.0999 × 2803 = 280 kJ released (about 67 kcal).'},
+
+ // ---------- CR2-LO2 · energy diagrams ----------
+ {lo:'CR2-LO2',who:'Energy diagram',role:'What is at the top?',q:'On an energy diagram, what is at the top of the hill?',
+  o:['The transition state (activated complex)','The products','The catalyst','The equilibrium position'],
+  why:'The peak is the transition state: old bonds are half broken and new bonds half formed. It is the highest-energy point on the path.'},
+ {lo:'CR2-LO2',who:'Energy diagram',role:'Reading the arrows',q:'Which measurement on an energy diagram gives the activation energy, E<sub>a</sub>?',
+  o:['From the reactants up to the peak','From the reactants to the products','From the products up to the peak','From the bottom axis up to the peak'],
+  why:'E<sub>a</sub> = energy of the peak − energy of the reactants. Reactants to products is ΔH.'},
+ {lo:'CR2-LO2',who:'QC chemist',role:'Values from a diagram',rx:true,q:'Reactants at 40 kJ, transition state at 130 kJ, products at 10 kJ. What is E<sub>a</sub> (forward)?',
+  o:['90 kJ','120 kJ','30 kJ','130 kJ'],why:'E<sub>a</sub> = 130 − 40 = 90 kJ. 120 kJ is E<sub>a</sub> for the reverse reaction (130 − 10); −30 kJ is ΔH.'},
+ {lo:'CR2-LO2',who:'QC chemist',role:'Classify the reaction',rx:true,q:'Reactants at 20 kJ, transition state at 100 kJ, products at 70 kJ. What is ΔH?',
+  o:['+50 kJ, endothermic','−50 kJ, exothermic','+80 kJ, endothermic','+30 kJ, endothermic'],
+  why:'ΔH = products − reactants = 70 − 20 = +50 kJ. The products are higher, so energy is absorbed: endothermic. 80 kJ is E<sub>a</sub>.'},
+ {lo:'CR2-LO2',who:'QC chemist',role:'The reverse barrier',rx:true,q:'Reactants at 50 kJ, transition state at 150 kJ, products at 20 kJ. What is E<sub>a</sub> for the reverse reaction?',
+  o:['130 kJ','100 kJ','−30 kJ','30 kJ'],why:'The reverse reaction starts from the products: 150 − 20 = 130 kJ. Check: E<sub>a</sub>(forward) − ΔH = 100 − (−30) = 130 kJ.'},
+ {lo:'CR2-LO2',who:'Cik Sarah',role:'Paper on the desk',q:'"Paper burns exothermically, so why doesn\'t my notebook burst into flames?"',
+  o:['Its activation energy is large, so it needs a flame to start','Its ΔH is positive','Paper burning is endothermic','There is no oxygen near the desk'],
+  why:'ΔH tells you how much heat is released; E<sub>a</sub> tells you how hard it is to start. A very exothermic reaction can still be very slow if E<sub>a</sub> is large.'},
+ {lo:'CR2-LO2',who:'Chemistry tutor',role:'Impossible values',q:'A reaction is endothermic with ΔH = +60 kJ. Which value of E<sub>a</sub> is impossible?',
+  o:['40 kJ','60 kJ','85 kJ','150 kJ'],why:'For an endothermic reaction, the peak must be at least as high as the products, so E<sub>a</sub> is always at least as large as ΔH. 40 kJ is smaller than 60 kJ.'},
+ {lo:'CR2-LO2',who:'Chemistry tutor',role:'Sign of Ea',q:'Which statement about E<sub>a</sub> is always true?',
+  o:['It is always positive: every reaction has a hill to climb','It is negative for exothermic reactions','It equals ΔH','It is zero when a catalyst is present'],
+  why:'E<sub>a</sub> is measured upwards from the reactants to the peak, so it is always positive. A catalyst lowers it but does not remove it.'},
+
+ // ---------- CR2-LO3 · collision theory ----------
+ {lo:'CR2-LO3',who:'Chemistry tutor',role:'Collision theory',q:'Which is NOT one of the three conditions for a reaction in collision theory?',
+  o:['The particles must have the same mass','The particles must collide','The collision must have energy ≥ E<sub>a</sub>','The particles must meet in the correct orientation'],
+  why:'An effective collision needs contact, enough energy (at least E<sub>a</sub>) and the right orientation. Mass has nothing to do with it.'},
+ {lo:'CR2-LO3',who:'Chemistry tutor',role:'Bouncing molecules',q:'Two molecules collide in the wrong orientation. What happens?',
+  o:['They bounce apart unchanged','They form products slowly','They form a different product','They stick together permanently'],
+  why:'Any collision that misses one of the conditions is ineffective: the particles simply bounce apart.'},
+ {lo:'CR2-LO3',who:'Lab safety officer',role:'Hydrogen cylinder',q:'A mixture of H<sub>2</sub> and O<sub>2</sub> can stand for years, but a spark makes it explode. Why?',
+  o:['At room temperature almost no collisions have energy ≥ E<sub>a</sub>; the spark supplies it','H<sub>2</sub> and O<sub>2</sub> molecules never collide','The spark makes ΔH negative','The spark changes the orientation of the molecules'],
+  why:'The spark gives some molecules enough energy to react. The heat released then energises more molecules, so more and more collisions become effective: an explosion.'},
+ {lo:'CR2-LO3',who:'Chemistry tutor',role:'If every collision worked',q:'Gas molecules collide billions of times per second. What would happen if every collision were effective?',
+  o:['Every reaction would be almost instant','Nothing would ever react','All reactions would be endothermic','Reactions would only happen in liquids'],
+  why:'Most collisions are ineffective because they lack enough energy or the right orientation. That is why most reactions take measurable time.'},
+ {lo:'CR2-LO3',who:'R&D chemist',role:'Big drug molecules',q:'Two large drug-like molecules react only when one small group on each meets. Why is this slower than a reaction between two small molecules colliding just as often?',
+  o:['A smaller fraction of collisions have the right orientation','Large molecules cannot collide','Large molecules have no activation energy','Large molecules always have more energy'],
+  why:'With big molecules, most collisions bring the wrong parts together. Fewer collisions are effective, so the rate is lower.'},
+ {lo:'CR2-LO3',who:'Energy-spread graph',role:'The shaded tail',q:'On a graph of the spread of particle energies, only the particles beyond E<sub>a</sub> can react. If E<sub>a</sub> is higher, what happens?',
+  o:['The tail is smaller, so fewer collisions are effective and the reaction is slower','The tail is larger, so the reaction is faster','The particles move faster','ΔH becomes larger'],
+  why:'Raising E<sub>a</sub> moves the cut-off to the right, so fewer particles have enough energy. Fewer effective collisions means a slower reaction.'},
+ {lo:'CR2-LO3',who:'Air quality lab',role:'NO + O₃',q:'NO reacts with O<sub>3</sub> only if the N atom strikes an end O atom of O<sub>3</sub> with enough energy. Which collision forms NO<sub>2</sub>?',
+  o:['N hits an end O atom, with energy ≥ E<sub>a</sub>','O of NO hits the middle O atom, very fast','N hits an end O atom, very slowly','Any collision between NO and O<sub>3</sub>'],
+  why:'Both conditions must be met at the same time: correct orientation and enough energy.'},
+
+ // ---------- CR2-LO4 · reaction rates ----------
+ {lo:'CR2-LO4',at:['store'],who:'QC laboratory',role:'Peroxide decomposition',rx:true,q:'2H<sub>2</sub>O<sub>2</sub>(aq) → 2H<sub>2</sub>O(ℓ) + O<sub>2</sub>(g). [H<sub>2</sub>O<sub>2</sub>] falls from 0.90 M to 0.60 M in 60 s. What is the average rate of loss of H<sub>2</sub>O<sub>2</sub>?',
+  o:['5.0 × 10<sup>−3</sup> M/s','1.5 × 10<sup>−2</sup> M/s','2.5 × 10<sup>−3</sup> M/s','0.30 M/s'],
+  why:'Change = 0.90 − 0.60 = 0.30 M. Rate = 0.30 M ÷ 60 s = 5.0 × 10<sup>−3</sup> M/s. 2.5 × 10<sup>−3</sup> M/s is the rate of O<sub>2</sub> formation (1 : 2 ratio).'},
+ {lo:'CR2-LO4',at:['store'],who:'QC laboratory',role:'Oxygen formed',rx:true,q:'In 2H<sub>2</sub>O<sub>2</sub> → 2H<sub>2</sub>O + O<sub>2</sub>, H<sub>2</sub>O<sub>2</sub> is used up at 6.0 × 10<sup>−3</sup> M/s. At what rate does O<sub>2</sub> form?',
+  o:['3.0 × 10<sup>−3</sup> M/s','6.0 × 10<sup>−3</sup> M/s','1.2 × 10<sup>−2</sup> M/s','2.0 × 10<sup>−3</sup> M/s'],
+  why:'The mole ratio O<sub>2</sub> : H<sub>2</sub>O<sub>2</sub> is 1 : 2, so O<sub>2</sub> forms at half the rate: 3.0 × 10<sup>−3</sup> M/s.'},
+ {lo:'CR2-LO4',who:'Puan Habibah',role:'Aspirin in the bathroom',q:'"I keep my opened aspirin in the bathroom." Which two factors speed up its breakdown there?',
+  o:['Heat and moisture','Light and low pressure','Cold and dryness','A larger tablet and less water'],
+  why:'Warmth gives more collisions with energy ≥ E<sub>a</sub>, and steam supplies water for hydrolysis. Advise a cool, dry place with the lid closed.'},
+ {lo:'CR2-LO4',who:'Encik Azlan',role:'Insulin pens',q:'"Why must my spare insulin stay in the fridge at 2–8 °C?"',
+  o:['Cold slows the reactions that break the insulin down','Cold raises the activation energy','Cold makes the insulin more concentrated','Cold changes ΔH of the breakdown'],
+  why:'At low temperature, molecules move more slowly, collide less often and fewer collisions have energy ≥ E<sub>a</sub>. E<sub>a</sub> and ΔH do not change.'},
+ {lo:'CR2-LO4',who:'Mr. Wong',role:'Old aspirin bottle',q:'"My old aspirin smells of vinegar." What has happened?',
+  o:['It has hydrolysed into salicylic acid and acetic acid','It has turned into vinegar on purpose','It has absorbed the smell from the kitchen','It is working better than before'],
+  why:'Moisture reacts with aspirin (hydrolysis), forming acetic acid, which smells of vinegar. The tablets have degraded and should be discarded.'},
+ {lo:'CR2-LO4',who:'Formulation scientist',role:'Micronised powder',q:'Why does a micronised (very fine) drug powder dissolve faster than the same mass of granules?',
+  o:['Larger total surface area, so more collisions with the solvent','Higher activation energy','It has a more negative ΔH','It contains more drug molecules'],
+  why:'Only particles on the surface can collide with the solvent. Smaller pieces expose more surface, so the rate goes up.'},
+ {lo:'CR2-LO4',who:'Store keeper',role:'Amber bottles',q:'Why are some medicines supplied in amber bottles marked "protect from light"?',
+  o:['Light supplies energy that drives breakdown reactions','Amber glass lowers the temperature','Light removes moisture from the bottle','Amber glass acts as a catalyst'],
+  why:'Light can supply the energy for photodegradation. Amber glass blocks much of it, slowing the breakdown.'},
+ {lo:'CR2-LO4',who:'Practical class',role:'Magnesium and acid',q:'Magnesium ribbon fizzes faster in 2 M HCl than in 1 M HCl. Which factor explains this?',
+  o:['Concentration: more H<sup>+</sup> ions per litre, more collisions per second','Temperature: the 2 M acid is hotter','Catalyst: HCl is a catalyst','Surface area: the ribbon is thinner'],
+  why:'More particles in the same volume means more collisions per second, so more effective collisions per second.'},
+ {lo:'CR2-LO4',who:'Chemistry tutor',role:'Rate over time',q:'Why is a reaction fastest at the start and then slows down?',
+  o:['Reactant concentrations fall, so there are fewer collisions','The activation energy rises as it goes','The products act as a catalyst','The temperature always falls'],
+  why:'As reactants are used up, there are fewer particles to collide, so the rate drops.'},
+ {lo:'CR2-LO4',at:['store'],who:'Stability lab',role:'Warm storeroom',q:'A drug\'s breakdown rate roughly doubles for each 10 °C rise. Moved from 20 °C to 40 °C, about how much faster does it degrade?',
+  o:['About 4 times faster','About 2 times faster','About 20 times faster','No change'],
+  why:'20 °C is two 10 °C steps: 2 × 2 = 4 times faster. This is why storage temperature matters for expiry dates.'},
+
+ // ---------- CR2-LO5 · catalysts and enzymes ----------
+ {lo:'CR2-LO5',who:'Chemistry tutor',role:'What is a catalyst?',q:'Which statement about a catalyst is correct?',
+  o:['It provides a pathway with a lower E<sub>a</sub> and is not used up','It is used up in the reaction','It makes ΔH more negative','It only works at high temperature'],
+  why:'A catalyst lowers E<sub>a</sub>, so more collisions are effective, and it is recovered unchanged. ΔH stays the same.'},
+ {lo:'CR2-LO5',who:'Pharmacy student',role:'A common mistake',q:'"Adding a catalyst makes the reaction release more heat and gives more product." Is this right?',
+  o:['No: ΔH and the final amount of product are unchanged; product just forms faster','Yes: it releases more heat and more product','Partly: it releases more heat only','Partly: it gives more product only'],
+  why:'A catalyst lowers E<sub>a</sub> only. It speeds up the forward and reverse reactions equally, so the equilibrium position does not move.'},
+ {lo:'CR2-LO5',who:'Adik Irfan',role:'Grazed knee',q:'"The hydrogen peroxide fizzed as soon as it touched my cut, but not in the bottle." Why?',
+  o:['The enzyme catalase in blood catalyses its decomposition into water and O<sub>2</sub>','The cut is very hot','The bottle contains a catalyst inhibitor','Blood makes the reaction endothermic'],
+  why:'Catalase lowers E<sub>a</sub> for 2H<sub>2</sub>O<sub>2</sub> → 2H<sub>2</sub>O + O<sub>2</sub> enormously. The bubbles are oxygen.'},
+ {lo:'CR2-LO5',who:'Biochemistry tutor',role:'Lock and key',q:'Why does each enzyme catalyse only certain reactions?',
+  o:['Its active site fits only certain substrates','It is used up after one reaction','It only works above 60 °C','It changes ΔH for each reaction'],
+  why:'The substrate binds in the active site, which holds it in the right orientation. The shape must match, like a key in a lock.'},
+ {lo:'CR2-LO5',who:'Ward sister',role:'High fever',q:'Why does an enzyme-catalysed reaction slow sharply well above 37 °C?',
+  o:['The enzyme denatures and the active site loses its shape','The molecules move more slowly','E<sub>a</sub> becomes zero','The reaction becomes endothermic'],
+  why:'Above the optimum temperature, the protein unfolds. The active site no longer fits the substrate, so the rate drops. This is one reason a high fever is dangerous.'},
+ {lo:'CR2-LO5',who:'Puan Kalsom',role:'Headache tablets',q:'"How do ibuprofen and aspirin reduce pain and fever?"',
+  o:['They inhibit COX enzymes, so less prostaglandin is made','They raise the activation energy of every reaction in the body','They are catalysts that make prostaglandin','They cool the body like a cold pack'],
+  why:'They are enzyme inhibitors: they bind to cyclooxygenase (COX), so fewer substrate molecules can react and less prostaglandin forms.'},
+ {lo:'CR2-LO5',who:'Cardiology clinic',role:'Cholesterol medicine',q:'Simvastatin lowers cholesterol. Which enzyme does it inhibit?',
+  o:['HMG-CoA reductase','Catalase','Cyclooxygenase (COX)','Angiotensin-converting enzyme (ACE)'],
+  why:'Statins inhibit HMG-CoA reductase, an enzyme in cholesterol synthesis. ACE inhibitors such as captopril lower blood pressure.'},
+ {lo:'CR2-LO5',who:'Encik Ravi',role:'Blood pressure',q:'"My doctor gave me captopril, an ACE inhibitor." What does it do?',
+  o:['Blocks angiotensin-converting enzyme, lowering blood pressure','Speeds up angiotensin-converting enzyme','Acts as a catalyst for cholesterol synthesis','Raises the temperature of the blood'],
+  why:'An inhibitor binds to the enzyme, often in or near the active site, so the enzyme-catalysed reaction slows down.'},
+ {lo:'CR2-LO5',who:'Mechanic\'s family',role:'Catalytic converter',q:'"What do the platinum, palladium and rhodium in a car\'s catalytic converter do?"',
+  o:['Speed up the removal of CO and NO without being used up','Burn the fuel more slowly','Get used up and must be refilled each month','Make the exhaust reaction endothermic'],
+  why:'They are catalysts: they lower E<sub>a</sub> for the reactions that remove CO and NO, and are recovered unchanged.'},
+
+ // ---------- CR2-LO6 · equilibrium and Le Châtelier ----------
+ {lo:'CR2-LO6',who:'Chemistry tutor',role:'Dynamic equilibrium',q:'Which statement about a system at dynamic equilibrium is correct?',
+  o:['The forward and reverse rates are equal','Both reactions have stopped','Reactant and product concentrations are always equal','A catalyst shifts it to the right'],
+  why:'Both reactions keep going at equal rates, so concentrations stay constant, but usually not equal.'},
+ {lo:'CR2-LO6',who:'Fertiliser plant',role:'Making ammonia',q:'N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g), ΔH = −92 kJ. What happens when the temperature is raised?',
+  o:['Shifts left: the forward reaction is exothermic','Shifts right: more NH<sub>3</sub> forms','No shift','Shifts right because heat is a reactant'],
+  why:'In an exothermic reaction, heat is a product. Adding heat favours the reverse (endothermic) direction, so less NH<sub>3</sub>.'},
+ {lo:'CR2-LO6',who:'Fertiliser plant',role:'Raising the pressure',q:'N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g). What happens when the pressure is increased?',
+  o:['Shifts right: 4 mol of gas become 2 mol','Shifts left: towards more gas molecules','No shift','Shifts left because NH<sub>3</sub> is heavier'],
+  why:'Higher pressure favours the side with fewer moles of gas: 2 on the right against 4 on the left.'},
+ {lo:'CR2-LO6',who:'Fertiliser plant',role:'Iron catalyst',q:'An iron catalyst is added to the ammonia equilibrium. What happens?',
+  o:['No shift; equilibrium is reached faster','Shifts right','Shifts left','ΔH becomes more negative'],
+  why:'A catalyst speeds up forward and reverse reactions equally, so the position of equilibrium does not move.'},
+ {lo:'CR2-LO6',who:'Fertiliser plant',role:'Removing product',q:'NH<sub>3</sub> is continually removed from N<sub>2</sub> + 3H<sub>2</sub> ⇌ 2NH<sub>3</sub>. Which way does it shift?',
+  o:['Right, to replace the NH<sub>3</sub>','Left, to make more N<sub>2</sub>','No shift','It stops reacting'],
+  why:'Removing a product is a stress; the system responds by making more of it, so it shifts right.'},
+ {lo:'CR2-LO6',who:'Physiology tutor',role:'Oxygen in the tissues',q:'Hb + O<sub>2</sub> ⇌ HbO<sub>2</sub>. In working muscle, cells use up O<sub>2</sub>. What happens?',
+  o:['Shifts left: oxyhaemoglobin releases O<sub>2</sub>','Shifts right: haemoglobin picks up more O<sub>2</sub>','No shift','Haemoglobin is used up'],
+  why:'Low O<sub>2</sub> concentration shifts the equilibrium left, so HbO<sub>2</sub> gives up oxygen exactly where it is needed. In the lungs, high O<sub>2</sub> shifts it right.'},
+ {lo:'CR2-LO6',who:'Encik Hakim',role:'Fizzy drink',q:'"Why does my drink fizz when I open it?" CO<sub>2</sub>(g) ⇌ CO<sub>2</sub>(aq)',
+  o:['Lower CO<sub>2</sub> pressure shifts it left, so CO<sub>2</sub> comes out as bubbles','Opening the bottle adds a catalyst','The drink becomes warmer when opened','Opening shifts it right, dissolving more CO<sub>2</sub>'],
+  why:'Opening releases the CO<sub>2</sub> gas above the drink. The equilibrium shifts left to replace it, so dissolved CO<sub>2</sub> escapes as bubbles.'},
+ {lo:'CR2-LO6',who:'Air quality lab',role:'Hot engines',q:'N<sub>2</sub>(g) + O<sub>2</sub>(g) ⇌ 2NO(g), ΔH = +180.6 kJ. Why do hot car engines and lightning make more NO?',
+  o:['Higher temperature shifts this endothermic equilibrium right','Higher temperature shifts it left','Heat acts as a catalyst only','Temperature has no effect on equilibrium'],
+  why:'For an endothermic forward reaction, heat is a reactant. Adding heat favours the forward direction, so more NO forms.'}
+ ]
+});
+</script>
+</body>
+</html>
