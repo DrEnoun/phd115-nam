@@ -207,3 +207,5 @@ addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')
 addEventListener('pagehide',()=>{timeEv();beacon()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
+/* Virtual Dr. NAM chat: loads js/drnam-chat.js on every page (it hides itself where set in that file). */
+(function(){var b=(document.currentScript&&document.currentScript.src||'').replace(/track\.js.*$/,'');if(!b||window.NAMCHAT)return;var s=document.createElement('script');s.src=b+'drnam-chat.js';s.defer=true;document.head.appendChild(s)})();
