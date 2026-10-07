@@ -230,6 +230,9 @@ td:first-child{color:var(--ink-deep)}
 .has3d .s3hint{display:flex}
 .s3hint b{color:var(--spark-400)}
 .s3hint .btn{padding:6px 14px;font-size:14px;margin-left:auto}
+html.lite{--shadow-lift:0 10px 22px rgba(0,0,0,.45);--shadow-float:0 12px 24px rgba(0,0,0,.4)}
+html.lite .panel{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(14,31,54,.93)}
+html.lite #stage::before{-webkit-mask-image:none;mask-image:none;opacity:.12}
 [hidden]{display:none!important}
 button:focus-visible,a:focus-visible{outline:3px solid var(--spark-400);outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -243,7 +246,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--spark-400);outline-
 <div id="notes" hidden></div>
 
 <div id="help" hidden><div><b>Controls</b><br>→ / Space / tap right: next step or slide<br>← / tap left: back<br>Part buttons on the left: jump to a part<br>N: speaker notes · F: full screen<br>P: periodic table on/off<br>D: draw on/off · Ctrl+Z: undo ink<br>On quick checks, tap an answer (or press A–D)<br>G: go to slide number<br><br><button id="hClose" class="btn">Close</button></div></div>
-<script src="../../js/ptable.js"></script><script src="../../js/three.min.js"></script><script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+<script>try{if(matchMedia('(pointer:coarse)').matches||Math.min(screen.width||9999,screen.height||9999)<600)document.documentElement.classList.add('lite')}catch(e){}</script><script src="../../js/ptable.js"></script><script src="../../js/three.min.js"></script><script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
 <script>// Shared ball-and-stick molecule library. Coordinates in ångström (approximate geometries).
 (function (root) {
   const COL = { H: 0xF2F5F8, C: 0x5A6B80, O: 0xE0463C, N: 0x3F6FD8, Cl: 0x3FB56B, Na: 0x9B6BD6, S: 0xE8C33A, P: 0xF08A24, F: 0xA0CD3C, B: 0xF4A6A6, Be: 0xBEE65A, Br: 0xA52A2A };
@@ -350,6 +353,7 @@ let cur=0,frag=0;
 const store={get(k){try{return localStorage.getItem('phd115-ic2-deck-'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('phd115-ic2-deck-'+k,v)}catch(e){}}};
 function nFrags(i){return slides[i].querySelectorAll('.frag').length}
 function fitTitle(s){const h=s.querySelector('.panel h2');if(!h||h.dataset.fit)return;let f=42;while(h.scrollWidth>h.clientWidth+1&&f>28){f-=2;h.style.fontSize=f+'px'}h.dataset.fit=1}
+function predecode(){const run=()=>[cur+1,cur+2].forEach(k=>{const s=slides[k];if(s&&!s.dataset.dec){s.dataset.dec=1;s.querySelectorAll('img').forEach(i=>{if(i.decode)i.decode().catch(()=>{})})}});window.requestIdleCallback?requestIdleCallback(run,{timeout:400}):setTimeout(run,200)}
 function paint(){
  slides.forEach((s,i)=>s.classList.toggle('on',i===cur)); fitTitle(slides[cur]); autofit(slides[cur]);
  slides[cur].querySelectorAll('.frag').forEach(f=>f.classList.toggle('show',+f.dataset.f<=frag));
@@ -358,7 +362,7 @@ function paint(){
  molUpdate();
  document.getElementById('count').textContent=`${cur+1} / ${slides.length}`;
  document.getElementById('notes').textContent=S[cur].notes||'';
- store.set('cur',cur); history.replaceState(null,'','#'+(cur+1)); prog();
+ store.set('cur',cur); history.replaceState(null,'','#'+(cur+1)); prog(); predecode();
 }
 
 // ---- floating 3D molecules (above the ground, kept clear of text)
@@ -377,7 +381,7 @@ function layout(d,i){if(R3SMALL&&d.t!=='shapes3d')return[];if(d.t==='shapes3d'){
 function molUpdate(){if(!R3)return;R3.items.forEach(it=>{R3.sc.remove(it.g);it.g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()})});
  R3.items=layout(S[cur],cur).map(([n,x,y,sz,op])=>{const g=MOL.build(THREE,n,{opacity:op});g.scale.setScalar(sz);g.position.set(x-640,360-y,0);
   g.rotation.set(Math.random()*.8,Math.random()*6.28,0);R3.sc.add(g);return{g,x,y,sz,z:1,user:false,ph:Math.random()*6.28,sp:.12+Math.random()*.18}});
- R3.r.render(R3.sc,R3.cam);}
+ R3.r.domElement.style.display=R3.items.length?'':'none';R3.r.render(R3.sc,R3.cam);}
 function loop(t){if(R3&&!document.hidden&&R3.items.length){const s=(t-R3.t0)/1000;R3.items.forEach(it=>{if(it.user)return;it.g.rotation.y+=it.sp*0.016;it.g.rotation.x=Math.sin(s*.3+it.ph)*.35;
  it.g.position.y=360-it.y+Math.sin(s*.6+it.ph)*10;it.g.position.x=it.x-640+Math.cos(s*.4+it.ph)*5});R3.r.render(R3.sc,R3.cam)}requestAnimationFrame(loop)}
 
