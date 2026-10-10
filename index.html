@@ -70,6 +70,15 @@ span.go{opacity:.55;background:transparent;border-style:dashed}
 footer{border-top:1px solid var(--line);margin-top:34px;padding:16px 0 calc(24px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.82rem}
 footer .brand{color:var(--cold);font-weight:700}
 .foot-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.lab{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:22px 0 4px;
+ background:linear-gradient(120deg,#0A1A2C 0%,#0F3A48 100%);color:#E6F7F5;border:0;border-left:6px solid #D4FF3A}
+.lab .k{margin:0;color:#D4FF3A;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.lab h2{margin:4px 0 4px;color:#fff;font-size:1.15rem}
+.lab p{margin:0;color:#BFD6DA;font-size:.9rem;max-width:560px}
+.lab .btn{background:#D4FF3A;color:#0A1628}
+.lab .btn:hover{filter:brightness(1.05)}
+.labl{margin:10px 0 0;font-size:.85rem;color:var(--muted)}
+.labl a{color:var(--tc,var(--cold));font-weight:600}
 [hidden]{display:none!important}
 a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offset:2px}
 </style>
@@ -94,6 +103,15 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offse
  <li><span class="n">5</span><b>Game</b>quick-fire revision</li>
 </ol>
 
+<section class="card lab" aria-labelledby="labTitle">
+ <div>
+  <p class="k">New · Hand-gesture games</p>
+  <h2 id="labTitle">Dr. NAM Virtual Secret Lab</h2>
+  <p>Play chemistry with your hands in front of the webcam (finger gun to shoot, pinch to grab), or just use a mouse or touch. Molecule Shooter, Atom Blaster, Lewis Structure Builder and the STEM Tour.</p>
+ </div>
+ <a class="btn" href="https://drenoun.github.io/dr-nam-virtual-secret-lab/" target="_blank" rel="noopener">Open the Virtual Lab ↗</a>
+</section>
+
 <div class="seg" role="group" aria-label="Browse">
  <button id="vTopic" aria-pressed="true">By topic</button>
  <button id="vAct" aria-pressed="false">By activity</button>
@@ -113,6 +131,9 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offse
 
 <script>
 // ---- Site content: add a path when an activity is ready (null = coming soon)
+// Virtual Secret Lab (hand-gesture games): topics with `lab` get direct links to its activities
+const LAB='https://drenoun.github.io/dr-nam-virtual-secret-lab/';
+const LAB_IC=[['shooter','Molecule Shooter'],['lewis','Lewis Structure Builder'],['blaster','Atom Blaster']];
 const ACTS=[
  {k:'pre',  name:'Before class', desc:'A short reading and readiness check to do before the lecture.'},
  {k:'slides',name:'Slides',     desc:'The complete lecture: figures, worked examples, exercises and quick checks.'},
@@ -164,9 +185,9 @@ const TC={ic1:['#2F6F9F','#E1EEF7'],ic2:['#1F7A86','#DFF1F2'],em:['#B86E00','#FB
 const tc=c=>`--tc:${TC[c][0]};--ts:${TC[c][1]}`;
 const TOPICS=[
  {code:'ic1',n:1,title:'Ionic & Covalent Compounds I',blurb:'Ions, formulas, naming, formula mass and the properties of ionic compounds.',ppt:'downloads/PHD115_IonicCovalent1_Slides.pptx',
-  a:{slides:'ic1/slides/',pre:'ic1/pre/',post:'ic1/post/',tut:'ic1/tutorial/',game:'ic1/game/'},v2:'ic1/slides-v2/'},
+  a:{slides:'ic1/slides/',pre:'ic1/pre/',post:'ic1/post/',tut:'ic1/tutorial/',game:'ic1/game/'},v2:'ic1/slides-v2/',lab:LAB_IC},
  {code:'ic2',n:2,title:'Ionic & Covalent Compounds II',blurb:'Covalent bonds, naming, Lewis structures, polarity, molecular shape and intermolecular forces.',ppt:'downloads/PHD115_IonicCovalent2_Slides.pptx',
-  a:{slides:'ic2/slides/',pre:'ic2/pre/',post:'ic2/post/',tut:'ic2/tutorial/',game:'ic2/game/'},v2:'ic2/slides-v2/'},
+  a:{slides:'ic2/slides/',pre:'ic2/pre/',post:'ic2/post/',tut:'ic2/tutorial/',game:'ic2/game/'},v2:'ic2/slides-v2/',lab:LAB_IC},
  {code:'em',n:3,title:'Energy & Matters',blurb:'Energy and heat, temperature, phase changes, bond energies and biochemical energy.',ppt:'downloads/PHD115_EnergyMatters_Slides.pptx',
   a:{slides:'em/slides/',pre:'em/pre/',post:'em/post/',tut:'em/tutorial/',game:'em/game/'}},
  {code:'cr1',n:4,title:'Chemical Reactions I',blurb:'Balancing equations, types of reactions, redox and stoichiometry.',ppt:'downloads/PHD115_ChemicalReactions1_Slides.pptx',a:{slides:'cr1/slides/',pre:'cr1/pre/',post:'cr1/post/',tut:'cr1/tutorial/',game:'cr1/game/'}},
@@ -188,6 +209,7 @@ function renderTopics(){document.getElementById('byTopic').innerHTML=TOPICS.map(
   <p class="b">${t.blurb}</p>${av.length?`<div class="bar" aria-label="Progress ${pct}%"><i style="width:${pct}%"></i></div>`:'<p class="small">Materials coming soon.</p>'}
   <div class="acts">${ACTS.map(A=>goEl(t,A)).join('')}</div>
   ${t.v2?`<p class="small" style="margin:10px 0 0">✨ <a href="${t.v2}" data-t="${t.code}" data-a="slides">Slides v2: try the new look (beta)</a></p>`:''}
+  ${t.lab?`<p class="labl">🎯 Virtual Lab: ${t.lab.map(([id,name])=>`<a href="${LAB}#/play/${id}" target="_blank" rel="noopener">${name}</a>`).join(' · ')}</p>`:''}
   ${t.ppt?`<p class="small" style="margin:10px 0 0"><a href="${t.ppt}" download>Download the slides as PowerPoint</a></p>`:''}</article>`}).join('')}
 function renderActs(){document.getElementById('byAct').innerHTML=ACTS.map(A=>`<div class="act"><h2 style="margin-top:22px">${A.name}</h2><p class="desc">${A.desc}</p><div class="rows">${
   TOPICS.map(t=>{const path=t.a[A.k];const s=path?status(t.code,A.k):{txt:'Coming soon',cls:''};
