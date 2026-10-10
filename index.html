@@ -109,7 +109,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offse
   <h2 id="labTitle">Dr. NAM Virtual Secret Lab</h2>
   <p>Play chemistry with your hands in front of the webcam (finger gun to shoot, pinch to grab), or just use a mouse or touch. Molecule Shooter, Atom Blaster, Lewis Structure Builder and the STEM Tour.</p>
  </div>
- <a class="btn" href="https://drenoun.github.io/dr-nam-virtual-secret-lab/" target="_blank" rel="noopener">Open the Virtual Lab ↗</a>
+ <div style="display:grid;gap:6px;justify-items:end"><a class="btn" href="https://drenoun.github.io/dr-nam-virtual-secret-lab/?hub" target="_blank" rel="noopener">Open the Virtual Lab ↗</a><small style="color:#BFD6DA">Signed in here? Your Lab games count too.</small></div>
 </section>
 
 <div class="seg" role="group" aria-label="Browse">
@@ -133,6 +133,8 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offse
 // ---- Site content: add a path when an activity is ready (null = coming soon)
 // Virtual Secret Lab (hand-gesture games): topics with `lab` get direct links to its activities
 const LAB='https://drenoun.github.io/dr-nam-virtual-secret-lab/';
+// Lab results (best score) are saved on this device by the Lab itself, under phd115:lab:<activity>
+const labBest=id=>{try{const v=JSON.parse(localStorage.getItem('phd115:lab:'+id)||'null');return v&&v.best?v.best:0}catch(e){return 0}};
 const LAB_IC=[['shooter','Molecule Shooter'],['lewis','Lewis Structure Builder'],['blaster','Atom Blaster']];
 const ACTS=[
  {k:'pre',  name:'Before class', desc:'A short reading and readiness check to do before the lecture.'},
@@ -209,7 +211,7 @@ function renderTopics(){document.getElementById('byTopic').innerHTML=TOPICS.map(
   <p class="b">${t.blurb}</p>${av.length?`<div class="bar" aria-label="Progress ${pct}%"><i style="width:${pct}%"></i></div>`:'<p class="small">Materials coming soon.</p>'}
   <div class="acts">${ACTS.map(A=>goEl(t,A)).join('')}</div>
   ${t.v2?`<p class="small" style="margin:10px 0 0">✨ <a href="${t.v2}" data-t="${t.code}" data-a="slides">Slides v2: try the new look (beta)</a></p>`:''}
-  ${t.lab?`<p class="labl">🎯 Virtual Lab: ${t.lab.map(([id,name])=>`<a href="${LAB}#/play/${id}" target="_blank" rel="noopener">${name}</a>`).join(' · ')}</p>`:''}
+  ${t.lab?`<p class="labl">🎯 Virtual Lab: ${t.lab.map(([id,name])=>{const b=labBest(id);return `<a href="${LAB}?hub#/play/${id}" target="_blank" rel="noopener">${name}</a>${b?` <span class="st done">best ${b} ✓</span>`:''}`}).join(' · ')}</p>`:''}
   ${t.ppt?`<p class="small" style="margin:10px 0 0"><a href="${t.ppt}" download>Download the slides as PowerPoint</a></p>`:''}</article>`}).join('')}
 function renderActs(){document.getElementById('byAct').innerHTML=ACTS.map(A=>`<div class="act"><h2 style="margin-top:22px">${A.name}</h2><p class="desc">${A.desc}</p><div class="rows">${
   TOPICS.map(t=>{const path=t.a[A.k];const s=path?status(t.code,A.k):{txt:'Coming soon',cls:''};
@@ -226,6 +228,9 @@ document.getElementById('reset').onclick=()=>{if(!confirm('Reset all your saved 
  try{Object.keys(localStorage).filter(k=>k.startsWith('phd115')).forEach(k=>localStorage.removeItem(k))}catch(e){}render();view('topic')};
 render();let v='topic';try{v=localStorage.getItem('phd115:view')||'topic'}catch(e){}view(v);
 addEventListener('pageshow',render);
+// Back from the Virtual Lab tab: show new Lab scores
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')render()});
+addEventListener('storage',e=>{if(e.key&&e.key.startsWith('phd115:lab:'))render()});
 if(location.hash){const el=document.getElementById(location.hash.slice(1));if(el){view('topic');setTimeout(()=>{el.scrollIntoView({behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800)},100)}}
 </script>
 </body>
