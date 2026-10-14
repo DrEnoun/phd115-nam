@@ -11,3 +11,5 @@ Self-instructional materials for Dr. NAM's PHD115 topics (Faculty of Pharmacy, U
 To add an activity: upload its folder, then upload the updated `index.html` (its path is filled in the TOPICS list).
 
 Content adapted from *The Basics of GOB Chemistry* (Ball, Hill & Scott), LibreTexts, CC BY-NC-SA 3.0.
+
+Extra bonding figures in IC1 and IC2 (three bond types, third-period Lewis symbols, unpaired dots → bonds) are redrawn by Dr. NAM after *General Chemistry for Gee-Gees* (Roy, Zeghal, Thomas & Focsaneanu), section 9.1, eCampusOntario, CC BY-NC-SA 4.0.
