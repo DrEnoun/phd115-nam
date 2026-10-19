@@ -67,17 +67,33 @@ setInterval(()=>{if(cur()!==shown)redraw()},150);
 // ---- pointer input
 let drawing=null,laser=[],laserRAF=0,active=null;
 function pt(e){const r=live.getBoundingClientRect();return [(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H,e.pointerType==='pen'?(e.pressure||.5):.5]}
-function allowed(e){if(e.pointerType==='pen'){if(!penSeen){penSeen=true;fingerDraw=false;bar&&paint();toast('Pencil detected: only the pencil draws now. Tap the hand button to let fingers draw too.')}return true}
+function allowed(e){if(e.pointerType==='pen'){if(!penSeen){penSeen=true;fingerDraw=false;bar&&paint();toast('Pencil found! Only the pencil draws now. Swipe with a finger to change slides.')}return true}
  if(e.pointerType==='touch')return fingerDraw;return e.button===0}
 function eraseAt(q){const S=strokesNow();const r=SIZES.er[size];let hit=false;for(let i=S.length-1;i>=0;i--){if(S[i].p.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<r+S[i].w/2)){S.splice(i,1);hit=true}}if(hit){save();redraw()}}
 ['pointerdown','pointermove','pointerup','pointercancel','click','touchstart','touchmove','touchend','mousedown','mouseup','wheel'].forEach(t=>live.addEventListener(t,e=>{if(on)e.stopPropagation()},{passive:false}));
-live.addEventListener('pointerdown',e=>{if(!on||!allowed(e))return;e.preventDefault();if(active!==null)return;active=e.pointerId;try{live.setPointerCapture(e.pointerId)}catch(_){}
+// ---- swipe to change slide while drawing: two fingers, or one finger when only the pencil draws
+const tp=new Map();let gest=0,gVoid=false,wAcc=0,wT=0,wLock=0;
+function nav(d){const n=document.getElementById(d<0?'bNext':'bPrev');if(n){n.click();setTimeout(redraw,60)}}
+function gestDown(e){if(e.pointerType!=='touch')return false;tp.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY});try{live.setPointerCapture(e.pointerId)}catch(_){}
+ const penBusy=active!==null&&!tp.has(active);
+ if(tp.size>=2||!fingerDraw||penBusy){if(!gest){gest=1;gVoid=penBusy}
+  if(active!==null&&!penBusy&&tp.has(active)){active=null;drawing=null;lc.clearRect(0,0,live.width,live.height)}
+  if(tp.size>=2)for(const v of tp.values()){v.x0=v.x;v.y0=v.y}
+  e.preventDefault();return true}return false}
+function gestMove(e){const v=tp.get(e.pointerId);if(!v)return false;v.x=e.clientX;v.y=e.clientY;if(gest){e.preventDefault();return true}return false}
+function gestUp(e){const v=tp.get(e.pointerId);if(!v)return false;const was=gest;
+ if(gest&&tp.size>=1&&!gest.done){let dx=0,dy=0;for(const q of tp.values()){dx+=q.x-q.x0;dy+=q.y-q.y0}dx/=tp.size;dy/=tp.size;
+  if(!gVoid&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.2){nav(dx);gest={done:1}}}
+ tp.delete(e.pointerId);if(!tp.size){gest=0;gVoid=false}return !!was}
+live.addEventListener('wheel',e=>{if(!on)return;e.preventDefault();if(Math.abs(e.deltaX)<=Math.abs(e.deltaY))return;const now=performance.now();if(now-wT>300)wAcc=0;wT=now;wAcc+=e.deltaX;
+ if(now>wLock&&Math.abs(wAcc)>90){nav(-wAcc);wAcc=0;wLock=now+700}},{passive:false});
+live.addEventListener('pointerdown',e=>{if(on&&gestDown(e))return;if(!on||!allowed(e))return;if(gest)gVoid=true;e.preventDefault();if(active!==null)return;active=e.pointerId;try{live.setPointerCapture(e.pointerId)}catch(_){}
  const q=pt(e);if(tool==='er'){eraseAt(q);return}if(tool==='laser'){laser.push([q[0],q[1],performance.now()]);runLaser();return}
  drawing={t:tool,c:tool==='hl'?hcol:col,w:SIZES[tool==='hl'?'hl':'pen'][size],p:[q]};liveDraw()});
-live.addEventListener('pointermove',e=>{if(!on||e.pointerId!==active)return;e.preventDefault();const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+live.addEventListener('pointermove',e=>{if(on&&gestMove(e))return;if(!on||e.pointerId!==active)return;e.preventDefault();const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
  for(const ev of (evs.length?evs:[e])){const q=pt(ev);if(tool==='er')eraseAt(q);else if(tool==='laser')laser.push([q[0],q[1],performance.now()]);else if(drawing){const l=drawing.p[drawing.p.length-1];if(Math.hypot(q[0]-l[0],q[1]-l[1])>.6)drawing.p.push(q)}}
  if(drawing)liveDraw()});
-function end(e){if(e.pointerId!==active)return;active=null;if(drawing){strokesNow().push(drawing);drawing=null;lc.clearRect(0,0,live.width,live.height);save();if(hidden){hidden=false;paint()}redraw()}}
+function end(e){if(gestUp(e)&&e.pointerId!==active)return;if(e.pointerId!==active)return;active=null;if(drawing){strokesNow().push(drawing);drawing=null;lc.clearRect(0,0,live.width,live.height);save();if(hidden){hidden=false;paint()}redraw()}}
 live.addEventListener('pointerup',end);live.addEventListener('pointercancel',end);
 function liveDraw(){lc.clearRect(0,0,live.width,live.height);if(drawing)drawStroke(lc,drawing)}
 function runLaser(){if(laserRAF)return;const step=()=>{const now=performance.now();laser=laser.filter(p=>now-p[2]<700);if(drawing)return;lc.clearRect(0,0,live.width,live.height);
@@ -107,7 +123,7 @@ function build(){bar=document.createElement('div');bar.id='ink-bar';bar.hidden=t
  bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   if(b.dataset.tool){tool=b.dataset.tool}else if(b.dataset.c){if(tool==='hl')hcol=b.dataset.c;else{col=b.dataset.c;if(tool!=='pen')tool='pen'}}else if(b.dataset.s)size=+b.dataset.s;
   else{const a=b.dataset.a;if(a==='undo'){strokesNow().pop();save();redraw()}else if(a==='clear'){if(strokesNow().length&&confirm('Clear all drawing on this slide?')){ink[cur()]=[];save();redraw()}}
-   else if(a==='hide'){hidden=!hidden;redraw()}else if(a==='finger'){fingerDraw=!fingerDraw;toast(fingerDraw?'Finger drawing on':'Finger drawing off (pencil only)')}
+   else if(a==='hide'){hidden=!hidden;redraw()}else if(a==='finger'){fingerDraw=!fingerDraw;toast(fingerDraw?'Finger drawing on. Swipe with two fingers to change slides.':'Pencil only. Swipe with a finger to change slides.')}
    else if(a==='prev'||a==='next'){const n=document.getElementById(a==='prev'?'bPrev':'bNext');n&&n.click();setTimeout(redraw,60)}else if(a==='side'){bar.classList.remove('moved');bar.style.left=bar.style.top='';bar.classList.toggle('right');savePos()}else if(a==='min'){setMini(!bar.classList.contains('mini'))}else if(a==='done')toggle(false)}
   paint()});initDrag();restorePos();paint()}
 const PKEY='phd115-inkbar';
@@ -124,8 +140,8 @@ function initDrag(){const g=bar.querySelector('.grip');let d=null;
  const up=e=>{if(!d||e.pointerId!==d.id)return;d=null;bar.classList.remove('dragging');clampBar();savePos()};g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
  g.addEventListener('dblclick',e=>{e.stopPropagation();setMini(!bar.classList.contains('mini'))})}
 let tt=0;function toast(m){let t=document.getElementById('ink-toast');if(!t){t=document.createElement('div');t.id='ink-toast';document.body.appendChild(t)}t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,2600)}
-function toggle(v){on=v===undefined?!on:v;if(!bar)build();bar.hidden=!on;live.classList.toggle('on',on);document.querySelectorAll('.ink-toggle').forEach(b=>b.setAttribute('aria-pressed',on));
- if(on){requestAnimationFrame(clampBar);if(hidden){hidden=false;redraw()}toast('Drawing on. Drag ⠿ to move the toolbar, – to shrink it. Press D or Done to stop.')}else{lc.clearRect(0,0,live.width,live.height)}paint()}
+function toggle(v){on=v===undefined?!on:v;tp.clear();gest=0;if(!bar)build();bar.hidden=!on;live.classList.toggle('on',on);document.querySelectorAll('.ink-toggle').forEach(b=>b.setAttribute('aria-pressed',on));
+ if(on){requestAnimationFrame(clampBar);if(hidden){hidden=false;redraw()}toast('Drawing on. Swipe with two fingers to change slides. Press D or Done to stop.')}else{lc.clearRect(0,0,live.width,live.height)}paint()}
 // ---- launcher button and keys
 function mount(){if(document.querySelector('.ink-toggle'))return;const slot=document.querySelector('[data-ink-slot]')||document.getElementById('ctl');const b=document.createElement('button');b.type='button';b.className='ink-btn ink-toggle';
  b.setAttribute('aria-pressed','false');b.setAttribute('aria-label','Draw on slide');b.innerHTML='✎ Draw';b.addEventListener('click',e=>{e.stopPropagation();toggle()});
