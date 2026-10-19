@@ -155,4 +155,5 @@ function renderPrint(){document.body.classList.add('print');
  ${DATA.sections.map(s=>{const its=KEY?s.items.filter(i=>i.type!=='read'):s.items;if(!its.length)return'';return `<h2>${s.h}</h2>${!KEY&&s.intro?`<p class="secintro">${s.intro}</p>`:''}${its.map(pq).join('')}`}).join('')}
  <footer><p class="brand">Dr. NAM · Faculty of Pharmacy, UiTM Bertam, Penang</p><p>${DATA.attrib}</p></footer></div></main>`}
 PRINT?renderPrint():render();
-</script></body></html>
+</script><script src="../../js/endhome.js"></script>
+</body></html>

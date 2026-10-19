@@ -253,15 +253,16 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--spark-400);outline-
 @media print{body{overflow:visible}}
 :root{--tier-accent:var(--spark-400)}.tier{display:grid;gap:8px;margin-top:10px}.tier>div{display:grid;grid-template-columns:2.4em 1fr auto;align-items:baseline;column-gap:6px}.tier>div>b{color:var(--tier-accent,inherit)}.tier .mk{white-space:nowrap;font-size:.85em;opacity:.75}.tier .tier{margin-top:4px;gap:4px}.tier .tier>div{grid-template-columns:2.2em 1fr auto}.stem{margin-bottom:2px}.tnote{margin-top:10px;font-size:.9em;opacity:.85}
 .tier.c2{grid-auto-flow:column;grid-template-columns:1fr 1fr;column-gap:28px}.tier.tight{gap:3px;margin-top:6px}
+@media (max-width:600px){#ctl{left:8px;flex-wrap:wrap;justify-content:flex-end;gap:6px}#ctl>*{white-space:nowrap}#ctl button,#ctl a{padding:7px 11px}}
 </style></head><body>
 <div id="bar"></div>
 <div id="wrap"><div id="box"><div id="stage"></div></div></div>
 <div id="rot">Turn your phone sideways for bigger slides ↻</div>
 <div id="count"></div>
-<div id="ctl"><a id="home" href="../../#cr1" aria-label="Back to study hub">⌂ Hub</a><span data-pt-slot="" style="display:contents"></span><button id="bPrev" aria-label="Previous">←</button><button id="bNext" aria-label="Next">→</button><button id="bNotes">Notes</button><button id="bFull">Full screen</button><button id="bHelp" aria-label="Keyboard help">?</button></div>
+<div id="ctl"><a id="home" href="../../#cr1" aria-label="Back to study hub">⌂ Hub</a><span data-pt-slot="" style="display:contents"></span><button id="bStart" aria-label="Back to the title slide" title="Back to the title slide">⏮ Start</button><button id="bPrev" aria-label="Previous">←</button><button id="bNext" aria-label="Next">→</button><button id="bNotes">Notes</button><button id="bFull">Full screen</button><button id="bHelp" aria-label="Keyboard help">?</button></div>
 <div id="notes" hidden></div>
 
-<div id="help" hidden><div><b>Controls</b><br>→ / Space / tap right: next step or slide<br>← / tap left: back<br>Part buttons on the left: jump to a part<br>N: speaker notes · F: full screen<br>P: periodic table on/off<br>D: draw on/off · Ctrl+Z: undo ink<br>On quick checks, tap an answer (or press A–D)<br>G: go to slide number<br><br><button id="hClose" class="btn">Close</button></div></div>
+<div id="help" hidden><div><b>Controls</b><br>→ / Space / tap right: next step or slide<br>← / tap left: back<br>Home / ⏮ Start: back to the title slide<br>Part buttons on the left: jump to a part<br>N: speaker notes · F: full screen<br>P: periodic table on/off<br>D: draw on/off · Ctrl+Z: undo ink<br>On quick checks, tap an answer (or press A–D)<br>G: go to slide number<br><br><button id="hClose" class="btn">Close</button></div></div>
 <script>try{if(matchMedia('(pointer:coarse)').matches||Math.min(screen.width||9999,screen.height||9999)<600)document.documentElement.classList.add('lite')}catch(e){}</script><script src="../../js/ptable.js"></script><script src="../../js/three.min.js"></script><script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
 <script>// Shared ball-and-stick molecule library. Coordinates in ångström (approximate geometries).
 (function (root) {
@@ -449,6 +450,7 @@ function prog(extra){try{const k='phd115:'+(META.code||'x').toLowerCase()+':slid
 addEventListener('keydown',e=>{
  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next()}
  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev()}
+ else if(e.key==='Home'){e.preventDefault();go(0)}
  else if(e.key==='n'||e.key==='N')toggleNotes();
  else if(e.key==='f'||e.key==='F')full();
  else if(e.key==='g'||e.key==='G'){const n=parseInt(prompt('Go to slide (1–'+slides.length+')'),10);if(n)go(n-1)}
@@ -459,7 +461,7 @@ addEventListener('keydown',e=>{
 });
 function toggleNotes(){const n=document.getElementById('notes');n.hidden=!n.hidden}
 function full(){const d=document.documentElement;if(!document.fullscreenElement){(d.requestFullscreen||d.webkitRequestFullscreen||(()=>{})).call(d)}else document.exitFullscreen()}
-bPrev.onclick=prev;bNext.onclick=next;bNotes.onclick=toggleNotes;bFull.onclick=full;bHelp.onclick=()=>help.hidden=false;hClose.onclick=()=>help.hidden=true;
+bPrev.onclick=prev;bStart.onclick=()=>go(0);bNext.onclick=next;bNotes.onclick=toggleNotes;bFull.onclick=full;bHelp.onclick=()=>help.hidden=false;hClose.onclick=()=>help.hidden=true;
 // ---- VSEPR: drag to rotate, pinch or scroll to zoom, double-tap to reset (per model card)
 (function(){
  const P=new Map();let card=-1,d0=0,z0=1,lastTap=0,lastIdx=-1;
