@@ -81,6 +81,10 @@ footer .brand{color:var(--cold);font-weight:700}
 .lab.quest .k{color:#FFB547}
 .lab.quest p{color:#D9CBE6}
 .lab.quest .btn{background:#FFB547;color:#1C1238}
+.lab.cloud{background:linear-gradient(120deg,#06202A 0%,#0B4A52 100%);border-left-color:#2DD4BF;margin-top:12px}
+.lab.cloud .k{color:#5EEAD4}
+.lab.cloud p{color:#C6E6E6}
+.lab.cloud .btn{background:#2DD4BF;color:#06202A}
 .labl{margin:10px 0 0;font-size:.85rem;color:var(--muted)}
 .labl a{color:var(--tc,var(--cold));font-weight:600}
 [hidden]{display:none!important}
@@ -123,6 +127,15 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--heat);outline-offse
   <p>Travel across nine worlds: match names, formulae and shapes, serve ionic compounds and balance equations. Made for PHD115 revision.</p>
  </div>
  <div style="display:grid;gap:6px;justify-items:end"><a class="btn" href="https://drenoun.github.io/drnam-chemquest-world/" target="_blank" rel="noopener">Play ChemQuest ↗</a></div>
+</section>
+
+<section class="card lab cloud" aria-labelledby="cloudTitle">
+ <div>
+  <p class="k">New · 3D explorer</p>
+  <h2 id="cloudTitle">Electron Cloud Lab</h2>
+  <p>Spin and play with electron clouds in 3D: orbital shapes, the Atom Hotel, σ and π bonds, hybridization, benzene, hydrogen bonds and van der Waals forces. Great for Ionic &amp; Covalent Compounds I and II.</p>
+ </div>
+ <div style="display:grid;gap:6px;justify-items:end"><a class="btn" href="lab/electron-cloud/">Open the Cloud Lab →</a></div>
 </section>
 
 <div class="seg" role="group" aria-label="Browse">
@@ -200,9 +213,9 @@ const TC={ic1:['#2F6F9F','#E1EEF7'],ic2:['#1F7A86','#DFF1F2'],em:['#B86E00','#FB
 const tc=c=>`--tc:${TC[c][0]};--ts:${TC[c][1]}`;
 const TOPICS=[
  {code:'ic1',n:1,title:'Ionic & Covalent Compounds I',blurb:'Ions, formulas, naming, formula mass and the properties of ionic compounds.',ppt:'downloads/PHD115_IonicCovalent1_Slides.pptx',
-  a:{slides:'ic1/slides/',pre:'ic1/pre/',post:'ic1/post/',tut:'ic1/tutorial/',game:'ic1/game/'},v2:'ic1/slides-v2/',lab:LAB_IC},
+  a:{slides:'ic1/slides/',pre:'ic1/pre/',post:'ic1/post/',tut:'ic1/tutorial/',game:'ic1/game/'},v2:'ic1/slides-v2/',lab:LAB_IC,cloud:1},
  {code:'ic2',n:2,title:'Ionic & Covalent Compounds II',blurb:'Covalent bonds, naming, Lewis structures, polarity, molecular shape and intermolecular forces.',ppt:'downloads/PHD115_IonicCovalent2_Slides.pptx',
-  a:{slides:'ic2/slides/',pre:'ic2/pre/',post:'ic2/post/',tut:'ic2/tutorial/',game:'ic2/game/'},v2:'ic2/slides-v2/',lab:LAB_IC},
+  a:{slides:'ic2/slides/',pre:'ic2/pre/',post:'ic2/post/',tut:'ic2/tutorial/',game:'ic2/game/'},v2:'ic2/slides-v2/',lab:LAB_IC,cloud:1},
  {code:'em',n:3,title:'Energy & Matters',blurb:'Energy and heat, temperature, phase changes, bond energies and biochemical energy.',ppt:'downloads/PHD115_EnergyMatters_Slides.pptx',
   a:{slides:'em/slides/',pre:'em/pre/',post:'em/post/',tut:'em/tutorial/',game:'em/game/'},v2:'em/slides-v2/'},
  {code:'cr1',n:4,title:'Chemical Reactions I',blurb:'Balancing equations, types of reactions, redox and stoichiometry.',ppt:'downloads/PHD115_ChemicalReactions1_Slides.pptx',a:{slides:'cr1/slides/',pre:'cr1/pre/',post:'cr1/post/',tut:'cr1/tutorial/',game:'cr1/game/'},v2:'cr1/slides-v2/'},
@@ -225,6 +238,7 @@ function renderTopics(){document.getElementById('byTopic').innerHTML=TOPICS.map(
   <div class="acts">${ACTS.map(A=>goEl(t,A)).join('')}</div>
   ${t.v2?`<p class="small" style="margin:10px 0 0">✨ <a href="${t.v2}" data-t="${t.code}" data-a="slides">Slides v2: try the new look (beta)</a></p>`:''}
   ${t.lab?`<p class="labl">🎯 Virtual Lab: ${t.lab.map(([id,name])=>{const b=labBest(id);return `<a href="${LAB}?hub#/play/${id}" target="_blank" rel="noopener">${name}</a>${b?` <span class="st done">best ${b} ✓</span>`:''}`}).join(' · ')}</p>`:''}
+  ${t.cloud?`<p class="labl">☁️ 3D: <a href="lab/electron-cloud/">Electron Cloud Lab</a></p>`:''}
   ${t.ppt?`<p class="small" style="margin:10px 0 0"><a href="${t.ppt}" download>Download the slides as PowerPoint</a></p>`:''}</article>`}).join('')}
 function renderActs(){document.getElementById('byAct').innerHTML=ACTS.map(A=>`<div class="act"><h2 style="margin-top:22px">${A.name}</h2><p class="desc">${A.desc}</p><div class="rows">${
   TOPICS.map(t=>{const path=t.a[A.k];const s=path?status(t.code,A.k):{txt:'Coming soon',cls:''};
