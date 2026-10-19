@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Electron Cloud Lab · PHD115 Study Hub</title>
+<meta name="description" content="Explore electron clouds, orbital shapes, the Atom Hotel, sigma and pi bonds, hybridization, resonance and forces between molecules in 3D.">
+<link rel="icon" type="image/png" href="../../img/drnam-48.png">
+<link rel="apple-touch-icon" href="../../img/drnam-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&family=Questrial&display=swap">
+<style>
+/* Layout: scene chips on top, 3D stage left, lesson card right; stacks on phones. Dr. NAM Playful style, Night default. */
+:root{
+  --ground:#060d1b; --text:#e3eef8; --muted:#9fb6cc; --title:#5eead4;
+  --stage:#0b1a33; --edge:#1b3358; --panel:#0c1d38;
+  --lime:#d4ff3a; --on-lime:#0a1628; --outline:#231f20;
+  --sticker:#ffffff; --sticker-text:#231f20; --shadow:#d4ff3a;
+  --teal:#2dd4bf; --coral:#fc7a7a;
+  --f-title:"League Spartan","Arial Black",system-ui,sans-serif;
+  --f-body:"Questrial","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --ground:#f0f6ff; --text:#3b365f; --muted:#5d5a80; --title:#0d7f74;
+  --stage:#dcebff; --edge:#b9d3f3; --panel:#ffffff;
+  --lime:#c8f53d; --shadow:#231f20; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ground);color:var(--text)}
+body{font-family:var(--f-body);font-size:clamp(16px,.55vw + 13.5px,21px);line-height:1.45;padding-inline:16px;padding-block:14px 28px;overflow-x:hidden}
+.wrap{max-width:1320px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.badge{width:56px;height:56px;border-radius:50%;background:#fff;border:3px solid var(--outline);display:grid;place-items:center;flex:none;overflow:hidden;font-family:var(--f-title);font-weight:800;color:#0d7f74;font-size:16px}
+.eyebrow{font-size:.72em;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-title);font-weight:800;font-size:clamp(32px,4vw,52px);line-height:.95;margin:2px 0 0;color:var(--title);letter-spacing:-.01em;text-wrap:balance}
+h1::after{content:"";display:block;width:64px;height:6px;background:var(--lime);margin-top:8px;border-radius:3px}
+
+.stk{font:inherit;font-size:.88em;background:var(--sticker);color:var(--sticker-text);border:3px solid var(--outline);border-radius:14px;padding:.4em .85em;box-shadow:4px 4px 0 var(--shadow);transform:rotate(-2deg);cursor:pointer;transition:transform .15s,box-shadow .1s;display:inline-flex;align-items:center;gap:.4em;min-height:46px;white-space:nowrap}
+.stk:nth-child(even){transform:rotate(2deg)}
+.stk:hover{transform:rotate(0) translateY(-2px) scale(1.03)}
+.stk:active{box-shadow:0 0 0 var(--shadow);transform:translate(4px,4px)}
+.stk:focus-visible{outline:4px solid var(--lime);outline-offset:3px}
+.stk[aria-pressed="true"]{background:var(--lime);color:var(--on-lime)}
+.stk.right{border-color:var(--outline);box-shadow:0 0 0 4px var(--lime)}
+.stk.wrong{text-decoration:line-through;opacity:.6;box-shadow:0 0 0 4px var(--coral)}
+
+.nav{display:flex;gap:12px;overflow-x:auto;padding:10px 6px 14px;margin-bottom:6px;scrollbar-width:thin}
+.nav .stk .n{font-family:var(--f-title);font-weight:800;background:var(--outline);color:#fff;border-radius:50%;width:1.5em;height:1.5em;display:inline-grid;place-items:center;font-size:.8em}
+.nav .stk[aria-pressed="true"] .n{background:var(--on-lime);color:var(--lime)}
+.nav .stk .ok{color:#0d7f74;font-weight:800}
+
+.lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.lab{grid-template-columns:1fr}}
+.stage{position:relative;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--stage) 82%,var(--title) 18%),var(--stage) 72%);border:3px solid var(--outline);border-radius:22px;aspect-ratio:4/3.1;max-width:100%;overflow:hidden;touch-action:none;cursor:grab}
+.stage:active{cursor:grabbing}
+.stage canvas{display:block;width:100%;height:100%}
+.st-title{position:absolute;left:14px;top:10px;font-family:var(--f-title);font-weight:800;font-size:1.25em;line-height:1.05}
+.st-title small{display:block;font-family:var(--f-body);font-weight:400;font-size:.62em;color:var(--muted)}
+.st-hint{position:absolute;right:12px;top:12px;font-size:.68em;color:var(--muted)}
+.status{position:absolute;left:12px;right:12px;bottom:12px;background:var(--panel);border:2px solid var(--edge);border-radius:14px;padding:.45em .75em;font-size:.82em;line-height:1.35;text-wrap:pretty}
+.status b{color:var(--title)}
+
+.card{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card h2{font-family:var(--f-title);font-weight:800;font-size:1.5em;margin:0;line-height:1.05;text-wrap:balance}
+.card h2 small{display:block;font-family:var(--f-body);font-weight:400;font-size:.55em;color:var(--muted);margin-top:4px}
+.says{display:flex;gap:12px;align-items:flex-start}
+.badge img{width:100%;height:100%;object-fit:cover;display:block}
+.says .badge{width:50px;height:50px;font-size:14px}
+.bubble{position:relative;background:#fff;color:#231f20;border:3px solid var(--outline);border-radius:18px;padding:.6em .85em;box-shadow:4px 4px 0 var(--shadow);font-size:.9em;flex:1;min-width:0}
+.bubble::before{content:"";position:absolute;left:-12px;top:18px;border:9px solid transparent;border-right-color:var(--outline)}
+.bubble .who{font-family:var(--f-title);font-weight:800;color:#0d7f74;display:block;font-size:.82em;letter-spacing:.03em}
+.lbl{font-size:.7em;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+ul.see{margin:0;padding-left:1.1em;display:grid;gap:4px;font-size:.92em}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.slider{display:grid;gap:4px;width:100%}
+.slider label{font-size:.85em}
+input[type=range]{width:100%;accent-color:var(--lime);height:30px}
+.quiz{background:var(--panel);border:2px solid var(--edge);border-radius:16px;padding:.8em .9em;display:grid;gap:10px}
+.quiz .q{font-family:var(--f-title);font-weight:700;font-size:1.02em}
+.quiz .opts{display:flex;gap:12px;flex-wrap:wrap}
+.quiz .opts .stk{white-space:normal;text-align:left}
+.fb{font-size:.9em;border-radius:12px;padding:.45em .7em;border:3px solid transparent}
+.fb.ok{border-color:var(--lime)} .fb.bad{border-color:var(--coral)}
+.fb .h{font-family:var(--f-title);font-weight:800;display:block}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.pips{display:flex;gap:6px;align-items:center;font-size:.72em;color:var(--muted)}
+.pip{width:13px;height:13px;border-radius:50%;border:2px solid var(--outline);background:var(--edge)}
+.pip.on{background:var(--lime)}
+.foot{margin-top:16px;font-size:.72em;color:var(--muted);max-width:75ch}
+@media (prefers-reduced-motion:reduce){.stk,.stk:nth-child(even){transform:none;transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="badge"><img src="../../img/drnam.jpg" alt="Chemistry with Dr. NAM"></div>
+      <div><div class="eyebrow">Dr. NAM Virtual Secret Lab · Bonding explorer</div><h1>Electron Cloud Lab</h1></div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="stk" href="../../" style="text-decoration:none">← Study Hub</a><button class="stk" id="soundBtn" type="button">🔊 Sound on</button><button class="stk" id="themeBtn" type="button">☀ Day</button></div>
+  </header>
+
+  <nav class="nav" id="nav" aria-label="Scenes"></nav>
+
+  <main class="lab">
+    <section class="stage" id="stage" aria-label="3D view">
+      <canvas id="cv"></canvas>
+      <div class="st-title" id="stTitle"></div>
+      <div class="st-hint">Drag to rotate</div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h2 id="cTitle"></h2>
+      <div class="says"><div class="badge" aria-hidden="true"><img src="../../img/drnam.jpg" alt=""></div>
+        <div class="bubble"><span class="who">Dr. NAM Says</span><span id="analogy"></span></div></div>
+      <div><div class="lbl">Try this</div><div class="controls" id="controls"></div></div>
+      <div><div class="lbl">What you see</div><ul class="see" id="see"></ul></div>
+      <div class="quiz"><div class="lbl" style="margin:0">Quick check</div><div class="q" id="qText"></div><div class="opts" id="qOpts"></div><div class="fb" id="qFb" hidden></div></div>
+      <div class="bottom"><div class="pips" id="pips"></div><button class="stk" id="nextBtn" type="button"></button></div>
+    </section>
+  </main>
+  <p class="foot">Made for PHD115 Ionic &amp; Covalent Compounds (IC1 and IC2). Dots show where electrons are likely to be found. Shapes are drawn simply so the ideas are easy to see. Have fun exploring! · <a href="../../" style="color:inherit">Back to the Study Hub</a></p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let theme=store.get('ecl.theme','night');
+
+/* ---------- three setup ---------- */
+const stage=$('stage'),canvas=$('cv');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));
+const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(38,1,.1,100);
+scene.add(new THREE.HemisphereLight(0xffffff,0x334466,.85));
+const dl=new THREE.DirectionalLight(0xffffff,.8); dl.position.set(3,5,6); scene.add(dl);
+const world=new THREE.Group(); scene.add(world);
+const UP=new THREE.Vector3(0,1,0);
+const SPH=new THREE.SphereGeometry(1,32,24), CYL=new THREE.CylinderGeometry(.1,.1,1,16);
+const dotTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.55,'rgba(255,255,255,.85)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+const P={};
+function setPalette(){Object.assign(P,theme==='day'
+  ?{cloud:0x0d9488,cloud2:0xe05757,glow:0x5f8a00,stick:0x7d8898,H:0xffffff,Cl:0x3f9a46,label:'#3b365f',labelHi:'#4d6e00'}
+  :{cloud:0x2dd4bf,cloud2:0xfc7a7a,glow:0xd4ff3a,stick:0xcfd8e3,H:0xf4f7fb,Cl:0x8fd18b,label:'#e3eef8',labelHi:'#d4ff3a'});}
+
+/* helpers */
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const r3=(x,y,z)=>Math.sqrt(x*x+y*y+z*z);
+const D={
+  s1:(x,y,z)=>Math.exp(-2*r3(x,y,z)),
+  s2:(x,y,z)=>{const r=r3(x,y,z);return (2-r)*(2-r)*Math.exp(-r);},
+  p:(d)=>(x,y,z)=>{const r=r3(x,y,z),q=x*d.x+y*d.y+z*d.z;return q*q*Math.exp(-r);},
+  hyb:(cs,cp,d)=>(x,y,z)=>{const r=r3(x,y,z),q=x*d.x+y*d.y+z*d.z,v=cs*(2-r)-cp*q;return v*v*Math.exp(-r);}
+};
+function sample(fn,n,R,scale){
+  let max=0;const st=R/14;
+  for(let x=-R;x<=R+1e-9;x+=st)for(let y=-R;y<=R+1e-9;y+=st)for(let z=-R;z<=R+1e-9;z+=st){const v=fn(x,y,z);if(v>max)max=v;}
+  max*=1.3;const out=new Float32Array(n*3);let k=0,g=0;
+  while(k<n&&g<n*4000){g++;const x=(Math.random()*2-1)*R,y=(Math.random()*2-1)*R,z=(Math.random()*2-1)*R;
+    if(Math.random()*max<fn(x,y,z)){out[k*3]=x*scale;out[k*3+1]=y*scale;out[k*3+2]=z*scale;k++;}}
+  return out;
+}
+function sampleSigned(psi,n,R,scale,cPos,cNeg){
+  let max=0;const st=R/14;
+  for(let x=-R;x<=R+1e-9;x+=st)for(let y=-R;y<=R+1e-9;y+=st)for(let z=-R;z<=R+1e-9;z+=st){const v=psi(x,y,z);if(v*v>max)max=v*v;}
+  max*=1.3;const pos=new Float32Array(n*3),col=new Float32Array(n*3),A=new THREE.Color(cPos),B=new THREE.Color(cNeg);let k=0,g=0;
+  while(k<n&&g<n*5000){g++;const x=(Math.random()*2-1)*R,y=(Math.random()*2-1)*R,z=(Math.random()*2-1)*R,v=psi(x,y,z);
+    if(Math.random()*max<v*v){pos[k*3]=x*scale;pos[k*3+1]=y*scale;pos[k*3+2]=z*scale;const C=v>=0?A:B;col[k*3]=C.r;col[k*3+1]=C.g;col[k*3+2]=C.b;k++;}}
+  return [pos,col];
+}
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+function points(n,size=.045){
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3));
+  g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*3),3));
+  return new THREE.Points(g,new THREE.PointsMaterial({size,map:dotTex,vertexColors:true,transparent:true,depthWrite:false,opacity:theme==='day'?.9:.82,alphaTest:.02}));
+}
+function paint(pts,hex,from=0,to){const c=new THREE.Color(hex),a=pts.geometry.attributes.color.array;to=to??a.length/3;for(let i=from;i<to;i++){a[i*3]=c.r;a[i*3+1]=c.g;a[i*3+2]=c.b;}pts.geometry.attributes.color.needsUpdate=true;}
+const colArr=(n,blocks)=>{const a=new Float32Array(n*3);let i=0;blocks.forEach(([hex,cnt])=>{const c=new THREE.Color(hex);for(let k=0;k<cnt;k++,i++){a[i*3]=c.r;a[i*3+1]=c.g;a[i*3+2]=c.b;}});return a;};
+function ball(hex,r,pos,opts={}){const m=new THREE.Mesh(SPH,new THREE.MeshStandardMaterial(Object.assign({color:hex,roughness:.4},opts)));m.scale.setScalar(r);if(pos)m.position.copy(pos);return m;}
+function stick(a,b,r,hex){const d=b.clone().sub(a),L=d.length();const m=new THREE.Mesh(CYL,new THREE.MeshStandardMaterial({color:hex,roughness:.5}));m.scale.set(r/.1,L,r/.1);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(UP,d.normalize());return m;}
+function label(txt,color,h=.3){const c=document.createElement('canvas');c.width=320;c.height=96;const g=c.getContext('2d');g.font='800 58px "League Spartan", Arial, sans-serif';g.fillStyle=color;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,160,52);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));s.scale.set(h*320/96,h,1);s.renderOrder=10;return s;}
+function beads(n,hex){const g=new THREE.Group();for(let i=0;i<n;i++){const b=ball(hex,.035,null,{emissive:hex,emissiveIntensity:.6,transparent:true});g.add(b);}return g;}
+function setBeads(g,a,b,op){g.children.forEach((m,i)=>{const t=(i+.5)/g.children.length;m.position.copy(a).lerp(b,t);m.material.opacity=op;m.visible=op>.03;});}
+function lobe(hex,dir,dist,sx,sy){const m=new THREE.Mesh(SPH,new THREE.MeshStandardMaterial({color:hex,transparent:true,opacity:.35,depthWrite:false}));m.scale.set(sx,sy,sx);m.quaternion.setFromUnitVectors(UP,dir.clone().normalize());m.position.copy(dir.clone().normalize().multiplyScalar(dist));return m;}
+function axes(L=1.7){const g=new THREE.Group();
+  [['x',V(1,0,0)],['y',V(0,1,0)],['z',V(0,0,1)]].forEach(([n,d])=>{
+    g.add(stick(d.clone().multiplyScalar(-L),d.clone().multiplyScalar(L),.008,P.stick));
+    const cone=new THREE.Mesh(new THREE.ConeGeometry(.045,.14,16),new THREE.MeshStandardMaterial({color:P.stick}));
+    cone.position.copy(d.clone().multiplyScalar(L));cone.quaternion.setFromUnitVectors(UP,d);g.add(cone);
+    const l=label(n,P.label,.28);l.position.copy(d.clone().multiplyScalar(L+.2));g.add(l);});
+  return g;}
+function tet(d){d=d.clone().normalize();const a=Math.abs(d.y)<.9?UP:V(1,0,0);const u=V(0,0,0).crossVectors(d,a).normalize(),w=V(0,0,0).crossVectors(d,u).normalize();
+  return [d,...[0,120,240].map(p=>{const f=p*Math.PI/180;return d.clone().multiplyScalar(-1/3).add(u.clone().multiplyScalar(.9428*Math.cos(f))).add(w.clone().multiplyScalar(.9428*Math.sin(f)));})];}
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+/* ---------- bond sparks ---------- */
+let soundOn=store.get('ecl.sound','on')==='on',AC=null;
+function zap(){if(!soundOn)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+  [[880,0],[1320,.07]].forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(f,t+d);o.frequency.exponentialRampToValueAtTime(f*1.5,t+d+.12);
+    g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d+.3);o.connect(g).connect(AC.destination);o.start(t+d);o.stop(t+d+.32);});}catch(e){}}
+const ringTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.shadowColor='#fff';g.shadowBlur=14;g.strokeStyle='#fff';g.lineWidth=7;g.beginPath();g.arc(64,64,48,0,Math.PI*2);g.stroke();return new THREE.CanvasTexture(c);})();
+const starTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.25,'rgba(255,255,255,.6)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);
+  g.fillStyle='#fff';g.beginPath();g.moveTo(32,2);g.lineTo(36,28);g.lineTo(62,32);g.lineTo(36,36);g.lineTo(32,62);g.lineTo(28,36);g.lineTo(2,32);g.lineTo(28,28);g.closePath();g.fill();return new THREE.CanvasTexture(c);})();
+const sparks=[];
+function spark(parent,pos,hex,o={}){
+  if(!parent)return;const n=o.n||70,sp=o.speed??1,quiet=!!o.quiet;
+  const g=new THREE.BufferGeometry(),p=new Float32Array(n*3),v=[];
+  for(let i=0;i<n;i++){p[i*3]=pos.x;p[i*3+1]=pos.y;p[i*3+2]=pos.z;v.push(V(gauss(),gauss(),gauss()).normalize().multiplyScalar(reduce?0:sp*(.5+Math.random()*1.5)));}
+  g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  const pts=new THREE.Points(g,new THREE.PointsMaterial({size:quiet?.08:.13,map:starTex,color:hex,transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending}));pts.renderOrder=20;parent.add(pts);
+  const extra=[];
+  if(!quiet){const ring=new THREE.Sprite(new THREE.SpriteMaterial({map:ringTex,color:hex,transparent:true,depthTest:false,blending:THREE.AdditiveBlending}));ring.position.copy(pos);ring.renderOrder=21;parent.add(ring);
+    const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:dotTex,color:0xffffff,transparent:true,depthTest:false,blending:THREE.AdditiveBlending}));flash.position.copy(pos);flash.renderOrder=21;parent.add(flash);
+    extra.push(ring,flash);zap();}
+  sparks.push({pts,v,o:pos.clone(),extra,t0:performance.now(),root:parent,life:quiet?.7:1.1});
+}
+function updateSparks(now){
+  for(let i=sparks.length-1;i>=0;i--){const s=sparks[i],k=(now-s.t0)/1000/s.life;
+    if(k>=1||s.root.parent!==world){[s.pts,...s.extra].forEach(x=>{x.parent&&x.parent.remove(x);if(x.geometry&&x.isPoints)x.geometry.dispose();x.material.dispose();});sparks.splice(i,1);continue;}
+    const a=s.pts.geometry.attributes.position.array,t=k*s.life,d=t*(1-.45*k);
+    s.v.forEach((v,j)=>{a[j*3]=s.o.x+v.x*d;a[j*3+1]=s.o.y+v.y*d-.25*t*t;a[j*3+2]=s.o.z+v.z*d;});
+    s.pts.geometry.attributes.position.needsUpdate=true;s.pts.material.opacity=(1-k)*(.65+.35*Math.sin(now/40));
+    if(s.extra.length){const [ring,flash]=s.extra;ring.scale.setScalar(.2+2.2*Math.min(1,k*1.6));ring.material.opacity=Math.max(0,1-k*1.4);
+      flash.scale.setScalar(1.4*(1-k)+.2);flash.material.opacity=Math.max(0,1-k*2.2);}}
+}
+let statusEl=$('status');
+const setStatus=h=>{statusEl.innerHTML=h;};
+
+/* morph helper for point sets and outline surfaces */
+function morpher(pts,after){
+  const pos=pts.geometry.attributes.position, col=pts.geometry.attributes.color; let m=null;
+  return {
+    set(P2,C2){pos.array.set(P2);col.array.set(C2);pos.needsUpdate=col.needsUpdate=true;m=null;after&&after();},
+    to(P2,C2,dur=1300){if(reduce){this.set(P2,C2);return;}m={fp:pos.array.slice(),fc:col.array.slice(),tp:P2,tc:C2,t0:performance.now(),dur};},
+    step(now){if(!m)return;const k=Math.min(1,(now-m.t0)/m.dur),e=ease(k),a=pos.array,c=col.array;
+      for(let i=0;i<a.length;i++){a[i]=m.fp[i]+(m.tp[i]-m.fp[i])*e;c[i]=m.fc[i]+(m.tc[i]-m.fc[i])*e;}
+      pos.needsUpdate=col.needsUpdate=true;after&&after();if(k>=1)m=null;}
+  };
+}
+/* outline surface: for each direction, find where |ψ| drops to the 90% boundary value */
+const SURF_BASE=new THREE.SphereGeometry(1,72,48), DIRS=SURF_BASE.attributes.position.array.slice();
+const BOX=new THREE.BoxGeometry(1,1,1), CONE=new THREE.ConeGeometry(.055,.17,14);
+function thresh(psi,pos,scale){const n=pos.length/3,a=new Float32Array(n);for(let i=0;i<n;i++)a[i]=Math.abs(psi(pos[i*3]/scale,pos[i*3+1]/scale,pos[i*3+2]/scale));a.sort();return a[Math.floor(n*.1)];}
+function radii(psi,c,R,scale){const n=DIRS.length/3,rad=new Float32Array(n),sg=new Int8Array(n),st=R/90;
+  for(let i=0;i<n;i++){const dx=DIRS[i*3],dy=DIRS[i*3+1],dz=DIRS[i*3+2];let hit=-1;
+    for(let r=R;r>0;r-=st){if(Math.abs(psi(dx*r,dy*r,dz*r))>=c){hit=r;break;}}
+    if(hit>0){let lo=hit,hi=hit+st;for(let k=0;k<8;k++){const m=(lo+hi)/2;if(Math.abs(psi(dx*m,dy*m,dz*m))>=c)lo=m;else hi=m;}
+      rad[i]=lo*scale;sg[i]=psi(dx*lo*.95,dy*lo*.95,dz*lo*.95)>=0?1:-1;}else{rad[i]=0;sg[i]=1;}}
+  return {rad,sg};}
+function unionRadii(list){const out={rad:new Float32Array(list[0].rad.length),sg:new Int8Array(list[0].rad.length)};
+  list.forEach(r=>{for(let i=0;i<r.rad.length;i++)if(r.rad[i]>out.rad[i]){out.rad[i]=r.rad[i];out.sg[i]=r.sg[i];}});return out;}
+function surfArrays(res){const n=res.rad.length,p=new Float32Array(n*3),c=new Float32Array(n*3),A=new THREE.Color(P.cloud),B=new THREE.Color(P.cloud2);
+  for(let i=0;i<n;i++){for(let k=0;k<3;k++)p[i*3+k]=DIRS[i*3+k]*res.rad[i];const C=res.sg[i]>0?A:B;c[i*3]=C.r;c[i*3+1]=C.g;c[i*3+2]=C.b;}return [p,c];}
+function solidArrays(res,hex){const n=res.rad.length,p=new Float32Array(n*3),c=new Float32Array(n*3),C=new THREE.Color(hex);
+  for(let i=0;i<n;i++){for(let k=0;k<3;k++)p[i*3+k]=DIRS[i*3+k]*res.rad[i];c[i*3]=C.r;c[i*3+1]=C.g;c[i*3+2]=C.b;}return [p,c];}
+function setSurf(m,[p,c]){const g=m.geometry;g.attributes.position.array.set(p);g.attributes.color.array.set(c);g.attributes.position.needsUpdate=g.attributes.color.needsUpdate=true;g.computeVertexNormals();}
+const VIEW=`<div class="controls" style="width:100%"><span style="font-size:.8em;color:var(--muted)">Show:</span><button class="stk" data-a="v-dots">Dots</button><button class="stk" data-a="v-out">Outline</button><button class="stk" data-a="v-both" aria-pressed="true">Both</button></div>`;
+function surface(){const g=SURF_BASE.clone();g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count*3),3));
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,transparent:true,opacity:theme==='day'?.4:.3,depthWrite:false,side:THREE.DoubleSide,roughness:.35}));
+  m.renderOrder=1;return m;}
+
+/* ---------- scenes ---------- */
+const SCENES=[
+/* 1 */ {id:'cloud',title:'Electron cloud',bm:'Awan elektron',cam:4.4,rot:[.2,0],
+  analogy:"Think of a firefly at night. Take hundreds of photos and stack them. Where the dots are thick, the firefly flies most often. We cannot track an electron's path, so we draw where it is likely to be: a cloud.",
+  see:["Each dot = one place the electron was found in one “photo”.","Thick area = high chance of finding the electron there.","An orbital is the space where the electron is found about 90% of the time. The x, y, z axes show direction."],
+  controls:`<button class="stk" data-a="1s" aria-pressed="true">1s orbital</button><button class="stk" data-a="2p">2p orbital</button><button class="stk" data-a="snap">Take 300 photos</button><button class="stk" data-a="clear">Clear</button><button class="stk" data-a="outline" aria-pressed="false">Show 90% outline</button>`,
+  q:{t:"A thick (dense) part of the cloud means…",o:["The electron is more likely to be found there","There are more electrons there","The electron moves slower there"],a:0,why:"The cloud is a chance map for one electron. Thick = likely, thin = unlikely."},
+  build(c){c.orb='1s';c.shown=0;c.target=900;
+    c.add(ball(P.cloud2,.06,V(0,0,0)));c.add(axes(1.6));
+    c.pts=points(3000,.04);c.add(c.pts);
+    c.fly=ball(P.glow,.07,null,{emissive:P.glow,emissiveIntensity:.9});c.add(c.fly);c.nextFly=0;
+    c.surf=surface();c.surf.visible=false;c.add(c.surf);const smo=morpher(c.surf,()=>c.surf.geometry.computeVertexNormals());
+    c.load=()=>{const s1=c.orb==='1s',scale=s1?.5:.17,R=s1?4:12,pos=s1?sample(D.s1,3000,R,scale):sample(D.p(V(0,1,0)),3000,R,scale);
+      c.pts.geometry.attributes.position.array.set(pos);c.pts.geometry.attributes.position.needsUpdate=true;paint(c.pts,P.cloud);
+      const psi=s1?(x,y,z)=>Math.exp(-r3(x,y,z)):(x,y,z)=>y*Math.exp(-r3(x,y,z)/2);
+      const res=radii(psi,thresh(psi,pos,scale),R,scale);if(!s1)res.sg.fill(1);const [p,cl]=surfArrays(res);smo.set(p,cl);};
+    c.load();},
+  act(c,a,btn){if(a==='outline'){c.surf.visible=!c.surf.visible;btn.setAttribute('aria-pressed',String(c.surf.visible));return;}
+    if(a==='1s'||a==='2p'){c.orb=a;c.load();c.shown=0;c.target=900;pressOnly(btn);}
+    if(a==='snap')c.target=Math.min(3000,c.target+300);
+    if(a==='clear'){c.shown=0;c.target=0;}},
+  update(c,now){if(c.shown<c.target)c.shown=Math.min(c.target,c.shown+(reduce?3000:8));if(c.shown>c.target)c.shown=c.target;
+    c.pts.geometry.setDrawRange(0,Math.floor(c.shown));
+    if(now>c.nextFly){const a=c.pts.geometry.attributes.position.array,i=Math.floor(Math.random()*3000);c.fly.position.set(a[i*3],a[i*3+1],a[i*3+2]);c.nextFly=now+(reduce?600:90);}
+    setStatus(`<b>${c.orb==='1s'?'1s: round cloud':'2p: dumbbell cloud, 2 lobes'}</b> · Photos taken: ${Math.floor(c.shown)}. The bright dot jumps; it never follows a track.`);}
+},
+/* 1b */ {id:'shapes',title:'Orbital shapes',bm:'Bentuk orbital',cam:4.6,rot:[.35,-.6],
+  analogy:"Think of orbitals as rooms in a hotel. s is one round room. p has three dumbbell rooms, one along each axis (x, y, z). d has five rooms and f has seven, with fancier shapes. Each room holds at most 2 electrons. Tap “Atom Hotel” to see the whole building.",
+  see:["Teal and coral show the two phases (+ and −) of the electron wave, not charge. Phases matter when orbitals overlap to make bonds.","Between lobes is a node: a flat plane or a cone where the electron is never found. s has 0, p 1, d 2, f 3.","s: 1 orbital · p: 3 · d: 5 · f: 7. Each orbital holds 2 electrons."],
+  controls:`<button class="stk" data-a="s" aria-pressed="true">s</button><button class="stk" data-a="p">p</button><button class="stk" data-a="d">d</button><button class="stk" data-a="f">f</button><button class="stk" data-a="tour">Play tour</button><button class="stk" data-a="hotel">Atom Hotel →</button><div class="controls" id="sub" style="width:100%"></div>
+    <div class="controls" id="view" style="width:100%"><span style="font-size:.8em;color:var(--muted)">Show:</span><button class="stk" data-a="v-dots">Dots</button><button class="stk" data-a="v-out">Outline</button><button class="stk" data-a="v-both" aria-pressed="true">Both</button></div>`,
+  q:{t:"How many orbitals are in a d subshell?",o:["3","5","7"],a:1,why:"s has 1, p has 3, d has 5 and f has 7 orbitals. Each holds 2 electrons, so a full d subshell holds 10."},
+  build(c){const N=3000;c.N=N;c.add(ball(P.H,.05,V(0,0,0)));c.add(axes(1.7));
+    c.pts=points(N,.036);c.add(c.pts);c.mo=morpher(c.pts);c.cache={};c.scache={};
+    c.surf=surface();c.add(c.surf);c.smo=morpher(c.surf,()=>c.surf.geometry.computeVertexNormals());c.dotsObjs=[c.pts];c.surfObjs=[c.surf];
+    const r=(x,y,z)=>Math.sqrt(x*x+y*y+z*z);
+    const O={
+      s:{t:'s',n:'s',a:.9,f:()=>1,txt:'a sphere. The same in every direction, so it has no axis.'},
+      px:{t:'p',n:'p<sub>x</sub>',a:.75,f:(x)=>x,txt:'a dumbbell along the x-axis. Node: the y–z plane through the nucleus.'},
+      py:{t:'p',n:'p<sub>y</sub>',a:.75,f:(x,y)=>y,txt:'a dumbbell along the y-axis.'},
+      pz:{t:'p',n:'p<sub>z</sub>',a:.75,f:(x,y,z)=>z,txt:'a dumbbell along the z-axis.'},
+      pall:{t:'p',n:'p<sub>x</sub> + p<sub>y</sub> + p<sub>z</sub>',txt:'all three dumbbells, at 90° to each other, along x, y and z.'},
+      dxy:{t:'d',n:'d<sub>xy</sub>',a:.6,f:(x,y)=>x*y,txt:'four lobes <i>between</i> the x and y axes (a four-leaf clover).'},
+      dxz:{t:'d',n:'d<sub>xz</sub>',a:.6,f:(x,y,z)=>x*z,txt:'four lobes between the x and z axes.'},
+      dyz:{t:'d',n:'d<sub>yz</sub>',a:.6,f:(x,y,z)=>y*z,txt:'four lobes between the y and z axes.'},
+      dx2y2:{t:'d',n:'d<sub>x²−y²</sub>',a:.6,f:(x,y)=>x*x-y*y,txt:'four lobes pointing <i>along</i> the x and y axes.'},
+      dz2:{t:'d',n:'d<sub>z²</sub>',a:.6,f:(x,y,z)=>2*z*z-x*x-y*y,txt:'a dumbbell on the z-axis with a donut ring round the middle.'},
+      fz3:{t:'f',n:'f<sub>z³</sub>',a:.5,f:(x,y,z)=>z*(2*z*z-3*x*x-3*y*y),txt:'two lobes on z, with two ring-shaped lobes around them.'},
+      fxz2:{t:'f',n:'f<sub>xz²</sub>',a:.5,f:(x,y,z)=>x*(4*z*z-x*x-y*y),txt:'six lobes, set around the x–z plane.'},
+      fyz2:{t:'f',n:'f<sub>yz²</sub>',a:.5,f:(x,y,z)=>y*(4*z*z-x*x-y*y),txt:'six lobes, set around the y–z plane.'},
+      fxyz:{t:'f',n:'f<sub>xyz</sub>',a:.5,f:(x,y,z)=>x*y*z,txt:'eight lobes, one in each corner of a cube.'},
+      fzx2y2:{t:'f',n:'f<sub>z(x²−y²)</sub>',a:.5,f:(x,y,z)=>z*(x*x-y*y),txt:'eight lobes, above and below the x and y axes.'},
+      fx3:{t:'f',n:'f<sub>x(x²−3y²)</sub>',a:.5,f:(x,y)=>x*(x*x-3*y*y),txt:'six lobes in a flat star in the x–y plane.'},
+      fy3:{t:'f',n:'f<sub>y(3x²−y²)</sub>',a:.5,f:(x,y)=>y*(3*x*x-y*y),txt:'six lobes in a flat star, turned 30°.'}
+    };c.O=O;
+    c.SUB={s:['s'],p:['px','py','pz','pall'],d:['dxy','dxz','dyz','dx2y2','dz2'],f:['fz3','fxz2','fyz2','fxyz','fzx2y2','fx3','fy3']};
+    const one=(k,n)=>{const o=O[k];return sampleSigned((x,y,z)=>o.f(x,y,z)*Math.exp(-r(x,y,z)/o.a),n,5,.55,P.cloud,P.cloud2);};
+    c.make=k=>{if(c.cache[k])return c.cache[k];let res;
+      if(k==='pall'){const parts=['px','py','pz'].map(q=>one(q,N/3));const p=new Float32Array(N*3),cl=new Float32Array(N*3);parts.forEach(([a,b],i)=>{p.set(a,i*N);cl.set(b,i*N);});res=[p,cl];}
+      else res=one(k,N);return c.cache[k]=res;};
+    const psiOf=k=>{const o=O[k];return (x,y,z)=>o.f(x,y,z)*Math.exp(-r(x,y,z)/o.a);};
+    const rOne=k=>{const [pos]=c.make(k),psi=psiOf(k);return radii(psi,thresh(psi,pos,.55),5,.55);};
+    c.makeS=k=>{if(c.scache[k])return c.scache[k];const res=k==='pall'?unionRadii(['px','py','pz'].map(rOne)):rOne(k);return c.scache[k]=surfArrays(res);};
+    c.go=(k,anim)=>{c.key=k;c.type=O[k].t;const [p,cl]=c.make(k),[sp,sc]=c.makeS(k);
+      if(anim){c.mo.to(p,cl,1100);c.smo.to(sp,sc,1100);}else{c.mo.set(p,cl);c.smo.set(sp,sc);}c.renderSub();};
+    c.renderSub=()=>{const sub=document.getElementById('sub');if(!sub)return;const list=c.SUB[c.type];
+      sub.innerHTML=list.length>1?list.map(k=>`<button class="stk" type="button" data-k="${k}" aria-pressed="${k===c.key}">${k==='pall'?'All 3':O[k].n}</button>`).join(''):'';
+      sub.querySelectorAll('button').forEach(b=>b.onclick=()=>{c.touring=false;c.tourBtn&&c.tourBtn.setAttribute('aria-pressed','false');c.go(b.dataset.k,true);});
+      document.querySelectorAll('#controls > button.stk[data-a]').forEach(b=>{if(b.dataset.a!=='tour')b.setAttribute('aria-pressed',String(b.dataset.a===c.type));});};
+    c.tour=['s','px','py','pz','pall','dxy','dx2y2','dz2','fz3','fxyz','fx3'];c.ti=0;c.touring=false;c.nextT=0;
+    c.go('s',false);},
+  act(c,a,btn){if(a==='hotel'){gotoScene('hotel');return;}
+    if(a.startsWith('v-')){c.pts.visible=a!=='v-out';c.surf.visible=a!=='v-dots';document.querySelectorAll('#view button').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));return;}
+    if(a==='tour'){c.touring=!c.touring;c.tourBtn=btn;btn.setAttribute('aria-pressed',String(c.touring));c.nextT=0;return;}
+    c.touring=false;const tb=document.querySelector('#controls [data-a="tour"]');if(tb)tb.setAttribute('aria-pressed','false');
+    c.go(c.SUB[a][0],true);},
+  update(c,now){c.mo.step(now);c.smo.step(now);
+    if(c.touring&&now>c.nextT){c.go(c.tour[c.ti%c.tour.length],true);c.ti++;c.nextT=now+2600;}
+    const o=c.O[c.key],info={s:'1 orbital · 2 e⁻ · 0 nodes',p:'3 orbitals · 6 e⁻ · 1 node each',d:'5 orbitals · 10 e⁻ · 2 nodes each',f:'7 orbitals · 14 e⁻ · 3 nodes each'}[c.type];
+    setStatus(`<b>${o.n}:</b> ${o.txt} <br><span style="opacity:.8">${c.type} subshell: ${info}</span>`);}
+},
+/* 1c */ {id:'hotel',title:'Atom Hotel',bm:'Hotel atom',cam:12,rot:[.1,-.28],
+  analogy:"An atom is like a hotel. Floors are shells (n = 1, 2, 3, 4). Each floor has room types s, p, d and f. Each room is one orbital and holds 2 guests (electrons) with opposite spins. Guests take the cheapest room first, and like bus passengers, they take an empty seat before sitting next to someone.",
+  see:["Floor = shell (n). Higher floor = farther from the nucleus, more energy.","Room = orbital: s ×1 (teal), p ×3 (coral), d ×5 (white), f ×7 (lime) per floor. Arrows = electrons with spin up or down.","Rules: cheapest room first (Aufbau) · empty rooms before sharing (Hund) · max 2 per room, opposite spins (Pauli). Tap a room to see its shape."],
+  controls:`<button class="stk" data-a="add">+1 electron</button><button class="stk" data-a="sub">−1</button><button class="stk" data-a="ne">Fill to Ne</button><button class="stk" data-a="ar">Fill to Ar</button><button class="stk" data-a="reset">Empty hotel</button><button class="stk" data-a="shape" disabled>Tap a room first</button>`,
+  q:{t:"Potassium (K) gets its 19th electron. Which room does it take?",o:["3d (floor 3)","4s (floor 4)","4p (floor 4)"],a:1,why:"The 4s room is cheaper (lower energy) than 3d, even though it is on floor 4. So 4s fills before 3d."},
+  build(c){c.Z=0;c.subs={};c.pickables=[];c.picked=null;
+    const COL={s:P.cloud,p:P.cloud2,d:0xffffff,f:P.glow},CNT={s:1,p:3,d:5,f:7},W=8.6,w=.36,gap=.06,gg=.36,FH=1.15,base=-2.0;
+    c.add(ball(P.cloud2,.14,V(0,base-.55,0)));const nl=label('nucleus',P.label,.24);nl.position.set(0,base-.95,0);c.add(nl);
+    const box=(sx,sy,sz,pos,mat)=>{const m=new THREE.Mesh(BOX,mat);m.scale.set(sx,sy,sz);m.position.copy(pos);return m;};
+    const frame=new THREE.MeshStandardMaterial({color:P.stick,transparent:true,opacity:.28,depthWrite:false});
+    for(let n=1;n<=4;n++){const y=base+(n-1)*FH;
+      c.add(box(W,.07,1.1,V(0,y-.27,0),frame));
+      const fl=label(`n = ${n}`,P.label,.26);fl.position.set(-W/2-.62,y,0);c.add(fl);
+      const types=['s','p','d','f'].slice(0,n);let tot=types.reduce((a,t)=>a+CNT[t]*w+(CNT[t]-1)*gap,0)+(types.length-1)*gg,x=-tot/2;
+      types.forEach(t=>{const key=n+t,rooms=[],gw=CNT[t]*w+(CNT[t]-1)*gap;
+        const gl=label(key,P.label,.24);gl.position.set(x+gw/2,y+.42,0);c.add(gl);
+        for(let j=0;j<CNT[t];j++){const mat=new THREE.MeshStandardMaterial({color:COL[t],transparent:true,opacity:.3,emissive:COL[t],emissiveIntensity:0,depthWrite:false});
+          const room=box(w,.42,.42,V(x+w/2,y,0),mat);room.userData={n,t,key};c.add(room);c.pickables.push(room);
+          const em=new THREE.MeshStandardMaterial({color:P.glow,emissive:P.glow,emissiveIntensity:.5});
+          const up=new THREE.Mesh(CONE,em);up.position.set(x+w/2-.07,y,0);const dn=new THREE.Mesh(CONE,em);dn.rotation.z=Math.PI;dn.position.set(x+w/2+.07,y,0);
+          up.visible=dn.visible=false;c.add(up);c.add(dn);rooms.push({room,up,dn});x+=w+gap;}
+        x+=gg-gap;c.subs[key]={rooms,t};});}
+    const top=base+3*FH+.55;c.add(box(.12,4*FH+.4,.12,V(-W/2,base+1.5*FH,-.5),frame));c.add(box(.12,4*FH+.4,.12,V(W/2,base+1.5*FH,-.5),frame));
+    c.add(box(W+.5,.12,1.2,V(0,top,0),frame));const hn=label('ATOM HOTEL',P.labelHi,.36);hn.position.set(0,top+.32,0);c.add(hn);
+    c.sign=null;c.top=top;
+    const SYM='H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr'.split(' ');
+    const NAME='Hydrogen Helium Lithium Beryllium Boron Carbon Nitrogen Oxygen Fluorine Neon Sodium Magnesium Aluminium Silicon Phosphorus Sulfur Chlorine Argon Potassium Calcium Scandium Titanium Vanadium Chromium Manganese Iron Cobalt Nickel Copper Zinc Gallium Germanium Arsenic Selenium Bromine Krypton'.split(' ');
+    const ORDER=[['1s',2],['2s',2],['2p',6],['3s',2],['3p',6],['4s',2],['3d',10],['4p',6]];
+    c.occ=Z=>{const o={};let left=Z;ORDER.forEach(([k,m])=>{o[k]=Math.min(m,left);left-=o[k];});if(Z===24||Z===29){o['4s']=1;o['3d']+=1;}return o;};
+    const SUP={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'},sup=n=>String(n).split('').map(d=>SUP[d]).join('');
+    c.config=Z=>{const o=c.occ(Z);return ORDER.filter(([k])=>o[k]>0).map(([k])=>k+sup(o[k])).join(' ');};
+    c.msg=Z=>{if(Z===0)return 'Empty hotel. Tap <b>+1 electron</b> to check in the first guest.';
+      if(Z===19)return '<b>4s before 3d!</b> The 4s room is cheaper than 3d, so the 19th electron goes to floor 4 first.';
+      if(Z===21)return '<b>Now 3d.</b> With 4s full, the cheapest free room is 3d, back on floor 3.';
+      if(Z===24)return '<b>Special case:</b> Cr is 4s¹ 3d⁵, not 4s² 3d⁴. A half-full set of d rooms is extra stable.';
+      if(Z===29)return '<b>Special case:</b> Cu is 4s¹ 3d¹⁰, not 4s² 3d⁹. A full set of d rooms is extra stable.';
+      const a=c.occ(Z-1),b=c.occ(Z),key=ORDER.map(x=>x[0]).find(k=>b[k]>a[k]);if(!key)return '';
+      const k=b[key],m=CNT[key[1]],full=k===2*m?` ${key} is now full.`:'';
+      return (k===1?`<b>Aufbau:</b> first guest in ${key}, the next cheapest room.`:k<=m?`<b>Hund:</b> takes an empty ${key} room before sharing.`:`<b>Pauli:</b> shares a ${key} room with opposite spin (max 2 per room).`)+full;};
+    c.render=(note)=>{const o=c.occ(c.Z),now=performance.now();
+      Object.entries(c.subs).forEach(([key,s])=>{const k=o[key]||0,m=s.rooms.length,up=Math.min(k,m),dn=Math.max(0,k-m);
+        s.rooms.forEach((r,j)=>{const u=j<up,d=j<dn;if(u&&!r.up.visible)r.up.userData.pop=now;if(d&&!r.dn.visible)r.dn.userData.pop=now;
+          r.up.visible=u;r.dn.visible=d;r.room.material.opacity=u?.75:.3;r.room.material.emissiveIntensity=u?.25:0;});});
+      if(c.sign)c.remove(c.sign);const txt=c.Z?`${SYM[c.Z-1]} · Z = ${c.Z}`:'Z = 0';c.sign=label(txt,P.label,.42);c.sign.position.set(0,c.top+.85,0);c.add(c.sign);
+      setStatus(note||(c.Z?`<b>${NAME[c.Z-1]} (Z = ${c.Z})</b> ${c.config(c.Z)}<br>${c.msg(c.Z)}`:c.msg(0)));};
+    c.render();},
+  act(c,a,btn){if(a==='shape'){if(c.picked){const t=c.picked.t;gotoScene('shapes',x=>x.go(x.SUB[t][0],false));}return;}
+    if(a==='add')c.Z=Math.min(36,c.Z+1);if(a==='sub')c.Z=Math.max(0,c.Z-1);if(a==='ne')c.Z=10;if(a==='ar')c.Z=18;if(a==='reset')c.Z=0;c.render();},
+  pick(c,obj){const u=obj.userData;if(!u.key)return;c.picked=u;
+    c.pickables.forEach(r=>r.scale.y=r.scale.z=.42);obj.scale.y=obj.scale.z=.52;
+    const shape={s:'a sphere',p:'a dumbbell along one axis',d:'mostly a four-leaf clover',f:'many lobes'}[u.t],cnt={s:1,p:3,d:5,f:7}[u.t];
+    const b=document.querySelector('#controls [data-a="shape"]');if(b){b.disabled=false;b.textContent=`See ${u.key} shape →`;}
+    c.render(`<b>Room ${u.key}</b> on floor ${u.n}: one of ${cnt} ${u.t} room${cnt>1?'s':''}. Shape: ${shape}. Holds 2 electrons.`);},
+  update(c,now){Object.values(c.subs).forEach(s=>s.rooms.forEach(r=>[r.up,r.dn].forEach(e=>{if(e.userData.pop){const k=Math.min(1,(now-e.userData.pop)/350);e.scale.setScalar(reduce?1:.2+.8*(1-Math.pow(1-k,3)));if(k>=1)delete e.userData.pop;}})));}
+},
+/* 2 */ {id:'sigma',title:'Sigma (σ) bond',bm:'Ikatan sigma',cam:5,rot:[.15,0],
+  analogy:"Two friends shake hands head-on. Their grip sits right in the middle, on the line between them. A σ bond is that head-on grip: the shared electrons sit between the two nuclei.",
+  see:["Move the slider to bring the two atoms together.","Lime dots = shared electrons where the clouds overlap.","Every single bond is one σ bond. It can be s + s, s + p or p + p (end to end)."],
+  controls:`<button class="stk" data-a="ss" aria-pressed="true">s + s (H₂)</button><button class="stk" data-a="pp">p + p end-on (F₂)</button>
+    <div class="slider"><label for="rng">Distance between nuclei</label><input id="rng" type="range" min="0" max="100" value="85"></div>${VIEW}`,
+  q:{t:"Where are the shared electrons in a σ bond?",o:["Above and below the line joining the nuclei","Directly between the two nuclei","Outside both atoms"],a:1,why:"σ = head-on overlap, so the electron density sits on the bond axis, between the nuclei."},
+  build(c){c.mode='ss';c.v=.85;c.nA=ball(P.cloud2,.06,V(0,0,0));c.nB=ball(P.cloud2,.06,V(0,0,0));c.add(c.nA);c.add(c.nB);
+    c.pts=points(4000,.04);c.add(c.pts);c.add(stick(V(-3,0,0),V(3,0,0),.008,P.stick));
+    c.sg=new THREE.Group();c.add(c.sg);c.sA=surface();c.sB=surface();c.sM=surface();[c.sA,c.sB,c.sM].forEach(m=>c.sg.add(m));
+    c.dotsObjs=[c.pts];c.surfObjs=[c.sg];c.key='';
+    c.load=()=>{const ss=c.mode==='ss';c.sc=ss?.5:.15;c.R=ss?4:12;c.base=ss?sample(D.s1,2000,4,.5):sample(D.p(V(1,0,0)),2000,12,.15);
+      c.psi1=ss?(x,y,z)=>Math.exp(-r3(x,y,z)):(x,y,z)=>x*Math.exp(-r3(x,y,z)/2);c.th1=thresh(c.psi1,c.base,c.sc);
+      const one=solidArrays(radii(c.psi1,c.th1,c.R,c.sc),P.cloud);setSurf(c.sA,one);setSurf(c.sB,one);c.key='';};c.load();},
+  act(c,a,btn){if(a==='ss'||a==='pp'){c.mode=a;c.load();pressOnly(btn);}if(a==='rng')c.v=btn.value/100;},
+  update(c){const ss=c.mode==='ss',d=ss?.5+c.v*2.7:.9+c.v*2.8,reach=ss?1.05:1.45,h=d/2;
+    c.nA.position.x=-h;c.nB.position.x=h;
+    const key=c.mode+d.toFixed(3);if(key!==c.key){c.key=key;const hu=h/c.sc,merged=ss&&2*Math.exp(-hu)>=c.th1;
+      c.sA.position.x=-h;c.sB.position.x=h;c.sA.visible=c.sB.visible=!merged;c.sM.visible=merged;
+      if(merged){const psi=(x,y,z)=>Math.exp(-r3(x+hu,y,z))+Math.exp(-r3(x-hu,y,z));setSurf(c.sM,solidArrays(radii(psi,c.th1,c.R+hu,c.sc),P.cloud));}}
+    const p=c.pts.geometry.attributes.position.array,col=c.pts.geometry.attributes.color.array,b=c.base;
+    const cg=new THREE.Color(P.glow),cc=new THREE.Color(P.cloud);
+    for(let k=0;k<2;k++)for(let i=0;i<2000;i++){const s=k?1:-1,j=(k*2000+i)*3,x=b[i*3]*(k?-1:1)+s*h,y=b[i*3+1],z=b[i*3+2];
+      p[j]=x;p[j+1]=y;p[j+2]=z;const ox=-s*h,dist=Math.sqrt((x-ox)**2+y*y+z*z),ov=x>-h&&x<h&&dist<reach;const C=ov?cg:cc;col[j]=C.r;col[j+1]=C.g;col[j+2]=C.b;}
+    c.pts.geometry.attributes.position.needsUpdate=c.pts.geometry.attributes.color.needsUpdate=true;
+    const far=ss?2.4:2.8,start=ss?1.2:1.7,close=ss?.8:1.15;
+    const bonded=d<=start&&d>=close,now=performance.now();
+    if(bonded&&!c.bonded&&c.mode===c.bMode)spark(c,V(0,0,0),P.glow);
+    if(bonded&&now>(c.nextGlint||0)){spark(c,V((Math.random()-.5)*d*.5,(Math.random()-.5)*.3,(Math.random()-.5)*.3),P.glow,{n:12,quiet:true,speed:.45});c.nextGlint=now+550;}
+    c.bonded=bonded;c.bMode=c.mode;
+    setStatus(d>far?'<b>Too far.</b> The clouds barely touch, so no bond yet.':d>start?'<b>Clouds start to overlap.</b> Pull a little closer.':d>=close?`<b>⚡ Bond formed!</b> Best overlap: the shared pair sits between the nuclei${ss?' (H–H = 74 pm)':' (F–F, end-to-end p overlap)'}.`:'<b>Too close.</b> The two positive nuclei push each other apart.');}
+},
+/* 3 */ {id:'pi',title:'Pi (π) bond',bm:'Ikatan pi',cam:4.8,rot:[.35,-.5],
+  analogy:"Now the two friends stand side by side and link arms. If one turns around, the arms must let go. A π bond is a side-by-side link, so it stops the bond from spinning.",
+  see:["Teal middle = the σ bond. Coral = p orbitals standing up.","Lime = π overlap: above and below the bond line, never on it.","Double bond = 1 σ + 1 π. Triple bond = 1 σ + 2 π."],
+  controls:`<div class="slider"><label for="rng">Twist one carbon</label><input id="rng" type="range" min="0" max="90" value="0"></div>${VIEW}`,
+  q:{t:"Why can't a C=C double bond rotate freely?",o:["Twisting breaks the side-by-side p overlap (the π bond)","The σ bond is too strong to twist","Carbon atoms are too heavy"],a:0,why:"Turning one end moves its p orbital out of line, so the π overlap is lost. That costs energy, which is why cis and trans isomers exist."},
+  build(c){c.th=0;const X=.62;[-X,X].forEach(x=>c.add(ball(P.stick,.12,V(x,0,0))));
+    const nS=900,nP=1600;c.nS=nS;c.nP=nP;c.pts=points(nS+2*nP,.04);c.add(c.pts);
+    const p=c.pts.geometry.attributes.position.array;for(let i=0;i<nS;i++){p[i*3]=gauss()*.42;p[i*3+1]=gauss()*.14;p[i*3+2]=gauss()*.14;}
+    c.pz=sample(D.p(V(0,0,1)),nP,12,.13);c.rnd=new Float32Array(nP*2).map(()=>Math.random());c.X=X;
+    paint(c.pts,P.cloud,0,nS);
+    c.sg=new THREE.Group();c.add(c.sg);const psiZ=(x,y,z)=>z*Math.exp(-r3(x,y,z)/2),pzS=solidArrays(radii(psiZ,thresh(psiZ,c.pz,.13),12,.13),P.cloud2);
+    c.dA=surface();c.dB=surface();setSurf(c.dA,pzS);setSurf(c.dB,pzS);c.dA.position.x=-X;c.dB.position.x=X;c.sg.add(c.dA);c.sg.add(c.dB);
+    const sig=ball(P.cloud,1,V(0,0,0),{transparent:true,opacity:.22,depthWrite:false});sig.scale.set(1.05,.34,.34);c.sg.add(sig);
+    c.lobes=[1,-1].map(s=>{const m=ball(P.glow,1,V(0,0,s*.36),{transparent:true,opacity:.3,depthWrite:false,emissive:P.glow,emissiveIntensity:.3});m.scale.set(.8,.2,.24);c.sg.add(m);return m;});
+    c.dotsObjs=[c.pts];c.surfObjs=[c.sg];},
+  act(c,a,el){if(a==='rng')c.th=+el.value;},
+  update(c){const p=c.pts.geometry.attributes.position.array,col=c.pts.geometry.attributes.color.array,t=c.th*Math.PI/180,co=Math.cos(t),si=Math.sin(t),ov=co*co;
+    c.dB.rotation.x=t;c.lobes.forEach(m=>{m.material.opacity=.3*ov;m.visible=ov>.03;});
+    const piOn=c.th<8;if(piOn&&c.piBroken){spark(c,V(0,0,.38),P.glow);spark(c,V(0,0,-.38),P.glow,{quiet:true,n:40});}c.piBroken=!piOn&&c.th>=80?true:(piOn?false:c.piBroken);
+    const cg=new THREE.Color(P.glow),cp=new THREE.Color(P.cloud2);
+    for(let k=0;k<2;k++)for(let i=0;i<c.nP;i++){const j=(c.nS+k*c.nP+i)*3;let x=c.pz[i*3]+(k?c.X:-c.X),y=c.pz[i*3+1],z=c.pz[i*3+2];
+      if(k){const y2=y*co-z*si,z2=y*si+z*co;y=y2;z=z2;}p[j]=x;p[j+1]=y;p[j+2]=z;
+      const mid=Math.abs(x)<.42&&Math.abs(k?(c.pz[i*3+2]):z)>.12&&c.rnd[k*c.nP+i]<ov;const C=mid?cg:cp;col[j]=C.r;col[j+1]=C.g;col[j+2]=C.b;}
+    c.pts.geometry.attributes.position.needsUpdate=c.pts.geometry.attributes.color.needsUpdate=true;
+    const pct=Math.round(ov*100);
+    setStatus(c.th<8?'<b>π bond:</b> full side-by-side overlap, above and below the σ bond.':c.th<80?`<b>Twisting…</b> π overlap drops to ${pct}%. The π bond is breaking.`:'<b>π bond broken!</b> Only the σ bond is left. Breaking it costs energy, so C=C does not spin freely.');}
+},
+/* 4 */ {id:'hyb',title:'Hybridization',bm:'Penghibridan',cam:4.6,rot:[.35,.5],
+  analogy:"Pour 1 cup of tea and 3 cups of milk into a jug and mix. You pour out 4 cups of the same teh susu. Carbon mixes 1 s + 3 p orbitals into 4 equal sp³ orbitals. Number in = number out.",
+  see:["Why? Carbon's ground state (2s² 2p²) suggests only 2 bonds at 90°, but CH₄ has 4 equal bonds at 109.5°.","Equal lobes point far apart (less repulsion) and stick out more (better overlap, stronger bonds).","Leftover p orbitals (coral) make π bonds. Hybridization is a model that explains the shape we see.","Choose Outline, then tap sp³: watch the round s and the dumbbell p shapes melt into the new lobes."],
+  controls:`<button class="stk" data-a="before" aria-pressed="true">Before mixing</button><button class="stk" data-a="sp3">sp³</button><button class="stk" data-a="sp2">sp²</button><button class="stk" data-a="sp">sp</button>${VIEW}`,
+  q:{t:"Mixing 1 s + 2 p orbitals gives how many hybrid orbitals?",o:["2 sp","3 sp²","4 sp³"],a:1,why:"Number in = number out: 1 + 2 = 3 sp² orbitals, 120° apart. The third p orbital is left over for a π bond."},
+  build(c){const N=900;c.N=N;c.add(ball(P.stick,.07,V(0,0,0)));c.add(axes(1.75));c.pts=points(4*N,.038);c.add(c.pts);c.mo=morpher(c.pts);c.cache={};
+    const s=.13,R=12,cat=(...a)=>{const o=new Float32Array(4*N*3);a.forEach((x,i)=>o.set(x,i*N*3));return o;};
+    const hyb=(cs,cp,d)=>{d=d.clone().normalize();return sample((x,y,z)=>{const r=r3(x,y,z),v=cs*r+1.732*cp*(x*d.x+y*d.y+z*d.z);return v*v*Math.exp(-r);},N,R,s);}, pp=d=>sample(D.p(d),N,R,s);
+    c.make=m=>{if(c.cache[m])return c.cache[m];let P2,C2;
+      if(m==='before'){P2=cat(sample((x,y,z)=>{const r=r3(x,y,z);return r*r*Math.exp(-r);},N,R,s),pp(V(1,0,0)),pp(V(0,1,0)),pp(V(0,0,1)));C2=colArr(4*N,[[P.cloud,N],[P.cloud2,3*N]]);}
+      if(m==='sp3'){const t=[V(1,1,1),V(1,-1,-1),V(-1,1,-1),V(-1,-1,1)];P2=cat(...t.map(d=>hyb(.5,.866,d)));C2=colArr(4*N,[[P.cloud,4*N]]);}
+      if(m==='sp2'){const t=[0,120,240].map(a=>V(Math.cos(a*Math.PI/180),Math.sin(a*Math.PI/180),0));P2=cat(...t.map(d=>hyb(.577,.816,d)),pp(V(0,0,1)));C2=colArr(4*N,[[P.cloud,3*N],[P.cloud2,N]]);}
+      if(m==='sp'){P2=cat(hyb(.707,.707,V(1,0,0)),hyb(.707,.707,V(-1,0,0)),pp(V(0,1,0)),pp(V(0,0,1)));C2=colArr(4*N,[[P.cloud,2*N],[P.cloud2,2*N]]);}
+      return c.cache[m]=[P2,C2];};
+    /* outline = polar plot of the angular part (the classic textbook lobe shapes) */
+    const psiH=(cs,cp,d)=>{d=d.clone().normalize();return (x,y,z)=>cs+1.732*cp*(x*d.x+y*d.y+z*d.z);};
+    const psiP=d=>psiH(0,1,d),psiS=()=>1;
+    const T4=[V(1,1,1),V(1,-1,-1),V(-1,1,-1),V(-1,-1,1)],T3=[0,120,240].map(a=>V(Math.cos(a*Math.PI/180),Math.sin(a*Math.PI/180),0));
+    const PSI={before:[psiS,psiP(V(1,0,0)),psiP(V(0,1,0)),psiP(V(0,0,1))],sp3:T4.map(d=>psiH(.5,.866,d)),
+      sp2:[...T3.map(d=>psiH(.577,.816,d)),psiP(V(0,0,1))],sp:[psiH(.707,.707,V(1,0,0)),psiH(.707,.707,V(-1,0,0)),psiP(V(0,1,0)),psiP(V(0,0,1))]};
+    const COLS={before:[P.cloud,P.cloud2,P.cloud2,P.cloud2],sp3:[P.cloud,P.cloud,P.cloud,P.cloud],sp2:[P.cloud,P.cloud,P.cloud,P.cloud2],sp:[P.cloud,P.cloud,P.cloud2,P.cloud2]};
+    c.surfs=[0,1,2,3].map(()=>{const m=surface();c.add(m);return m;});c.smos=c.surfs.map(m=>morpher(m,()=>m.geometry.computeVertexNormals()));c.scache={};
+    c.makeS=m=>{if(c.scache[m])return c.scache[m];const [P2]=c.make(m);
+      return c.scache[m]=PSI[m].map((A,i)=>{const n=DIRS.length/3,rad=new Float32Array(n),sg=new Int8Array(n).fill(1);
+        for(let j=0;j<n;j++)rad[j]=.62*Math.abs(A(DIRS[j*3],DIRS[j*3+1],DIRS[j*3+2]));return solidArrays({rad,sg},COLS[m][i]);});};
+    c.dotsObjs=[c.pts];c.surfObjs=c.surfs;
+    c.mode='before';const [a,b]=c.make('before');c.mo.set(a,b);c.makeS('before').forEach((x,i)=>c.smos[i].set(...x));},
+  act(c,a,btn){if(['before','sp3','sp2','sp'].includes(a)){c.mode=a;const [p,col]=c.make(a);c.mo.to(p,col);c.makeS(a).forEach((x,i)=>c.smos[i].to(...x));pressOnly(btn);}},
+  update(c,now){c.mo.step(now);c.smos.forEach(m=>m.step(now));const T={before:'<b>Before:</b> one round 2s + three dumbbell 2p orbitals, at 90° to each other.',sp3:'<b>sp³:</b> 4 equal lobes, 109.5° apart, a tetrahedron (CH₄).',sp2:'<b>sp²:</b> 3 lobes at 120° in a flat triangle, plus 1 p left over for a π bond (C₂H₄).',sp:'<b>sp:</b> 2 lobes at 180° in a line, plus 2 p left over for two π bonds (C₂H₂).'};setStatus(T[c.mode]);}
+},
+/* 5 */ {id:'benz',title:'Resonance in benzene',bm:'Resonans dalam benzena',cam:5.2,rot:[-.85,0],
+  analogy:"Purple paint is not red one second and blue the next. It is purple all the time. Benzene is not flipping between drawing A and drawing B. The real molecule is always the blend.",
+  see:["Each carbon is sp², with one p orbital standing up from the flat ring.","The 6 p orbitals overlap all the way around: 6 π electrons spread in two donut clouds, above and below.","All C–C bonds are 139 pm, between a single (154 pm) and a double (134 pm) bond. Pharmacy link: aromatic rings in drugs stack flat against rings in receptors."],
+  controls:`<button class="stk" data-a="p" aria-pressed="true">p orbitals</button><button class="stk" data-a="A">Drawing A</button><button class="stk" data-a="B">Drawing B</button><button class="stk" data-a="real">Real benzene</button>${VIEW}`,
+  q:{t:"In benzene, the six C–C bonds are…",o:["Alternating short and long","All the same length","All single bonds"],a:1,why:"The π electrons are spread evenly round the ring, so all six bonds are equal (139 pm)."},
+  build(c){const Rr=1,N=700,TOT=6*N;c.N=N;
+    const ang=i=>i*Math.PI/3, pos=i=>V(Rr*Math.cos(ang(i)),Rr*Math.sin(ang(i)),0);
+    for(let i=0;i<6;i++){c.add(ball(P.stick,.11,pos(i)));const h=V(1.78*Math.cos(ang(i)),1.78*Math.sin(ang(i)),0);c.add(ball(P.H,.08,h));c.add(stick(pos(i),h,.035,P.stick));c.add(stick(pos(i),pos((i+1)%6),.04,P.stick));}
+    c.pts=points(TOT,.035);c.add(c.pts);c.mo=morpher(c.pts);c.marks=new THREE.Group();c.add(c.marks);
+    const pz=sample(D.p(V(0,0,1)),N,12,.1);
+    const arcPt=(a0,a1,o,k)=>{const u=-.1+Math.random()*1.2,a=a0+(a1-a0)*u,r=Rr+gauss()*.16,z=(Math.random()<.5?1:-1)*(.42+gauss()*.11);o[k*3]=r*Math.cos(a);o[k*3+1]=r*Math.sin(a);o[k*3+2]=z;};
+    const pairs=s=>{const o=new Float32Array(TOT*3);let k=0;for(let p=0;p<3;p++){const i=s+2*p;for(let j=0;j<2*N;j++)arcPt(ang(i),ang(i+1),o,k++);}return o;};
+    const sets={p:(()=>{const o=new Float32Array(TOT*3);for(let i=0;i<6;i++){const q=pos(i);for(let j=0;j<N;j++){const k=i*N+j;o[k*3]=pz[j*3]+q.x;o[k*3+1]=pz[j*3+1]+q.y;o[k*3+2]=pz[j*3+2];}}return o;})(),
+      A:pairs(0),B:pairs(1),real:(()=>{const o=new Float32Array(TOT*3);for(let k=0;k<TOT;k++)arcPt(0,2*Math.PI,o,k);return o;})()};
+    const cols={p:colArr(TOT,[[P.cloud2,TOT]]),A:colArr(TOT,[[P.cloud,TOT]]),B:colArr(TOT,[[P.cloud,TOT]]),real:colArr(TOT,[[P.glow,TOT]])};
+    c.marksFor=m=>{c.marks.clear();if(m==='A'||m==='B'){const s=m==='A'?0:1;for(let p=0;p<3;p++){const i=s+2*p;c.marks.add(stick(pos(i).multiplyScalar(.78),pos(i+1).multiplyScalar(.78),.03,P.stick));}}
+      if(m==='real'){const pts=[];for(let i=0;i<=64;i++){const a=i/64*Math.PI*2;pts.push(V(.68*Math.cos(a),.68*Math.sin(a),0));}c.marks.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:P.glow})));}};
+    c.sg=new THREE.Group();c.add(c.sg);const psiZ=(x,y,z)=>z*Math.exp(-r3(x,y,z)/2);
+    const mk=hex=>new THREE.MeshStandardMaterial({color:hex,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,emissive:hex,emissiveIntensity:.15});
+    c.G={p:new THREE.Group(),A:new THREE.Group(),B:new THREE.Group(),real:new THREE.Group()};Object.values(c.G).forEach(g=>c.sg.add(g));
+    c.M={p:mk(P.cloud2),A:mk(P.cloud),B:mk(P.cloud),real:mk(P.glow)};
+    const pzArr=solidArrays(radii(psiZ,thresh(psiZ,pz,.1),12,.1),P.cloud2);
+    for(let i=0;i<6;i++){const m=surface();setSurf(m,pzArr);m.material=c.M.p;m.position.copy(pos(i));c.G.p.add(m);}
+    ['A','B'].forEach((k,s)=>{for(let q=0;q<3;q++){const i=s+2*q,a0=ang(i)-.12,a1=ang(i+1)+.12;[.42,-.42].forEach(z=>{const pts=[];for(let j=0;j<=16;j++){const a=a0+(a1-a0)*j/16;pts.push(V(Math.cos(a),Math.sin(a),z));}
+      c.G[k].add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,.2,12,false),c.M[k]));});}});
+    [.42,-.42].forEach(z=>{const t=new THREE.Mesh(new THREE.TorusGeometry(1,.21,14,72),c.M.real);t.position.z=z;c.G.real.add(t);});
+    c.dotsObjs=[c.pts];c.surfObjs=[c.sg];
+    c.go=(m,anim)=>{c.mode=m;c.marksFor(m);anim?c.mo.to(sets[m],cols[m],1200):c.mo.set(sets[m],cols[m]);};c.go('p',false);},
+  act(c,a,btn){if(['p','A','B','real'].includes(a)){c.go(a,true);pressOnly(btn);}},
+  update(c,now){c.mo.step(now);Object.entries(c.M).forEach(([k,mat])=>{const tgt=k===c.mode?.32:0;mat.opacity+=(tgt-mat.opacity)*(reduce?1:.08);c.G[k].visible=mat.opacity>.01;});const T={p:'<b>6 sp² carbons.</b> Each has one p orbital standing up, out of the flat ring.',A:'<b>Drawing A:</b> three fixed C=C bonds. This is only a drawing.',B:'<b>Drawing B:</b> the double bonds moved. Also only a drawing.',real:'<b>Real benzene:</b> 6 π electrons spread evenly in two donut clouds, above and below the ring. Very stable (aromatic).'};setStatus(T[c.mode]);}
+},
+/* 6 */ {id:'hb',title:'Hydrogen bond',bm:'Ikatan hidrogen',cam:5,rot:[.25,-.3],
+  analogy:"Oxygen pulls the electrons in O–H towards itself, so the H becomes a tiny, very positive magnet tip. That tip sticks to a lone pair on the next O, N or F. That sticky link is a hydrogen bond.",
+  see:["Grey stick = O–H covalent bond, strong, inside the molecule.","Lime dots = hydrogen bond, about 20 times weaker, between molecules.","Only H joined to N, O or F can do this. Heat it up: boiling breaks H-bonds, not O–H bonds."],
+  controls:`<div class="slider"><label for="rng">Heat (temperature)</label><input id="rng" type="range" min="0" max="100" value="10"></div>`,
+  q:{t:"Which of these forms hydrogen bonds between its molecules?",o:["CH₄","NH₃","H₂S"],a:1,why:"NH₃ has H joined to N, plus a lone pair on N. In CH₄ and H₂S the H is on C or S, which do not pull hard enough."},
+  build(c){c.heat=10;const k=.75,oh=.96*k;c.k=k;
+    const mk=(dirs,hIdx,lpIdx)=>{const g=new THREE.Group();g.add(ball(P.cloud2,.26,V(0,0,0)));
+      hIdx.forEach(i=>{const h=dirs[i].clone().multiplyScalar(oh);g.add(ball(P.H,.15,h));g.add(stick(V(0,0,0),h,.05,P.stick));});
+      lpIdx.forEach(i=>g.add(lobe(P.cloud,dirs[i],.33,.13,.24)));return g;};
+    c.dA=tet(V(1,0,0));c.dB=tet(V(-1,0,0));
+    c.A=mk(c.dA,[0,1],[2,3]);c.B=mk(c.dB,[1,2],[0,3]);c.add(c.A);c.add(c.B);
+    c.bd=beads(7,P.glow);c.add(c.bd);
+    c.l1=label('δ+',P.labelHi,.26);c.l2=label('δ−',P.labelHi,.26);c.l3=label('H-bond',P.labelHi,.24);c.l4=label('O–H',P.label,.22);[c.l1,c.l2,c.l3,c.l4].forEach(s=>c.add(s));},
+  act(c,a,el){if(a==='rng')c.heat=+el.value;},
+  update(c,now){const t=now/1000,amp=reduce?0:.01+c.heat*.0009,extra=Math.max(0,(c.heat-60)/40)*2.2,k=c.k;
+    const jig=(s)=>V(Math.sin(t*7.1+s)*amp,Math.sin(t*6.3+s*2)*amp,Math.sin(t*5.7+s*3)*amp);
+    c.A.position.copy(V(-1.25,0,0)).add(jig(0));
+    const H1=c.A.position.clone().add(c.dA[0].clone().multiplyScalar(.96*k));
+    c.B.position.copy(H1).add(V(1.9*k+extra,0,0)).add(jig(5));
+    const op=Math.max(0,1-extra/1.1);setBeads(c.bd,H1.clone().add(V(.1,0,0)),c.B.position.clone().add(V(-.24,0,0)),op);
+    if(op>.9&&c.hbBroken)spark(c,H1.clone().lerp(c.B.position,.5),P.glow);c.hbBroken=op<.05?true:(op>.9?false:c.hbBroken);
+    c.l1.position.copy(H1).add(V(0,.32,0));c.l2.position.copy(c.B.position).add(V(-.15,.42,0));
+    c.l3.position.copy(H1).lerp(c.B.position,.5).add(V(0,-.3,0));c.l3.material.opacity=op;
+    c.l4.position.copy(c.A.position).lerp(H1,.5).add(V(0,-.3,0));
+    setStatus(c.heat<60?'<b>Held together</b> by the hydrogen bond (O–H···O). Slide the heat up.':extra<1.1?'<b>Getting hot…</b> the molecules shake and the H-bond stretches.':'<b>Boiling!</b> The H-bond is broken and the molecules fly apart. Every O–H bond is still there.');}
+},
+/* 7 */ {id:'vdw',title:'Van der Waals forces',bm:'Daya van der Waals',cam:6.2,rot:[.2,0],
+  analogy:"Van der Waals is the family name for weak pulls between molecules. Polar molecules like HCl act like tiny bar magnets: they turn around until the + end faces the − end of the next one.",
+  see:["δ+ end (H) attracts the δ− end (Cl) of the next molecule: a dipole–dipole force.","The other family member is London dispersion, which every molecule has (next scene).","Hydrogen bonding is a special, much stronger kind of dipole–dipole force."],
+  controls:`<button class="stk" data-a="mix">Mix them up</button><button class="stk" data-a="align" aria-pressed="true">Let them attract</button>`,
+  q:{t:"HCl molecules line up head to tail because…",o:["The δ+ H of one attracts the δ− Cl of the next","They share electrons with each other","They turn into H⁺ and Cl⁻ ions"],a:0,why:"Cl pulls the bonding electrons, so HCl has a δ− end and a δ+ end. Opposite ends attract: dipole–dipole."},
+  build(c){c.aligned=true;c.mols=[];c.links=[];
+    for(let r=0;r<2;r++)for(let i=0;i<3;i++){const g=new THREE.Group();
+      g.add(ball(P.Cl,.3,V(-.45,0,0)));g.add(ball(P.H,.16,V(.5,0,0)));g.add(stick(V(-.45,0,0),V(.5,0,0),.05,P.stick));const egg=ball(P.cloud,1,V(-.15,0,0),{transparent:true,opacity:.14,depthWrite:false});egg.scale.set(.95,.58,.58);g.add(egg);
+      const pts=points(320,.04);const p=pts.geometry.attributes.position.array;for(let j=0;j<320;j++){const cl=j<260,s=cl?.3:.16,cx=cl?-.45:.5;p[j*3]=cx+gauss()*s;p[j*3+1]=gauss()*s;p[j*3+2]=gauss()*s;}paint(pts,P.cloud);g.add(pts);
+      const dm=label('δ−',P.labelHi,.24);dm.position.set(-.45,.55,0);const dp=label('δ+',P.labelHi,.24);dp.position.set(.5,.42,0);g.add(dm);g.add(dp);
+      g.position.set((i-1)*1.8,(r?-1:1)*.95,0);g.userData={a:0,b:0,ta:0,tb:0,r,i};c.add(g);c.mols.push(g);}
+    for(let r=0;r<2;r++)for(let i=0;i<2;i++){const b=beads(5,P.glow);c.add(b);c.links.push([c.mols[r*3+i],c.mols[r*3+i+1],b]);}
+    c.mix=()=>c.mols.forEach(g=>{g.userData.ta=(Math.random()*2-1)*Math.PI;g.userData.tb=(Math.random()*2-1)*1.2;});},
+  act(c,a,btn){if(a==='mix'){c.aligned=false;c.mix();}if(a==='align'){c.aligned=true;c.mols.forEach(g=>{g.userData.ta=0;g.userData.tb=0;});}pressOnly(btn);},
+  update(c,now){const t=now/1000;let al=0;
+    c.mols.forEach((g,j)=>{const u=g.userData,f=reduce?1:.05;u.a+=(u.ta-u.a)*f;u.b+=(u.tb-u.b)*f;const w=reduce?0:.05;g.rotation.set(0,u.b+Math.sin(t*2+j)*w,u.a+Math.sin(t*1.7+j*2)*w);al+=Math.cos(u.a)*Math.cos(u.b);});
+    al=Math.max(0,al/6);const op=Math.max(0,(al-.85)/.15);
+    c.links.forEach(([g1,g2,b])=>{const h=V(.5,0,0).applyEuler(g1.rotation).add(g1.position),cl=V(-.45,0,0).applyEuler(g2.rotation).add(g2.position);setBeads(b,h,cl,op);});
+    setStatus(c.aligned?'<b>Lined up:</b> each δ+ H faces the δ− Cl of the next molecule. Lime dots = dipole–dipole attraction.':'<b>Mixed up:</b> random directions, weak attraction. Tap “Let them attract”.');}
+},
+/* 8 */ {id:'disp',title:'London dispersion',bm:'Daya serakan London',cam:6,rot:[.15,0],
+  analogy:"Electrons are like people in a room. If for a moment more people crowd to one side, the people in the next room feel the push and move too. One temporary dipole makes the next one, like a stadium wave.",
+  see:["The cloud shifts for a moment: one side becomes δ−, the other δ+.","This pushes the neighbour's electrons the same way, so δ− faces δ+ and they attract.","Bigger cloud = easier to wobble = stronger force = higher boiling point. All molecules have this force."],
+  controls:`<button class="stk" data-a="He" aria-pressed="true">He</button><button class="stk" data-a="Ar">Ar</button><button class="stk" data-a="Xe">Xe</button><button class="stk" data-a="pause">Pause</button>`,
+  q:{t:"Which has stronger dispersion forces?",o:["He (small cloud, b.p. −269 °C)","Xe (big cloud, b.p. −108 °C)"],a:1,why:"Xe has many more electrons in a big, loose cloud. It wobbles more, so the temporary dipoles are bigger."},
+  build(c){c.paused=false;c.T=0;c.last=performance.now();c.el='He';
+    c.setup=el=>{[...c.children].forEach(o=>c.remove(o));c.el=el;const sz={He:.3,Ar:.5,Xe:.75}[el];c.sz=sz;c.A=sz*.45;c.sp=sz*3.4+.5;c.atoms=[];c.links=[];
+      for(let i=0;i<3;i++){const x=(i-1)*c.sp,n=ball(P.H,.06,V(x,0,0));c.add(n);const pts=points(1100,.04);pts.add(ball(P.cloud,sz*2,null,{transparent:true,opacity:.14,depthWrite:false}));const p=pts.geometry.attributes.position.array;
+        for(let j=0;j<1100;j++){p[j*3]=gauss()*sz;p[j*3+1]=gauss()*sz;p[j*3+2]=gauss()*sz;}paint(pts,P.cloud);pts.position.x=x;c.add(pts);
+        const L={lp:label('δ+',P.labelHi,.24),lm:label('δ−',P.labelHi,.24),rp:label('δ+',P.labelHi,.24),rm:label('δ−',P.labelHi,.24)};
+        Object.entries(L).forEach(([k,s])=>{s.position.set(x+(k[0]==='l'?-1:1)*sz*1.9,sz*1.3,0);c.add(s);});c.atoms.push({x,pts,L});}
+      for(let i=0;i<2;i++){const b=beads(5,P.glow);c.add(b);c.links.push(b);}
+      fitCam(4+c.sp*1.5);};
+    c.setup('He');},
+  act(c,a,btn){if(a==='pause'){c.paused=!c.paused;btn.setAttribute('aria-pressed',String(c.paused));btn.textContent=c.paused?'Play':'Pause';return;}
+    c.setup(a);btn.parentElement.querySelectorAll('[data-a="He"],[data-a="Ar"],[data-a="Xe"]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));},
+  update(c,now){const dt=(now-c.last)/1000;c.last=now;if(!c.paused&&!reduce)c.T+=dt;const T=c.T,f=t=>c.A*(Math.sin(2.2*t)+.6*Math.sin(3.7*t+1.3))/1.6;
+    const o=c.atoms.map((a,i)=>f(T-.25*i));
+    c.atoms.forEach((a,i)=>{a.pts.position.x=a.x+o[i];const s=Math.min(1,Math.abs(o[i])/(c.A*.55)),right=o[i]>0;
+      a.L.rm.material.opacity=right?s:0;a.L.lp.material.opacity=right?s:0;a.L.lm.material.opacity=right?0:s;a.L.rp.material.opacity=right?0:s;});
+    c.links.forEach((b,i)=>{const same=Math.sign(o[i])===Math.sign(o[i+1]),op=same?Math.min(1,Math.min(Math.abs(o[i]),Math.abs(o[i+1]))/(c.A*.45)):0;
+      setBeads(b,V(c.atoms[i].x+c.sz*1.4,0,0),V(c.atoms[i+1].x-c.sz*1.4,0,0),op);});
+    const bp={He:'−269 °C',Ar:'−186 °C',Xe:'−108 °C'}[c.el];
+    setStatus(`<b>${c.el}</b> · boiling point ${bp}. ${c.el==='He'?'Small, tight cloud: tiny wobble, weak pull.':c.el==='Ar'?'Medium cloud: more wobble.':'Big, loose cloud: large wobble, strongest pull.'} ${c.paused?'(paused: look at δ− facing δ+)':''}`);}
+}
+];
+
+/* ---------- engine ---------- */
+let cur=0,ctx=null;const solved=new Set();
+function fitCam(z){const a=camera.aspect||1;camera.position.set(0,0,z/Math.min(1,a*1.05));camera.lookAt(0,0,0);camera.updateProjectionMatrix();if(ctx)ctx.camZ=z;}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;fitCam(ctx?ctx.camZ:5);}
+new ResizeObserver(resize).observe(stage);
+function clear(){while(world.children.length){const o=world.children.pop();o.traverse(m=>{if(m.geometry&&![SPH,CYL,BOX,CONE].includes(m.geometry))m.geometry.dispose();});}}
+function pressOnly(btn){if(!btn||!btn.parentElement)return;btn.parentElement.querySelectorAll(':scope > button.stk').forEach(b=>{if(!['snap','clear','pause','outline','hotel','tour'].includes(b.dataset.a))b.setAttribute('aria-pressed',String(b===btn));});}
+function gotoScene(id,after){const i=SCENES.findIndex(s=>s.id===id);if(i<0)return;load(i);if(after)after(ctx);}
+
+function load(i){
+  cur=i;clear();const S=SCENES[i];
+  const root=new THREE.Group();world.add(root);world.rotation.set(S.rot[0],S.rot[1],0);
+  ctx=root;ctx.camZ=S.cam;S.build(ctx);fitCam(ctx.camZ);
+  $('stTitle').innerHTML=`${i+1}. ${S.title}<small>${S.bm}</small>`;
+  $('cTitle').innerHTML=`${S.title}<small>${S.bm}</small>`;
+  $('analogy').textContent=S.analogy;
+  $('see').innerHTML=S.see.map(s=>`<li>${s}</li>`).join('');
+  const cb=$('controls');cb.innerHTML=S.controls;
+  cb.querySelectorAll('button[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a.startsWith('v-')){(ctx.dotsObjs||[]).forEach(o=>o.visible=a!=='v-out');(ctx.surfObjs||[]).forEach(o=>o.visible=a!=='v-dots');
+      b.parentElement.querySelectorAll('button[data-a^="v-"]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));return;}
+    S.act(ctx,a,b);});
+  const r=cb.querySelector('#rng');if(r)r.oninput=()=>S.act(ctx,'rng',r);
+  const q=S.q;$('qText').textContent=q.t;$('qFb').hidden=true;
+  const qo=$('qOpts');qo.innerHTML='';q.o.forEach((t,k)=>{const b=document.createElement('button');b.className='stk';b.type='button';b.textContent=t;
+    b.onclick=()=>{const ok=k===q.a,fb=$('qFb');fb.hidden=false;fb.className='fb '+(ok?'ok':'bad');
+      fb.innerHTML=`<span class="h">${ok?'✓ Betul / Correct':'✗ Cuba lagi / Try again'}</span>${ok?q.why:'Look at the 3D view again, then try another answer.'}`;
+      b.classList.add(ok?'right':'wrong');if(ok){solved.add(S.id);qo.querySelectorAll('button').forEach(x=>x.disabled=true);renderNav();}};qo.appendChild(b);});
+  const nx=$('nextBtn');if(i<SCENES.length-1){nx.hidden=false;nx.textContent=`Next: ${SCENES[i+1].title} →`;nx.onclick=()=>{load(i+1);stage.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});};}else nx.hidden=true;
+  renderNav();store.set('ecl.scene',String(i));
+}
+function renderNav(){
+  const nav=$('nav');nav.innerHTML='';
+  SCENES.forEach((S,i)=>{const b=document.createElement('button');b.className='stk';b.type='button';b.setAttribute('aria-pressed',String(i===cur));
+    b.innerHTML=`<span class="n">${i+1}</span>${S.title}${solved.has(S.id)?' <span class="ok" aria-label="done">✓</span>':''}`;b.onclick=()=>load(i);nav.appendChild(b);});
+  $('pips').innerHTML=`Checks ${solved.size}/${SCENES.length} `+SCENES.map(S=>`<span class="pip${solved.has(S.id)?' on':''}" title="${S.title}"></span>`).join('');
+}
+
+let drag=null;
+stage.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};stage.setPointerCapture(e.pointerId);});
+stage.addEventListener('pointermove',e=>{if(!drag)return;world.rotation.y+=(e.clientX-drag.x)*.01;world.rotation.x=Math.max(-1.5,Math.min(1.5,world.rotation.x+(e.clientY-drag.y)*.01));drag={x:e.clientX,y:e.clientY};});
+['pointerup','pointercancel'].forEach(ev=>stage.addEventListener(ev,()=>drag=null));
+let downAt=null;const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+stage.addEventListener('pointerdown',e=>{downAt={x:e.clientX,y:e.clientY};});
+stage.addEventListener('pointerup',e=>{const S=SCENES[cur];if(!downAt||!S.pick||!ctx.pickables)return;
+  if(Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)>6)return;const r=stage.getBoundingClientRect();
+  ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);
+  const hit=ray.intersectObjects(ctx.pickables)[0];if(hit)S.pick(ctx,hit.object);});
+
+function frame(now){
+  updateSparks(now);
+  if(ctx){SCENES[cur].update(ctx,now);if(!drag&&!reduce&&['cloud','shapes','hyb','sigma','pi'].includes(SCENES[cur].id))world.rotation.y+=.0025;}
+  renderer.render(scene,camera);requestAnimationFrame(frame);
+}
+function applyTheme(){if(theme==='day')document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');
+  $('themeBtn').textContent=theme==='night'?'☀ Day':'☾ Night';setPalette();}
+$('themeBtn').onclick=()=>{theme=theme==='night'?'day':'night';store.set('ecl.theme',theme);applyTheme();load(cur);};
+
+const sb=$('soundBtn'),paintSound=()=>{sb.textContent=soundOn?'🔊 Sound on':'🔇 Sound off';sb.setAttribute('aria-pressed',String(soundOn));};
+sb.onclick=()=>{soundOn=!soundOn;store.set('ecl.sound',soundOn?'on':'off');paintSound();};paintSound();
+applyTheme();resize();
+let start=parseInt(store.get('ecl.scene','0'),10);if(!(start>=0&&start<SCENES.length))start=0;
+load(start);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
