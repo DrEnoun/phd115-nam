@@ -262,7 +262,7 @@ window.NAMSHIFT={start(C){
    <p style="margin:0 0 4px">${right} of ${S.res.length} answered correctly. ${msg}</p>${!isBest?`<p class="mut" style="margin:0;font-size:.9rem">Your best is still ${prev.best}.</p>`:''}</div>
   <div class="card"><h2>Outcome report</h2><p class="mut" style="font-size:.9rem">How you did on each learning outcome in this shift.</p>${C.los.map(l=>{const b=by[l[0]];const p=b.n?b.c/b.n:0;const ok=b.n&&p>=.8;
     return `<div class="sh-lo"><span class="tag">${l[0]}</span><span class="t">${esc(l[1])}</span><span class="v ${b.n?(ok?'ok':'no'):''}">${b.n?b.c+'/'+b.n+(ok?' ✓':' · revise'):'–'}</span><span class="bar"><i style="width:${100*p}%;background:${ok?'var(--ok)':'var(--heat)'}"></i></span></div>`}).join('')}
-   <div class="row"><button class="btn big" id="shAgain">Work another shift</button><a class="btn ghost" href="${C.slides}">Revise with the slides</a></div></div>
+   <div class="row"><button class="btn big" id="shAgain">Work another shift</button><a class="btn ghost" href="${C.slides}">Revise with the slides</a><a class="btn ghost" href="${C.hub}">⌂ Back to the Study Hub</a></div></div>
   <div class="card"><h2>Leaderboard, this topic</h2>${R()?`<p style="margin:0 0 10px;font-size:.92rem">🏆 ${esc(R())}</p>`:''}<div id="shBoard"><p class="mut" style="margin:0">Sending your score…</p></div><p style="margin:10px 0 0;font-size:.9rem"><a href="${C.board}" style="color:var(--cold)">Full leaderboard, all topics</a></p></div>`;
   document.getElementById('shAgain').onclick=begin;window.scrollTo({top:0});
   const send=window.NAMTRACK&&NAMTRACK.sync?NAMTRACK.sync():Promise.resolve();
