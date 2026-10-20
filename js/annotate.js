@@ -14,7 +14,7 @@ try{const o=JSON.parse(localStorage.getItem(PENK)||'null');if(o){penSeen=true;fi
 function savePen(){try{localStorage.setItem(PENK,JSON.stringify({finger:fingerDraw}))}catch(_){}}
 const tnow=()=>performance.now();
 const penRecent=()=>activeType==='pen'||tnow()-lastPen<500;          // pencil touching, or lifted a moment ago
-const big=e=>e.pointerType==='touch'&&Math.max(e.width||0,e.height||0)>50; // a wide contact is a palm, not a finger
+const big=e=>e.pointerType==='touch'&&Math.max(e.width||0,e.height||0)>140; // only a very wide contact is a palm
 let ink={};try{ink=JSON.parse(sessionStorage.getItem(KEY)||'{}')}catch(_){}
 const G=(0,eval);const cur=()=>{try{const v=G('typeof cur!=="undefined"?cur:0');return typeof v==='number'?v:0}catch(_){return 0}};
 const css=`
@@ -89,8 +89,26 @@ function drawStroke(ctx,s){const p=s.p;if(!p.length)return;ctx.save();ctx.scale(
    ctx.moveTo((pa[0]+a[0])/2,(pa[1]+a[1])/2);ctx.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);ctx.stroke()}
   const a=p[p.length-1];ctx.beginPath();ctx.moveTo(p.length>1?(p[p.length-2][0]+a[0])/2:a[0],p.length>1?(p[p.length-2][1]+a[1])/2:a[1]);ctx.lineTo(a[0],a[1]);ctx.lineWidth=s.w*(.4+.9*a[2]);ctx.stroke()}
  ctx.restore()}
+// ---- undo history and shape editing (move a shape by dragging it, resize by its dots)
+let hist=[],sel=null,edit=null,tapI=null,erPushed=false;
+function pushHist(){const k=SF.key();hist.push({k,v:JSON.stringify(ink[k]||[])});if(hist.length>150)hist.shift()}
+function undo(){const k=SF.key();for(let i=hist.length-1;i>=0;i--){if(hist[i].k===k){ink[k]=JSON.parse(hist[i].v);hist.splice(i,1);sel=null;save();redraw();return}}
+ strokesNow().pop();sel=null;save();redraw()}
+const upx=()=>{const r=SF.live.getBoundingClientRect();return r.width?SF.W/r.width:1};   // slide units per screen pixel
+function box(st){const [a,b]=st.p;return [Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[0],b[0]),Math.max(a[1],b[1])]}
+function handles(st){if(st.t==='arrow')return [st.p[0],st.p[1]];const [x0,y0,x1,y1]=box(st);return [[x0,y0],[x1,y0],[x1,y1],[x0,y1]]}
+function selOk(){return sel&&sel.surf===SF&&sel.k===SF.key()&&(ink[sel.k]||[]).includes(sel.s)}
+function shapeHit(q){const u=upx(),H=26*u,R=16*u,L=ink[SF.key()]||[];
+ if(selOk()){const hs=handles(sel.s);for(let i=0;i<hs.length;i++)if(Math.hypot(hs[i][0]-q[0],hs[i][1]-q[1])<H)return {s:sel.s,h:i};
+  const [x0,y0,x1,y1]=box(sel.s);if(sel.s.t!=='arrow'&&q[0]>x0-R&&q[0]<x1+R&&q[1]>y0-R&&q[1]<y1+R)return {s:sel.s,h:-1}}
+ for(let i=L.length-1;i>=0;i--){const st=L[i];if(!SHAPES.includes(st.t))continue;if(shapePts(st).some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<R+st.w/2))return {s:st,h:-1}}
+ return null}
+function drawSel(ctx){if(!on||!SHAPES.includes(tool)||!selOk())return;const st=sel.s,u=upx();ctx.save();ctx.scale(SF.K,SF.K);
+ if(st.t!=='arrow'){const [x0,y0,x1,y1]=box(st),m=8*u;ctx.setLineDash([6*u,5*u]);ctx.lineWidth=1.5*u;ctx.strokeStyle='#2F6F9F';ctx.strokeRect(x0-m,y0-m,x1-x0+2*m,y1-y0+2*m);ctx.setLineDash([])}
+ for(const h of handles(st)){ctx.beginPath();ctx.arc(h[0],h[1],7*u,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=2.5*u;ctx.strokeStyle='#2F6F9F';ctx.stroke()}
+ ctx.restore()}
 let shown=-1;
-function redraw(){const s=SF;s.bc.clearRect(0,0,s.base.width,s.base.height);if(s===S0)shown=cur();if(hidden)return;(ink[s.key()]||[]).forEach(k=>drawStroke(s.bc,k))}
+function redraw(){const s=SF;s.bc.clearRect(0,0,s.base.width,s.base.height);if(s===S0)shown=cur();if(hidden)return;(ink[s.key()]||[]).forEach(k=>drawStroke(s.bc,k));drawSel(s.bc)}
 setInterval(()=>{if(SF===S0&&cur()!==shown)redraw()},150);
 
 // ---- zoomed picture: draw on it, the ink moves and scales with the picture
@@ -108,9 +126,9 @@ let drawing=null,laser=[],laserRAF=0,active=null;
 function pt(e){const r=live().getBoundingClientRect();return [(e.clientX-r.left)/r.width*SF.W,(e.clientY-r.top)/r.height*SF.H,e.pointerType==='pen'?(e.pressure||.5):.5]}
 function allowed(e){if(e.pointerType==='pen'){if(!penSeen){penSeen=true;fingerDraw=false;savePen();bar&&paint();toast('Pencil found! Only the pencil draws now. Swipe with a finger to change slides.')}return true}
  if(e.pointerType==='touch')return fingerDraw&&!big(e)&&!penRecent();return e.button===0}
-function eraseAt(q){const S=strokesNow();const r=SIZES.er[size];let hit=false;for(let i=S.length-1;i>=0;i--){const pts=SHAPES.includes(S[i].t)?shapePts(S[i]):S[i].p;if(pts.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<r+S[i].w/2)){S.splice(i,1);hit=true}}if(hit){save();redraw()}}
+function eraseAt(q){const S=strokesNow();const r=SIZES.er[size];let hit=false;for(let i=S.length-1;i>=0;i--){const pts=SHAPES.includes(S[i].t)?shapePts(S[i]):S[i].p;if(pts.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<r+S[i].w/2)){if(!erPushed){pushHist();erPushed=true}S.splice(i,1);hit=true}}if(hit){save();redraw()}}
 function picAt(x,y){if(!window.ZOOM)return null;for(const el of document.elementsFromPoint(x,y)){if(el.tagName==='IMG'&&ZOOM.can(el))return el}return null}
-function endAll(){tp.clear();gest=0;gVoid=false;active=null;activeType=null;drawing=null;const s=SF;s.lc.clearRect(0,0,s.live.width,s.live.height)}
+function endAll(){tp.clear();gest=0;gVoid=false;active=null;activeType=null;edit=null;tapI=null;drawing=null;const s=SF;s.lc.clearRect(0,0,s.live.width,s.live.height)}
 // swipe to change slide while drawing: two fingers, or one finger when only the pencil draws.
 // On a zoomed picture the same gestures move (one finger) and pinch-zoom (two fingers) the picture instead.
 const tp=new Map();let gest=0,gVoid=false,wAcc=0,wT=0,wLock=0,gPrev=null;
@@ -141,19 +159,32 @@ function bind(c){
   if(gestDown(e))return;if(!allowed(e))return;if(gest)gVoid=true;e.preventDefault();
   if(e.pointerType==='pen'){lastPen=tnow();if(active!==null&&activeType!=='pen'){active=null;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}}
   if(active!==null)return;active=e.pointerId;activeType=e.pointerType;try{c.setPointerCapture(e.pointerId)}catch(_){}
+  tapI={x:e.clientX,y:e.clientY,t:tnow(),moved:false};erPushed=false;
   const q=pt(e);if(tool==='er'){eraseAt(q);return}if(tool==='laser'){laser.push([q[0],q[1],performance.now()]);runLaser();return}
-  if(SHAPES.includes(tool)){drawing={t:tool,c:col,w:SIZES.pen[size]*1.15,p:[q,q]};liveDraw();return}
+  if(SHAPES.includes(tool)){const hit=shapeHit(q);
+   if(hit){pushHist();sel={s:hit.s,k:SF.key(),surf:SF};edit={h:hit.h,q0:q,p0:hit.s.p.map(a=>a.slice()),b0:box(hit.s),moved:false};redraw();return}
+   drawing={t:tool,c:col,w:SIZES.pen[size]*1.15,p:[q,q]};liveDraw();return}
   drawing={t:tool,c:tool==='hl'?hcol:col,w:SIZES[tool==='hl'?'hl':'pen'][size],p:[q]};liveDraw()});
  c.addEventListener('pointermove',e=>{if(!on)return;if(e.pointerType==='pen')lastPen=tnow();if(gestMove(e))return;if(e.pointerId!==active)return;e.preventDefault();
+  if(tapI&&Math.hypot(e.clientX-tapI.x,e.clientY-tapI.y)>8)tapI.moved=true;
+  if(edit){const q=pt(e),dx=q[0]-edit.q0[0],dy=q[1]-edit.q0[1],st=sel.s;if(Math.abs(dx)+Math.abs(dy)>.5)edit.moved=true;
+   if(edit.h<0)st.p=edit.p0.map(a=>[a[0]+dx,a[1]+dy,a[2]]);
+   else if(st.t==='arrow'){st.p[edit.h]=[edit.p0[edit.h][0]+dx,edit.p0[edit.h][1]+dy,edit.p0[edit.h][2]]}
+   else{let [x0,y0,x1,y1]=edit.b0;const h=edit.h;if(h===0||h===3)x0+=dx;else x1+=dx;if(h===0||h===1)y0+=dy;else y1+=dy;st.p=[[x0,y0,.5],[x1,y1,.5]]}
+   redraw();return}
   if(drawing&&SHAPES.includes(drawing.t)){drawing.p[1]=pt(e);liveDraw();return}
   const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
   for(const ev of (evs.length?evs:[e])){const q=pt(ev);if(tool==='er')eraseAt(q);else if(tool==='laser')laser.push([q[0],q[1],performance.now()]);else if(drawing){const l=drawing.p[drawing.p.length-1];if(Math.hypot(q[0]-l[0],q[1]-l[1])>.6)drawing.p.push(q)}}
   if(drawing)liveDraw()});
  c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end)}
 function end(e){if(e.pointerType==='pen')lastPen=tnow();if(gestUp(e)&&e.pointerId!==active)return;if(e.pointerId!==active)return;active=null;activeType=null;
+ const tap=tapI&&!tapI.moved&&tnow()-tapI.t<300&&e.type==='pointerup';tapI=null;
+ if(edit){const st=sel.s;if(edit.moved){if(st.t!=='arrow'){const b=box(st);st.p=[[b[0],b[1],.5],[b[2],b[3],.5]]}save()}else hist.pop();edit=null;redraw();return}
+ const im=tap&&tool!=='er'&&!SF.zoom?picAt(e.clientX,e.clientY):null;
  if(drawing){const d=drawing;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height);
   const tiny=SHAPES.includes(d.t)&&Math.hypot(d.p[1][0]-d.p[0][0],d.p[1][1]-d.p[0][1])<6;
-  if(!tiny){strokesNow().push(d);save();if(hidden){hidden=false;paint()}}redraw()}}
+  if(tiny||im){if(tiny)sel=null}else{pushHist();strokesNow().push(d);if(SHAPES.includes(d.t))sel={s:d,k:SF.key(),surf:SF};save();if(hidden){hidden=false;paint()}}redraw()}
+ if(im){laser=[];ZOOM.open(im)}}
 function liveDraw(){SF.lc.clearRect(0,0,SF.live.width,SF.live.height);if(drawing)drawStroke(SF.lc,drawing)}
 function runLaser(){if(laserRAF)return;const step=()=>{const now=performance.now(),s=SF,lc=s.lc;laser=laser.filter(p=>now-p[2]<700);if(drawing)return;lc.clearRect(0,0,s.live.width,s.live.height);
  lc.save();lc.scale(s.K,s.K);for(let i=1;i<laser.length;i++){const a=laser[i-1],b=laser[i],f=1-(now-b[2])/700;lc.strokeStyle=`rgba(255,40,40,${.85*f})`;lc.lineWidth=6*f+2;lc.lineCap='round';lc.beginPath();lc.moveTo(a[0],a[1]);lc.lineTo(b[0],b[1]);lc.stroke()}
@@ -190,15 +221,15 @@ function build(){bar=document.createElement('div');bar.id='ink-bar';bar.hidden=t
  document.body.appendChild(bar);
  ['pointerdown','pointerup','click','touchstart','touchend'].forEach(t=>bar.addEventListener(t,e=>e.stopPropagation()));
  bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.tool){tool=b.dataset.tool;pickZoom=false;if(SHAPES.includes(tool))toast('Drag on the slide to draw a '+NAMES[tool].toLowerCase()+'.')}
-  else if(b.dataset.c){if(tool==='hl')hcol=b.dataset.c;else{col=b.dataset.c;if(!['pen',...SHAPES].includes(tool))tool='pen'}}else if(b.dataset.s)size=+b.dataset.s;
-  else{const a=b.dataset.a;if(a==='undo'){strokesNow().pop();save();redraw()}else if(a==='clear'){if(strokesNow().length&&confirm('Clear all drawing here?')){ink[SF.key()]=[];save();redraw()}}
+  if(b.dataset.tool){tool=b.dataset.tool;pickZoom=false;if(SHAPES.includes(tool))toast('Drag to draw a '+NAMES[tool].toLowerCase()+'. Drag a shape to move it, or its dots to resize it.')}
+  else if(b.dataset.c){if(tool==='hl')hcol=b.dataset.c;else{col=b.dataset.c;if(!['pen',...SHAPES].includes(tool))tool='pen';if(SHAPES.includes(tool)&&selOk()){pushHist();sel.s.c=col;save()}}}else if(b.dataset.s){size=+b.dataset.s;if(SHAPES.includes(tool)&&selOk()){pushHist();sel.s.w=SIZES.pen[size]*1.15;save()}}
+  else{const a=b.dataset.a;if(a==='undo'){undo()}else if(a==='clear'){if(strokesNow().length&&confirm('Clear all drawing here?')){pushHist();ink[SF.key()]=[];sel=null;save();redraw()}}
    else if(a==='hide'){hidden=!hidden;redraw()}else if(a==='finger'){fingerDraw=!fingerDraw;savePen();toast(fingerDraw?'Finger drawing on. Swipe with two fingers to change slides.':'Pencil only. Swipe with a finger to change slides.')}
    else if(a==='zoom'){if(window.ZOOM&&ZOOM.isOpen()){toast('This picture is already zoomed.')}else{pickZoom=!pickZoom;if(pickZoom)toast('Now tap a picture to zoom it.')}}
    else if(a==='prev'||a==='next'){if(window.ZOOM&&ZOOM.isOpen())ZOOM.close();const n=document.getElementById(a==='prev'?'bPrev':'bNext');n&&n.click();setTimeout(redraw,60)}
    else if(a==='start'){if(window.ZOOM&&ZOOM.isOpen())ZOOM.close();if(typeof window.go==='function'){window.go(0);setTimeout(redraw,60)}}
    else if(a==='side'){bar.classList.remove('moved');bar.style.left=bar.style.top='';bar.classList.toggle('right');savePos()}else if(a==='min'){setMini(!bar.classList.contains('mini'))}else if(a==='done')toggle(false)}
-  paint()});initDrag();restorePos();paint()}
+  paint();redraw()});initDrag();restorePos();paint()}
 const PKEY='phd115-inkbar';
 function savePos(){try{const mv=bar.classList.contains('moved');localStorage.setItem(PKEY,JSON.stringify({x:mv?parseFloat(bar.style.left):null,y:mv?parseFloat(bar.style.top):null,right:bar.classList.contains('right'),mini:bar.classList.contains('mini')}))}catch(_){}}
 function clampBar(){if(!bar||!bar.classList.contains('moved')||bar.hidden)return;const r=bar.getBoundingClientRect();let x=parseFloat(bar.style.left)||0,y=parseFloat(bar.style.top)||0;
@@ -228,7 +259,7 @@ document.addEventListener('keydown',e=>{const t=e.target;if(t&&(t.tagName==='INP
  if((e.key==='d'||e.key==='D')&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();e.stopImmediatePropagation();toggle();return}
  if(on&&bar&&(e.key==='m'||e.key==='M')&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();e.stopImmediatePropagation();setMini(!bar.classList.contains('mini'));return}
  if(on&&e.key==='Escape'){e.stopImmediatePropagation();toggle(false);return}
- if(on&&(e.ctrlKey||e.metaKey)&&(e.key==='z'||e.key==='Z')){e.preventDefault();strokesNow().pop();save();redraw()}
+ if(on&&(e.ctrlKey||e.metaKey)&&(e.key==='z'||e.key==='Z')){e.preventDefault();undo()}
  if(on&&(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown'||e.key==='PageUp'||e.key==='Home'))setTimeout(redraw,60)},true);
 addEventListener('resize',()=>setTimeout(()=>{if(SF===S0)resize();clampBar()},60));document.addEventListener('fullscreenchange',()=>setTimeout(()=>SF===S0&&resize(),120));document.addEventListener('webkitfullscreenchange',()=>setTimeout(()=>SF===S0&&resize(),120));
 window.INK={toggle,clearAll(){ink={};save();redraw()},resize};
