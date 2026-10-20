@@ -8,6 +8,13 @@ const COLS=['#E0463C','#2F6F9F','#2E7D4F','#1B2A41','#B86E00','#FFFFFF'],HCOLS=[
 const SIZES={pen:[2.5,4.5,8],hl:[16,26,40],er:[14,26,44]};
 const SHAPES=['rect','ell','arrow'];
 let on=false,tool='pen',col=COLS[0],hcol=HCOLS[0],size=1,hidden=false,penSeen=false,fingerDraw=true,pickZoom=false;
+// ---- palm rejection: once a pencil is used, the palm is ignored on every page of this device
+const PENK='phd115-inkpen';let lastPen=-1e9,activeType=null,gT=0,blockClick=0;
+try{const o=JSON.parse(localStorage.getItem(PENK)||'null');if(o){penSeen=true;fingerDraw=!!o.finger}}catch(_){}
+function savePen(){try{localStorage.setItem(PENK,JSON.stringify({finger:fingerDraw}))}catch(_){}}
+const tnow=()=>performance.now();
+const penRecent=()=>activeType==='pen'||tnow()-lastPen<500;          // pencil touching, or lifted a moment ago
+const big=e=>e.pointerType==='touch'&&Math.max(e.width||0,e.height||0)>50; // a wide contact is a palm, not a finger
 let ink={};try{ink=JSON.parse(sessionStorage.getItem(KEY)||'{}')}catch(_){}
 const G=(0,eval);const cur=()=>{try{const v=G('typeof cur!=="undefined"?cur:0');return typeof v==='number'?v:0}catch(_){return 0}};
 const css=`
@@ -45,6 +52,7 @@ const css=`
 #ink-bar[hidden]{display:none!important}
 #ink-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:2147483101;background:rgba(27,42,65,.92);color:#fff;font:600 13px Lexend,system-ui,sans-serif;padding:8px 14px;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .25s}
 @media (max-height:620px){#ink-bar{grid-template-columns:repeat(3,36px)}#ink-bar button{width:36px;height:36px}#ink-bar [data-a=done]{width:120px}}
+html.ink-on,html.ink-on body{touch-action:none;overscroll-behavior:none}
 @media print{#ink-bar,#ink-toast{display:none}}`;
 const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
@@ -98,19 +106,19 @@ function paintZoomBtn(){const b=document.querySelector('.zm-draw');if(b)b.setAtt
 // ---- pointer input
 let drawing=null,laser=[],laserRAF=0,active=null;
 function pt(e){const r=live().getBoundingClientRect();return [(e.clientX-r.left)/r.width*SF.W,(e.clientY-r.top)/r.height*SF.H,e.pointerType==='pen'?(e.pressure||.5):.5]}
-function allowed(e){if(e.pointerType==='pen'){if(!penSeen){penSeen=true;fingerDraw=false;bar&&paint();toast('Pencil found! Only the pencil draws now. Swipe with a finger to change slides.')}return true}
- if(e.pointerType==='touch')return fingerDraw;return e.button===0}
+function allowed(e){if(e.pointerType==='pen'){if(!penSeen){penSeen=true;fingerDraw=false;savePen();bar&&paint();toast('Pencil found! Only the pencil draws now. Swipe with a finger to change slides.')}return true}
+ if(e.pointerType==='touch')return fingerDraw&&!big(e)&&!penRecent();return e.button===0}
 function eraseAt(q){const S=strokesNow();const r=SIZES.er[size];let hit=false;for(let i=S.length-1;i>=0;i--){const pts=SHAPES.includes(S[i].t)?shapePts(S[i]):S[i].p;if(pts.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<r+S[i].w/2)){S.splice(i,1);hit=true}}if(hit){save();redraw()}}
 function picAt(x,y){if(!window.ZOOM)return null;for(const el of document.elementsFromPoint(x,y)){if(el.tagName==='IMG'&&ZOOM.can(el))return el}return null}
-function endAll(){tp.clear();gest=0;gVoid=false;active=null;drawing=null;const s=SF;s.lc.clearRect(0,0,s.live.width,s.live.height)}
+function endAll(){tp.clear();gest=0;gVoid=false;active=null;activeType=null;drawing=null;const s=SF;s.lc.clearRect(0,0,s.live.width,s.live.height)}
 // swipe to change slide while drawing: two fingers, or one finger when only the pencil draws.
 // On a zoomed picture the same gestures move (one finger) and pinch-zoom (two fingers) the picture instead.
 const tp=new Map();let gest=0,gVoid=false,wAcc=0,wT=0,wLock=0,gPrev=null;
 function nav(d){const n=document.getElementById(d<0?'bNext':'bPrev');if(n){n.click();setTimeout(redraw,60)}}
 function gInfo(){const v=[...tp.values()];const cx=v.reduce((a,q)=>a+q.x,0)/v.length,cy=v.reduce((a,q)=>a+q.y,0)/v.length;const d=v.length>1?Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y):0;return {cx,cy,d,n:v.length}}
 function gestDown(e){if(e.pointerType!=='touch')return false;tp.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,t:performance.now()});try{live().setPointerCapture(e.pointerId)}catch(_){}
- const penBusy=active!==null&&!tp.has(active);
- if(tp.size>=2||!fingerDraw||penBusy){if(!gest){gest=1;gVoid=penBusy}
+ const penBusy=(active!==null&&!tp.has(active))||penRecent(),palm=big(e);
+ if(tp.size>=2||!fingerDraw||penBusy||palm){if(!gest){gest=1;gT=tnow();gVoid=penBusy||palm}else if(palm||penBusy)gVoid=true
   if(active!==null&&!penBusy&&tp.has(active)){active=null;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}
   if(tp.size>=2)for(const v of tp.values()){v.x0=v.x;v.y0=v.y}
   gPrev=gInfo();e.preventDefault();return true}return false}
@@ -119,8 +127,8 @@ function gestMove(e){const v=tp.get(e.pointerId);if(!v)return false;v.x=e.client
  return true}
 function gestUp(e){const v=tp.get(e.pointerId);if(!v)return false;const was=gest;
  if(gest&&!gest.done&&!SF.zoom&&tp.size>=1){let dx=0,dy=0;for(const q of tp.values()){dx+=q.x-q.x0;dy+=q.y-q.y0}dx/=tp.size;dy/=tp.size;
-  if(!gVoid&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.2){nav(dx);gest={done:1}}
-  else if(!gVoid&&tp.size===1&&Math.hypot(dx,dy)<8&&performance.now()-v.t<400){const im=picAt(e.clientX,e.clientY);if(im){ZOOM.open(im);gest={done:1}}}}
+  if(!gVoid&&tnow()-gT<800&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.2){nav(dx);gest={done:1}}
+  else if(!gVoid&&!penRecent()&&tp.size===1&&Math.hypot(dx,dy)<8&&tnow()-v.t<300){const im=picAt(e.clientX,e.clientY);if(im){ZOOM.open(im);gest={done:1}}}}
  tp.delete(e.pointerId);if(tp.size)gPrev=gInfo();else{gest=0;gVoid=false;gPrev=null}return !!was}
 function bind(c){
  ['pointerdown','pointermove','pointerup','pointercancel','click','dblclick','touchstart','touchmove','touchend','mousedown','mouseup','wheel'].forEach(t=>c.addEventListener(t,e=>{if(on)e.stopPropagation()},{passive:false}));
@@ -129,18 +137,20 @@ function bind(c){
   if(Math.abs(e.deltaX)<=Math.abs(e.deltaY))return;const now=performance.now();if(now-wT>300)wAcc=0;wT=now;wAcc+=e.deltaX;
   if(now>wLock&&Math.abs(wAcc)>90){nav(-wAcc);wAcc=0;wLock=now+700}},{passive:false});
  c.addEventListener('pointerdown',e=>{if(!on)return;
-  if(pickZoom){e.preventDefault();const im=picAt(e.clientX,e.clientY);pickZoom=false;paint();if(im)ZOOM.open(im);else toast('Tap on a picture to zoom it.');return}
-  if(gestDown(e))return;if(!allowed(e))return;if(gest)gVoid=true;e.preventDefault();if(active!==null)return;active=e.pointerId;try{c.setPointerCapture(e.pointerId)}catch(_){}
+  if(pickZoom){if(e.pointerType==='touch'&&(big(e)||penRecent()))return;e.preventDefault();const im=picAt(e.clientX,e.clientY);pickZoom=false;paint();if(im)ZOOM.open(im);else toast('Tap on a picture to zoom it.');return}
+  if(gestDown(e))return;if(!allowed(e))return;if(gest)gVoid=true;e.preventDefault();
+  if(e.pointerType==='pen'){lastPen=tnow();if(active!==null&&activeType!=='pen'){active=null;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}}
+  if(active!==null)return;active=e.pointerId;activeType=e.pointerType;try{c.setPointerCapture(e.pointerId)}catch(_){}
   const q=pt(e);if(tool==='er'){eraseAt(q);return}if(tool==='laser'){laser.push([q[0],q[1],performance.now()]);runLaser();return}
   if(SHAPES.includes(tool)){drawing={t:tool,c:col,w:SIZES.pen[size]*1.15,p:[q,q]};liveDraw();return}
   drawing={t:tool,c:tool==='hl'?hcol:col,w:SIZES[tool==='hl'?'hl':'pen'][size],p:[q]};liveDraw()});
- c.addEventListener('pointermove',e=>{if(!on)return;if(gestMove(e))return;if(e.pointerId!==active)return;e.preventDefault();
+ c.addEventListener('pointermove',e=>{if(!on)return;if(e.pointerType==='pen')lastPen=tnow();if(gestMove(e))return;if(e.pointerId!==active)return;e.preventDefault();
   if(drawing&&SHAPES.includes(drawing.t)){drawing.p[1]=pt(e);liveDraw();return}
   const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
   for(const ev of (evs.length?evs:[e])){const q=pt(ev);if(tool==='er')eraseAt(q);else if(tool==='laser')laser.push([q[0],q[1],performance.now()]);else if(drawing){const l=drawing.p[drawing.p.length-1];if(Math.hypot(q[0]-l[0],q[1]-l[1])>.6)drawing.p.push(q)}}
   if(drawing)liveDraw()});
  c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end)}
-function end(e){if(gestUp(e)&&e.pointerId!==active)return;if(e.pointerId!==active)return;active=null;
+function end(e){if(e.pointerType==='pen')lastPen=tnow();if(gestUp(e)&&e.pointerId!==active)return;if(e.pointerId!==active)return;active=null;activeType=null;
  if(drawing){const d=drawing;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height);
   const tiny=SHAPES.includes(d.t)&&Math.hypot(d.p[1][0]-d.p[0][0],d.p[1][1]-d.p[0][1])<6;
   if(!tiny){strokesNow().push(d);save();if(hidden){hidden=false;paint()}}redraw()}}
@@ -183,7 +193,7 @@ function build(){bar=document.createElement('div');bar.id='ink-bar';bar.hidden=t
   if(b.dataset.tool){tool=b.dataset.tool;pickZoom=false;if(SHAPES.includes(tool))toast('Drag on the slide to draw a '+NAMES[tool].toLowerCase()+'.')}
   else if(b.dataset.c){if(tool==='hl')hcol=b.dataset.c;else{col=b.dataset.c;if(!['pen',...SHAPES].includes(tool))tool='pen'}}else if(b.dataset.s)size=+b.dataset.s;
   else{const a=b.dataset.a;if(a==='undo'){strokesNow().pop();save();redraw()}else if(a==='clear'){if(strokesNow().length&&confirm('Clear all drawing here?')){ink[SF.key()]=[];save();redraw()}}
-   else if(a==='hide'){hidden=!hidden;redraw()}else if(a==='finger'){fingerDraw=!fingerDraw;toast(fingerDraw?'Finger drawing on. Swipe with two fingers to change slides.':'Pencil only. Swipe with a finger to change slides.')}
+   else if(a==='hide'){hidden=!hidden;redraw()}else if(a==='finger'){fingerDraw=!fingerDraw;savePen();toast(fingerDraw?'Finger drawing on. Swipe with two fingers to change slides.':'Pencil only. Swipe with a finger to change slides.')}
    else if(a==='zoom'){if(window.ZOOM&&ZOOM.isOpen()){toast('This picture is already zoomed.')}else{pickZoom=!pickZoom;if(pickZoom)toast('Now tap a picture to zoom it.')}}
    else if(a==='prev'||a==='next'){if(window.ZOOM&&ZOOM.isOpen())ZOOM.close();const n=document.getElementById(a==='prev'?'bPrev':'bNext');n&&n.click();setTimeout(redraw,60)}
    else if(a==='start'){if(window.ZOOM&&ZOOM.isOpen())ZOOM.close();if(typeof window.go==='function'){window.go(0);setTimeout(redraw,60)}}
@@ -203,7 +213,11 @@ function initDrag(){const g=bar.querySelector('.grip');let d=null;
  const up=e=>{if(!d||e.pointerId!==d.id)return;d=null;bar.classList.remove('dragging');clampBar();savePos()};g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
  g.addEventListener('dblclick',e=>{e.stopPropagation();setMini(!bar.classList.contains('mini'))})}
 let tt=0;function toast(m){let t=document.getElementById('ink-toast');if(!t){t=document.createElement('div');t.id='ink-toast';document.body.appendChild(t)}t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,2600)}
-function toggle(v){on=v===undefined?!on:v;endAll();pickZoom=false;if(!bar)build();bar.hidden=!on;for(const s of [S0,SZ])if(s)s.live.classList.toggle('on',on);
+addEventListener('pointerdown',e=>{if(!on||e.pointerType!=='touch')return;const t=e.target;
+ if(t&&t.closest&&(t.closest('#ink-bar')||(t.classList&&t.classList.contains('ink-live'))))return;
+ if(penRecent()||big(e)){e.stopPropagation();e.preventDefault();blockClick=tnow()+600}},true);
+addEventListener('click',e=>{if(tnow()<blockClick&&!(e.target&&e.target.closest&&e.target.closest('#ink-bar'))){e.stopPropagation();e.preventDefault()}},true);
+function toggle(v){on=v===undefined?!on:v;endAll();document.documentElement.classList.toggle('ink-on',on);pickZoom=false;if(!bar)build();bar.hidden=!on;for(const s of [S0,SZ])if(s)s.live.classList.toggle('on',on);
  document.querySelectorAll('.ink-toggle').forEach(b=>b.setAttribute('aria-pressed',on));paintZoomBtn();
  if(on){requestAnimationFrame(clampBar);if(hidden){hidden=false;redraw()}toast(SF.zoom?'Draw on the picture. Pinch or use + and − to zoom.':'Drawing on. Swipe with two fingers to change slides. Press D or Done to stop.')}else{laser=[]}paint()}
 // ---- launcher button and keys
