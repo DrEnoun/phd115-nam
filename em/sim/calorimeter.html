@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calorimeter Lab · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#081426;--panel:#0f2340;--panel2:#13304f;--ink:#e3eef8;--muted:#9fb6c8;--teal:#2dd4bf;--lime:#d4ff3a;--hot:#fc7a7a;--cold:#7cc8f5;--edge:rgba(111,214,200,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden}
+#app{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr);height:100%;gap:10px;padding:10px}
+#view{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(120% 90% at 70% 0%,#12385a 0%,#081426 65%);border:1px solid var(--edge)}
+#view canvas{display:block;width:100%;height:100%;touch-action:none}
+.tag{position:absolute;transform:translate(-50%,-100%);pointer-events:none;font:700 13px 'League Spartan',sans-serif;padding:3px 8px;border-radius:9px;background:rgba(8,20,38,.82);border:1px solid var(--edge);white-space:nowrap}
+.tag.hot{color:var(--hot)}.tag.cold{color:var(--cold)}.tag.lime{color:var(--lime)}
+#hint{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--muted)}
+#side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:8px;border-radius:12px;font:700 14px 'League Spartan',sans-serif;cursor:pointer}
+.tabs button.on{background:var(--teal);color:#062a2b;border-color:var(--teal)}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:10px 12px}
+.row{display:grid;grid-template-columns:118px 1fr 58px;align-items:center;gap:8px;font-size:13px;margin:4px 0}
+.row output{text-align:right;color:var(--lime);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--teal)}
+select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--edge);border-radius:8px;padding:4px 6px;font:inherit}
+.btns{display:flex;gap:6px;margin-top:6px}
+.btns button{flex:1;border:0;border-radius:12px;padding:9px;font:800 14px 'League Spartan',sans-serif;cursor:pointer}
+.go{background:var(--lime);color:#0a1628}.rs{background:var(--panel2);color:var(--ink);border:1px solid var(--edge)!important}
+button:disabled{opacity:.45;cursor:default}
+.read{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12.5px}
+.read div{background:var(--panel2);border-radius:10px;padding:6px 8px}
+.read b{display:block;font:800 18px 'League Spartan',sans-serif}
+.hot b{color:var(--hot)}.cold b{color:var(--cold)}.eq b{color:var(--lime)}
+#chart{width:100%;height:100px;display:block;flex:none}
+.say{margin-top:8px}
+.say{font-size:13px;line-height:1.35;color:var(--ink)}
+.say b{color:var(--teal)}
+.hide{display:none!important}
+@media (max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:55% 45%}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="view"><div id="tags"></div><div id="hint">Drag to turn the view</div></div>
+  <div id="side">
+    <div class="tabs"><button id="tCal" class="on">Calorimeter</button><button id="tSh">Specific heat</button></div>
+
+    <div id="pCal">
+      <div class="card">
+        <div class="row"><span>Metal</span><select id="metal"></select><span></span></div>
+        <div class="row"><span>Metal mass</span><input id="mm" type="range" min="10" max="100" step="5" value="25"><output id="mmO"></output></div>
+        <div class="row"><span>Metal start</span><input id="tm" type="range" min="50" max="100" step="1" value="95"><output id="tmO"></output></div>
+        <div class="row"><span>Water mass</span><input id="mw" type="range" min="50" max="200" step="10" value="50"><output id="mwO"></output></div>
+        <div class="row"><span>Water start</span><input id="tw" type="range" min="15" max="30" step="1" value="22"><output id="twO"></output></div>
+        <div class="btns"><button class="go" id="drop">Drop the metal in</button><button class="rs" id="reset">Reset</button></div>
+      </div>
+      <div class="card say" id="sayCal">Press <b>Drop the metal in</b>. Heat flows from the hot metal to the cold water until both have the <b>same temperature</b>.</div>
+      <div class="read" style="margin-top:8px">
+        <div class="hot">Metal<b id="rTm">–</b></div>
+        <div class="cold">Water<b id="rTw">–</b></div>
+        <div class="hot">Heat lost by metal<b id="rQm">0 J</b></div>
+        <div class="cold">Heat gained by water<b id="rQw">0 J</b></div>
+      </div>
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div id="pSh" class="hide">
+      <div class="card">
+        <div class="say" style="margin-bottom:6px">Four samples, each <b>100 g</b>. Each one gets the <b>same heat</b>. Which one gets hottest?</div>
+        <div class="row"><span>Heat to add</span><input id="qt" type="range" min="1000" max="10000" step="500" value="5000"><output id="qtO"></output></div>
+        <div class="btns"><button class="go" id="heat">Start heating</button><button class="rs" id="reset2">Reset</button></div>
+      </div>
+      <div class="card say" id="saySh">Same heat in, but different temperature rise. Low <b>specific heat</b> = heats up fast. Water has a high specific heat, so it heats up slowly.</div>
+      <div class="read" id="shRead" style="margin-top:8px"></div>
+      <canvas id="chart2" style="width:100%;height:100px;display:block"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="../../js/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const CW=4.184;
+const METALS=[
+ {n:'Aluminium',c:0.900,col:0xc8ced6},
+ {n:'Iron',c:0.452,col:0x8b8f96},
+ {n:'Copper',c:0.385,col:0xd9814a},
+ {n:'Gold',c:0.129,col:0xf2c14e},
+ {n:'Mystery metal',c:null,col:0x7d6fd1}
+];
+let mystery=METALS[Math.floor(Math.random()*4)];
+METALS.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m.c?`${m.n} (c = ${m.c.toFixed(3)} J/g·°C)`:`${m.n} (c = ?)`;$('metal').appendChild(o)});
+
+/* ---------- three.js scene ---------- */
+const view=$('view');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+view.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
+scene.add(new THREE.HemisphereLight(0xcfe8ff,0x1a2030,0.9));
+const dl=new THREE.DirectionalLight(0xffffff,0.9);dl.position.set(4,8,6);scene.add(dl);
+const world=new THREE.Group();scene.add(world);
+const calG=new THREE.Group(), shG=new THREE.Group();world.add(calG);world.add(shG);
+
+// table
+const table=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.2,0.12,64),new THREE.MeshStandardMaterial({color:0x1b3a5c,roughness:.8}));
+table.position.y=-0.06;world.add(table);
+
+// --- calorimeter ---
+function cup(r1,r2,h,col,op){
+  const pts=[new THREE.Vector2(r2,0),new THREE.Vector2(r1,h)];
+  const g=new THREE.LatheGeometry(pts,64);
+  const m=new THREE.MeshStandardMaterial({color:col,transparent:true,opacity:op,side:THREE.DoubleSide,roughness:.9,depthWrite:false});
+  return new THREE.Mesh(g,m);
+}
+const outer=cup(1.35,1.1,2.6,0xf3ecdc,0.28);calG.add(outer);
+const inner=cup(1.25,1.02,2.5,0xffffff,0.22);inner.position.y=0.05;calG.add(inner);
+const bottom=new THREE.Mesh(new THREE.CircleGeometry(1.1,48),new THREE.MeshStandardMaterial({color:0xf3ecdc}));bottom.rotation.x=-Math.PI/2;bottom.position.y=0.01;calG.add(bottom);
+// water (height depends on mass)
+const waterMat=new THREE.MeshStandardMaterial({color:0x5fb7ea,transparent:true,opacity:.55,roughness:.2,depthWrite:false});
+let water=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,48),waterMat);calG.add(water);
+// lid (ring, open centre so we can see)
+const lid=new THREE.Mesh(new THREE.TorusGeometry(1.32,0.06,10,64),new THREE.MeshStandardMaterial({color:0xd8d1c1}));lid.rotation.x=Math.PI/2;lid.position.y=2.62;calG.add(lid);
+// thermometer
+const thermo=new THREE.Group();thermo.position.set(-0.55,0,0.25);calG.add(thermo);
+const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,3.4,16),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.35,depthWrite:false}));glass.position.y=1.95;thermo.add(glass);
+const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.11,16,12),new THREE.MeshStandardMaterial({color:0xe53935,emissive:0x400000}));bulb.position.y=0.3;thermo.add(bulb);
+const colMat=new THREE.MeshStandardMaterial({color:0xe53935,emissive:0x300000});
+const column=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,1,10),colMat);thermo.add(column);
+// stirrer
+const stir=new THREE.Group();stir.position.set(0.55,0,-0.1);calG.add(stir);
+const rodMat=new THREE.MeshStandardMaterial({color:0x9aa3ad,metalness:.6,roughness:.3});
+const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,3.2,8),rodMat);rod.position.y=1.9;stir.add(rod);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(0.35,0.03,8,32),rodMat);ring.rotation.x=Math.PI/2;ring.position.set(-0.35,0.35,0);stir.add(ring);
+// metal block
+const metalMat=new THREE.MeshStandardMaterial({color:0xc8ced6,metalness:.7,roughness:.35,emissive:0x000000});
+const block=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,0.6),metalMat);calG.add(block);
+const thread=new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,1,6),new THREE.MeshBasicMaterial({color:0xdddddd}));calG.add(thread);
+// heat sparkles
+const sparks=[];for(let i=0;i<40;i++){const s=new THREE.Mesh(new THREE.SphereGeometry(0.035,6,6),new THREE.MeshBasicMaterial({color:0xff8a50,transparent:true,opacity:0}));s.userData={a:Math.random()*6.28,r:0.35+Math.random()*0.5,y:Math.random()};calG.add(s);sparks.push(s)}
+
+// --- specific heat samples ---
+const SAMPLES=[{n:'Water',c:4.184},{n:'Aluminium',c:0.900,col:0xc8ced6},{n:'Iron',c:0.452,col:0x8b8f96},{n:'Copper',c:0.385,col:0xd9814a}];
+const shObjs=SAMPLES.map((s,i)=>{
+  const g=new THREE.Group();g.position.set(-2.4+i*1.6,0,0);shG.add(g);
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.65,0.25,32),new THREE.MeshStandardMaterial({color:0x2a2f38,roughness:.6}));plate.position.y=0.125;g.add(plate);
+  const coil=new THREE.Mesh(new THREE.TorusGeometry(0.4,0.04,8,40),new THREE.MeshStandardMaterial({color:0x552222,emissive:0x000000}));coil.rotation.x=Math.PI/2;coil.position.y=0.26;g.add(coil);
+  let body;
+  if(s.n==='Water'){
+    const beaker=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1.1,32,1,true),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.25,side:THREE.DoubleSide,depthWrite:false}));beaker.position.y=0.82;g.add(beaker);
+    body=new THREE.Mesh(new THREE.CylinderGeometry(0.47,0.47,0.75,32),new THREE.MeshStandardMaterial({color:0x5fb7ea,transparent:true,opacity:.7,depthWrite:false}));body.position.y=0.65;
+  }else{
+    body=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.7,0.7),new THREE.MeshStandardMaterial({color:s.col,metalness:.7,roughness:.35}));body.position.y=0.62;
+  }
+  g.add(body);
+  return {g,body,coil,s};
+});
+
+/* ---------- labels ---------- */
+const tags=$('tags');
+function tag(cls){const d=document.createElement('div');d.className='tag '+cls;tags.appendChild(d);return d}
+const tagM=tag('hot'),tagW=tag('cold');
+const shTags=shObjs.map(()=>tag('lime'));
+const v3=new THREE.Vector3();
+function place(el,obj,dy){obj.getWorldPosition(v3);v3.y+=dy;v3.project(camera);const r=view.getBoundingClientRect();el.style.left=((v3.x+1)/2*r.width)+'px';el.style.top=((1-v3.y)/2*r.height)+'px'}
+
+/* ---------- camera drag ---------- */
+let yaw=0.5,pitch=0.38,drag=null;
+const cvs=renderer.domElement;
+cvs.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw,pitch};cvs.setPointerCapture(e.pointerId)});
+cvs.addEventListener('pointermove',e=>{if(!drag)return;yaw=drag.yaw+(e.clientX-drag.x)*0.008;pitch=Math.max(0.05,Math.min(1.2,drag.pitch+(e.clientY-drag.y)*0.006))});
+cvs.addEventListener('pointerup',()=>drag=null);
+function camPos(){const d=mode==='cal'?8.2:9.6;const ty=mode==='cal'?1.4:0.7;camera.position.set(Math.sin(yaw)*Math.cos(pitch)*d,ty+Math.sin(pitch)*d,Math.cos(yaw)*Math.cos(pitch)*d);camera.lookAt(0,ty,0)}
+
+function resize(){const r=view.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(1,r.height);camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(view);
+
+/* ---------- colour helpers ---------- */
+const C_COLD=new THREE.Color(0x4fa8e8),C_HOT=new THREE.Color(0xff6a4d);
+function tempColor(T,lo,hi){const t=Math.max(0,Math.min(1,(T-lo)/(hi-lo)));return C_COLD.clone().lerp(C_HOT,t)}
+
+/* ---------- calorimeter state ---------- */
+let mode='cal';
+const S={running:false,done:false,t:0,dropY:0,Tm:95,Tw:22,Tf:null,hist:[]};
+function metal(){const m=METALS[+$('metal').value];return m.c?m:Object.assign({},mystery,{n:'Mystery metal',col:0x7d6fd1})}
+function params(){return{mm:+$('mm').value,tm0:+$('tm').value,mw:+$('mw').value,tw0:+$('tw').value,c:metal().c}}
+function fmt(x,d=1){return x.toFixed(d)}
+function setOutputs(){$('mmO').textContent=$('mm').value+' g';$('tmO').textContent=$('tm').value+' °C';$('mwO').textContent=$('mw').value+' g';$('twO').textContent=$('tw').value+' °C';$('qtO').textContent=(+$('qt').value).toLocaleString()+' J'}
+function waterHeight(mw){return 0.35+mw/200*1.55}
+function buildWater(){const p=params();const h=waterHeight(p.mw);water.geometry.dispose();const rTop=1.02+(1.25-1.02)*(h/2.5);water.geometry=new THREE.CylinderGeometry(rTop-0.02,1.0,h,48);water.position.y=h/2+0.06;S.wh=h}
+function resetCal(){
+  const p=params();S.running=false;S.done=false;S.t=0;S.Tm=p.tm0;S.Tw=p.tw0;S.Tf=null;S.hist=[[0,p.tm0,p.tw0]];S.dropY=4.6;
+  metalMat.color.setHex(metal().col);buildWater();
+  $('drop').disabled=false;['metal','mm','tm','mw','tw'].forEach(i=>$(i).disabled=false);
+  $('rQm').textContent='0 J';$('rQw').textContent='0 J';
+  const m=METALS[+$('metal').value];
+  $('sayCal').innerHTML=m.c?'Press <b>Drop the metal in</b>. Heat flows from the hot metal to the cold water until both have the <b>same temperature</b>.':'<b>Mystery metal!</b> Drop it in. Then use heat gained by water = heat lost by metal to find its <b>specific heat</b>. Which metal is it?';
+  drawChart();
+}
+function startCal(){
+  const p=params();
+  S.Tf=(p.mm*p.c*p.tm0+p.mw*CW*p.tw0)/(p.mm*p.c+p.mw*CW);
+  S.running=true;S.t=0;S.hist=[[0,p.tm0,p.tw0]];
+  $('drop').disabled=true;['metal','mm','tm','mw','tw'].forEach(i=>$(i).disabled=true);
+  $('sayCal').innerHTML='Heat is flowing <b>from the metal into the water</b>…';
+}
+function stepCal(dt){
+  const p=params();
+  // drop animation
+  const target=0.45;
+  if(S.running&&S.dropY>target){S.dropY=Math.max(target,S.dropY-dt*4.5)}
+  const inWater=S.running&&S.dropY<=target+0.01;
+  if(inWater&&!S.done){
+    S.t+=dt;const k=0.55;const e=Math.exp(-k*S.t);
+    S.Tm=S.Tf+(p.tm0-S.Tf)*e;S.Tw=S.Tf+(p.tw0-S.Tf)*e;
+    if(S.hist.length===0||S.t-S.hist[S.hist.length-1][0]>0.08)S.hist.push([S.t,S.Tm,S.Tw]);
+    if(e<0.004){S.Tm=S.Tw=S.Tf;S.done=true;S.hist.push([S.t,S.Tf,S.Tf]);finishCal()}
+    drawChart();
+  }
+  const qm=p.mm*p.c*(p.tm0-S.Tm), qw=p.mw*CW*(S.Tw-p.tw0);
+  if(S.running){$('rQm').textContent=Math.round(qm)+' J';$('rQw').textContent=Math.round(qw)+' J'}
+  $('rTm').textContent=fmt(S.Tm)+' °C';$('rTw').textContent=fmt(S.Tw)+' °C';
+  // visuals
+  block.position.set(0.05,S.dropY,0.05);
+  const scale=Math.cbrt(p.mm/25);block.scale.setScalar(scale);
+  thread.position.set(0.05,(S.dropY+0.3*scale+4.9)/2,0.05);thread.scale.y=Math.max(0.01,4.9-(S.dropY+0.3*scale));
+  const glow=Math.max(0,(S.Tm-40)/60);metalMat.emissive.setRGB(glow*0.55,glow*0.12,0);
+  waterMat.color.copy(tempColor(S.Tw,15,60));
+  const colH=0.2+(S.Tw-10)/90*3.0;column.scale.y=colH;column.position.y=0.3+colH/2;
+  stir.rotation.y+=inWater&&!S.done?dt*3:0;
+  sparks.forEach(s=>{const u=s.userData;u.y+=dt*0.8;if(u.y>1)u.y=0;s.position.set(0.05+Math.cos(u.a+u.y*3)*u.r*scale,S.dropY-0.2+u.y*0.8,0.05+Math.sin(u.a+u.y*3)*u.r*scale);s.material.opacity=inWater&&!S.done?Math.min(1,(S.Tm-S.Tw)/30)*(1-u.y):0});
+}
+function finishCal(){
+  const p=params();const m=METALS[+$('metal').value];
+  const qw=p.mw*CW*(S.Tf-p.tw0);
+  if(m.c){$('sayCal').innerHTML=`Done! Both are at <b>${fmt(S.Tf)} °C</b>. Heat lost by metal = heat gained by water = <b>${Math.round(qw)} J</b>. Check: q = m × c × ΔT for each.`}
+  else{const cm=qw/(p.mm*(p.tm0-S.Tf));$('sayCal').innerHTML=`Final temperature: <b>${fmt(S.Tf)} °C</b>. Your turn: q<sub>water</sub> = ${p.mw} × 4.184 × (${fmt(S.Tf)} − ${p.tw0}). Then c = q ÷ (${p.mm} × ΔT of metal). <span id="reveal" style="cursor:pointer;text-decoration:underline">Show answer</span>`;
+    $('reveal').onclick=()=>{$('reveal').outerHTML=`<b>c ≈ ${cm.toFixed(3)} J/g·°C → ${mystery.n}</b>`}}
+}
+
+/* ---------- chart ---------- */
+function setupCanvas(c){const r=c.getBoundingClientRect();const d=Math.min(devicePixelRatio,2);c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return [x,r.width,r.height]}
+function axes(x,w,h,ymin,ymax,xl,yl){
+  x.clearRect(0,0,w,h);x.strokeStyle='rgba(159,182,200,.35)';x.lineWidth=1;x.font='11px Questrial,sans-serif';x.fillStyle='#9fb6c8';
+  const L=34,B=h-18,T=8,R=w-8;x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();
+  x.fillText(Math.round(ymax)+'',4,T+8);x.fillText(Math.round(ymin)+'',4,B);x.fillText(xl,R-x.measureText(xl).width,h-4);x.fillText(yl,L+4,T+8);
+  return {L,B,T,R};
+}
+function drawChart(){
+  const [x,w,h]=setupCanvas($('chart'));const p=params();
+  const ymin=Math.min(p.tw0,15)-2,ymax=Math.max(p.tm0,60)+2;const tmax=Math.max(10,S.hist.length?S.hist[S.hist.length-1][0]:10);
+  const a=axes(x,w,h,ymin,ymax,'time','°C');
+  const X=t=>a.L+(t/tmax)*(a.R-a.L),Y=v=>a.B-(v-ymin)/(ymax-ymin)*(a.B-a.T);
+  [[1,'#fc7a7a'],[2,'#7cc8f5']].forEach(([k,c])=>{x.strokeStyle=c;x.lineWidth=2.5;x.beginPath();S.hist.forEach((r,i)=>{i?x.lineTo(X(r[0]),Y(r[k])):x.moveTo(X(r[0]),Y(r[k]))});x.stroke()});
+  if(S.done){x.setLineDash([4,4]);x.strokeStyle='#d4ff3a';x.beginPath();x.moveTo(a.L,Y(S.Tf));x.lineTo(a.R,Y(S.Tf));x.stroke();x.setLineDash([]);x.fillStyle='#d4ff3a';x.fillText('final '+fmt(S.Tf)+' °C',a.L+6,Y(S.Tf)-4)}
+}
+
+/* ---------- specific heat state ---------- */
+const H={running:false,q:0,hist:[]};
+const COLS=['#7cc8f5','#c8ced6','#a0a6ad','#e0925a'];
+function resetSh(){H.running=false;H.q=0;H.hist=[[0,25,25,25,25]];$('heat').disabled=false;$('qt').disabled=false;renderShRead();drawChart2();
+  $('saySh').innerHTML='Same heat in, but different temperature rise. Low <b>specific heat</b> = heats up fast. Water has a high specific heat, so it heats up slowly.'}
+function T_of(i){return 25+H.q/(100*SAMPLES[i].c)}
+function renderShRead(){$('shRead').innerHTML=SAMPLES.map((s,i)=>`<div><span style="color:${COLS[i]}">${s.n}</span> · c = ${s.c}<b style="color:${COLS[i]}">${fmt(T_of(i))} °C</b></div>`).join('')}
+function stepSh(dt){
+  const Q=+$('qt').value;
+  if(H.running){H.q=Math.min(Q,H.q+Q*dt/6);if(H.q-H.hist[H.hist.length-1][0]>Q/120||H.q>=Q)H.hist.push([H.q,...SAMPLES.map((s,i)=>T_of(i))]);renderShRead();drawChart2();
+    if(H.q>=Q){H.running=false;$('saySh').innerHTML=`All four got <b>${Q.toLocaleString()} J</b>. Water rose only <b>${fmt(T_of(0)-25)} °C</b>, but copper rose <b>${fmt(T_of(3)-25)} °C</b>. ΔT = q ÷ (m × c): smaller c, bigger ΔT.`}}
+  shObjs.forEach((o,i)=>{const T=T_of(i);const c=tempColor(T,25,150);
+    if(o.s.n==='Water')o.body.material.color.copy(tempColor(T,25,60));else{o.body.material.emissive.setRGB(Math.max(0,(T-60)/140)*0.6,Math.max(0,(T-60)/140)*0.12,0)}
+    o.coil.material.emissive.setRGB(H.running?0.9:0,H.running?0.25:0,0);
+  });
+}
+function drawChart2(){
+  const [x,w,h]=setupCanvas($('chart2'));const Q=+$('qt').value;const ymax=25+Q/(100*0.385)+5;
+  const a=axes(x,w,h,20,ymax,'heat added (J)','°C');
+  const X=q=>a.L+(q/Q)*(a.R-a.L),Y=v=>a.B-(v-20)/(ymax-20)*(a.B-a.T);
+  SAMPLES.forEach((s,k)=>{x.strokeStyle=COLS[k];x.lineWidth=2.5;x.beginPath();H.hist.forEach((r,i)=>{i?x.lineTo(X(r[0]),Y(r[k+1])):x.moveTo(X(r[0]),Y(r[k+1]))});x.stroke()});
+}
+
+/* ---------- UI ---------- */
+function setMode(m){mode=m;$('tCal').classList.toggle('on',m==='cal');$('tSh').classList.toggle('on',m==='sh');$('pCal').classList.toggle('hide',m!=='cal');$('pSh').classList.toggle('hide',m!=='sh');calG.visible=m==='cal';shG.visible=m==='sh';
+  [tagM,tagW].forEach(t=>t.style.display=m==='cal'?'':'none');shTags.forEach(t=>t.style.display=m==='sh'?'':'none');
+  if(m==='cal')drawChart();else drawChart2()}
+$('tCal').onclick=()=>setMode('cal');$('tSh').onclick=()=>setMode('sh');
+['metal','mm','tm','mw','tw'].forEach(i=>$(i).addEventListener('input',()=>{setOutputs();resetCal()}));
+$('qt').addEventListener('input',()=>{setOutputs();resetSh()});
+$('drop').onclick=startCal;$('reset').onclick=()=>{if(+$('metal').value===4)mystery=METALS[Math.floor(Math.random()*4)];resetCal()};
+$('heat').onclick=()=>{if(H.q>=+$('qt').value)resetSh();H.running=true;$('heat').disabled=true;$('qt').disabled=true;$('saySh').innerHTML='Heating… every sample gets heat at the <b>same rate</b>.'};
+$('reset2').onclick=resetSh;
+
+// pass slide keys to the deck
+addEventListener('keydown',e=>{const t=e.target.tagName;if(t==='INPUT'||t==='SELECT')return;
+  const map={ArrowRight:'next',PageDown:'next',' ':'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+
+const q=new URLSearchParams(location.search);
+setOutputs();resetCal();resetSh();setMode(q.get('mode')==='sh'?'sh':'cal');
+let last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(mode==='cal')stepCal(dt);else stepSh(dt);
+  camPos();renderer.render(scene,camera);
+  if(mode==='cal'){place(tagM,block,0.55);tagM.textContent='Metal '+fmt(S.Tm)+' °C';place(tagW,glass,1.85);tagW.textContent='Water '+fmt(S.Tw)+' °C'}
+  else shObjs.forEach((o,i)=>{place(shTags[i],o.body,0.65);shTags[i].textContent=SAMPLES[i].n+' '+fmt(T_of(i))+' °C'});
+  requestAnimationFrame(loop)}
+resize();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
