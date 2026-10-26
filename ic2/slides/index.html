@@ -108,7 +108,7 @@ button:focus-visible{outline:3px solid #F0B24A;outline-offset:2px}
 <div id="ctl"><span data-pt-slot="" style="display:contents"></span><button id="bPrev" aria-label="Previous">←</button><button id="bNext" aria-label="Next">→</button><button id="bNotes">Notes</button><button id="bFull">Full screen</button><button id="bHelp" aria-label="Keyboard help">?</button></div>
 <div id="notes" hidden></div>
 <a id="home" href="../../#ic2" aria-label="Back to study hub">⌂ Study hub</a>
-<div id="help" hidden><div><b>Controls</b><br>→ / Space / tap right: next step or slide<br>← / tap left: back<br>N: speaker notes · F: full screen<br>P: periodic table on/off · I: polyatomic ions<br>D: draw on/off · Ctrl+Z: undo ink<br>On quick checks, tap an answer (or press A–D)<br>G: go to slide number<br><br><button id="hClose" style="font:inherit;padding:6px 14px;border-radius:8px;border:1px solid #D7E0E8;background:#F2F6F9;cursor:pointer">Close</button></div></div>
+<div id="help" hidden><div><b>Controls</b><br>→ / Space / tap right: next step or slide<br>← / tap left: back<br>N: speaker notes · F: full screen<br>P: periodic table on/off · I: polyatomic ions<br>D: draw on/off · Ctrl+Z: undo ink<br>On quick checks, tap an answer (or press A–D)<br>G: go to slide number<br>+ / − or pinch: zoom the slide in or out · 0: normal size<br>Zoomed in? Drag or scroll to look around<br><br><button id="hClose" style="font:inherit;padding:6px 14px;border-radius:8px;border:1px solid #D7E0E8;background:#F2F6F9;cursor:pointer">Close</button></div></div>
 <script src="../../js/ptable.js"></script><script src="../../js/ions.js"></script><script src="../../js/three.min.js"></script><script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
 <script>// Shared ball-and-stick molecule library. Coordinates in ångström (approximate geometries).
 (function (root) {
@@ -298,4 +298,4 @@ function full(){const d=document.documentElement;if(!document.fullscreenElement)
 bPrev.onclick=prev;bNext.onclick=next;bNotes.onclick=toggleNotes;bFull.onclick=full;bHelp.onclick=()=>help.hidden=false;hClose.onclick=()=>help.hidden=true;
 initMol();
 const h=parseInt(location.hash.slice(1),10);cur=h?Math.min(h-1,slides.length-1):(+store.get('cur')||0);paint();
-</script><script src="../../js/annotate.js"></script></body></html>
+</script><script src="../../js/slidezoom.js"></script><script src="../../js/annotate.js"></script></body></html>
