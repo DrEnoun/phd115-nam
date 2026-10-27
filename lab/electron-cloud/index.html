@@ -19,12 +19,14 @@
   --teal:#2dd4bf; --coral:#fc7a7a;
   --f-title:"League Spartan","Arial Black",system-ui,sans-serif;
   --f-body:"Questrial","Segoe UI",system-ui,sans-serif;
+  --s1:#2dd4bf; --s2:#fc7a7a; --s3:#d4ff3a; --s4:#c9b6ff; --grid:#1f3a60; --axis:#9fb6cc;
   color-scheme:dark;
 }
 :root[data-theme="light"]{
   --ground:#f0f6ff; --text:#3b365f; --muted:#5d5a80; --title:#0d7f74;
   --stage:#dcebff; --edge:#b9d3f3; --panel:#ffffff;
   --lime:#c8f53d; --shadow:#231f20; color-scheme:light;
+  --s1:#0d9488; --s2:#d94848; --s3:#5f8a00; --s4:#7a4fd0; --grid:#c9dcf2; --axis:#5d5a80;
 }
 *{box-sizing:border-box}
 html,body{background:var(--ground);color:var(--text)}
@@ -58,7 +60,26 @@ h1::after{content:"";display:block;width:64px;height:6px;background:var(--lime);
 .stage canvas{display:block;width:100%;height:100%}
 .st-title{position:absolute;left:14px;top:10px;font-family:var(--f-title);font-weight:800;font-size:1.25em;line-height:1.05}
 .st-title small{display:block;font-family:var(--f-body);font-weight:400;font-size:.62em;color:var(--muted)}
-.st-hint{position:absolute;right:12px;top:12px;font-size:.68em;color:var(--muted)}
+.st-tools{position:absolute;right:10px;top:8px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;z-index:2}
+.st-hint{font-size:.68em;color:var(--muted)}
+.mini{font:inherit;font-size:.72em;background:var(--panel);color:var(--text);border:2px solid var(--edge);border-radius:999px;padding:.25em .8em;cursor:pointer;min-height:36px}
+.mini[aria-pressed="true"]{background:var(--lime);color:var(--on-lime);border-color:var(--outline)}
+.mini:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.board{display:none}
+.stage.chartmode{aspect-ratio:auto;touch-action:auto;cursor:auto}
+.stage.chartmode canvas{display:none}
+.stage.chartmode .board{display:block;padding:60px 14px 92px}
+.chart{background:var(--panel);border:2px solid var(--edge);border-radius:16px;padding:.55em .6em}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart canvas{display:block;width:100%;height:auto}
+.chart .cap{font-size:.74em;color:var(--muted);margin-top:4px;line-height:1.35}
+.chart h3{font-family:var(--f-title);font-weight:800;font-size:1em;margin:0 0 4px}
+.stage .chart{background:transparent;border:0;padding:0}
+.gstack{display:grid;gap:12px}
+.mixlist{width:100%;display:grid;gap:6px;font-size:.84em}
+.mixlist div{background:var(--panel);border:2px solid var(--edge);border-radius:12px;padding:.35em .6em}
+.chip{display:inline-block;border-radius:999px;padding:0 .5em;font-size:.86em;font-weight:700;margin:1px 2px}
+.chip.hb{background:var(--s3);color:var(--on-lime)} .chip.dd{background:var(--s2);color:#231f20} .chip.ld{background:var(--s1);color:#06202a}
 .status{position:absolute;left:12px;right:12px;bottom:12px;background:var(--panel);border:2px solid var(--edge);border-radius:14px;padding:.45em .75em;font-size:.82em;line-height:1.35;text-wrap:pretty}
 .status b{color:var(--title)}
 
@@ -109,7 +130,8 @@ input[type=range]{width:100%;accent-color:var(--lime);height:30px}
     <section class="stage" id="stage" aria-label="3D view">
       <canvas id="cv"></canvas>
       <div class="st-title" id="stTitle"></div>
-      <div class="st-hint">Drag to rotate</div>
+      <div class="board" id="board"></div>
+      <div class="st-tools"><button class="mini" id="spinBtn" type="button" aria-pressed="false">⏸ Pause spin</button><div class="st-hint" id="stHint">Drag to rotate</div></div>
       <div class="status" id="status" role="status" aria-live="polite"></div>
     </section>
 
@@ -118,12 +140,13 @@ input[type=range]{width:100%;accent-color:var(--lime);height:30px}
       <div class="says"><div class="badge" aria-hidden="true"><img src="../../img/drnam.jpg" alt=""></div>
         <div class="bubble"><span class="who">Dr. NAM Says</span><span id="analogy"></span></div></div>
       <div><div class="lbl">Try this</div><div class="controls" id="controls"></div></div>
+      <div id="graphBox" hidden><div class="lbl" id="gLbl">Graph</div><div id="graph" class="gstack"></div></div>
       <div><div class="lbl">What you see</div><ul class="see" id="see"></ul></div>
       <div class="quiz"><div class="lbl" style="margin:0">Quick check</div><div class="q" id="qText"></div><div class="opts" id="qOpts"></div><div class="fb" id="qFb" hidden></div></div>
       <div class="bottom"><div class="pips" id="pips"></div><button class="stk" id="nextBtn" type="button"></button></div>
     </section>
   </main>
-  <p class="foot">Made for PHD115 Ionic &amp; Covalent Compounds (IC1 and IC2). Dots show where electrons are likely to be found. Shapes are drawn simply so the ideas are easy to see. Have fun exploring! · <a href="../../" style="color:inherit">Back to the Study Hub</a></p>
+  <p class="foot">Made for PHD115 Ionic &amp; Covalent Compounds (IC1 and IC2). Dots show where electrons are likely to be found. Shapes are drawn simply so the ideas are easy to see. Boiling points and bond data are standard textbook values. Have fun exploring! · <a href="../../" style="color:inherit">Back to the Study Hub</a></p>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -267,6 +290,101 @@ function surface(){const g=SURF_BASE.clone();g.setAttribute('color',new THREE.Bu
   const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,transparent:true,opacity:theme==='day'?.4:.3,depthWrite:false,side:THREE.DoubleSide,roughness:.35}));
   m.renderOrder=1;return m;}
 
+/* ---------- charts (SVG; colours come from CSS so Day and Night both work) ---------- */
+function frame2(o){
+  const k=o.fs||1,F=n=>(n*k).toFixed(1),W=o.W||440,H=o.H||250,L=o.L??(54*k),R=o.R??14,T=o.T??14,B=o.B??(44*k);
+  const sx=v=>L+(v-o.x0)/(o.x1-o.x0)*(W-L-R), sy=v=>H-B-(v-o.y0)/(o.y1-o.y0)*(H-T-B);
+  let s='';
+  (o.yt||[]).forEach(v=>{const y=sy(v);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--grid)" stroke-width="1"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="${F(12)}" fill="var(--axis)">${String(v).replace('-','−')}</text>`;});
+  (o.xt||[]).forEach(([v,l])=>{s+=`<text x="${sx(v)}" y="${H-B+16*k}" text-anchor="middle" font-size="${F(12)}" fill="var(--axis)">${l}</text>`;});
+  s+=`<line x1="${L}" x2="${L}" y1="${T}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--axis)"/>`;
+  if(o.xlab)s+=`<text x="${(L+W-R)/2}" y="${H-5}" text-anchor="middle" font-size="${F(12.5)}" fill="var(--muted)">${o.xlab}</text>`;
+  if(o.ylab)s+=`<text transform="translate(${13*k} ${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="${F(12.5)}" fill="var(--muted)">${o.ylab}</text>`;
+  return {W,H,L,R,T,B,sx,sy,s,F};
+}
+const svgWrap=(f,inner,label)=>`<svg viewBox="0 0 ${f.W} ${f.H}" role="img" aria-label="${label}" font-family="Questrial, Segoe UI, sans-serif">${f.s}${inner}</svg>`;
+const minus=v=>String(v).replace('-','−');
+function barChart(o){ /* items:[{l,v,sub,c}], base = where bars start (taller bar = bigger value) */
+  const n=o.items.length,f=frame2(Object.assign({x0:0,x1:n,B:(o.fs||1)*(o.items.some(i=>i.sub)?50:34)},o)),F=f.F,bw=(f.sx(1)-f.sx(0))*.6,z=f.sy(o.base??o.y0);
+  let s='';
+  if(o.y0<0&&o.y1>0&&o.base!==0)s+=`<line x1="${f.L}" x2="${f.W-f.R}" y1="${f.sy(0)}" y2="${f.sy(0)}" stroke="var(--axis)" stroke-dasharray="4 4"/><text x="${f.W-f.R-2}" y="${f.sy(0)-5}" text-anchor="end" font-size="${F(11)}" fill="var(--muted)">0 ${o.unit||''}</text>`;
+  o.items.forEach((it,i)=>{const cx=f.sx(i+.5),y=f.sy(it.v),top=Math.min(y,z),h=Math.abs(z-y),dim=o.hi!=null&&o.hi!==i;
+    s+=`<rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${Math.max(1,h)}" rx="5" fill="var(${it.c||'--s1'})" opacity="${dim?.35:1}" ${o.hi===i?'stroke="var(--text)" stroke-width="2.5"':''}><title>${it.l}: ${minus(it.v)} ${o.unit||''}</title></rect>`;
+    s+=`<text x="${cx}" y="${top-6}" text-anchor="middle" font-size="${F(12.5)}" font-weight="700" fill="var(--text)">${minus(it.v)}</text>`;
+    s+=`<text x="${cx}" y="${f.H-f.B+16*(o.fs||1)}" text-anchor="middle" font-size="${F(12.5)}" font-weight="700" fill="var(--text)">${it.l}</text>`;
+    if(it.sub)s+=`<text x="${cx}" y="${f.H-f.B+31*(o.fs||1)}" text-anchor="middle" font-size="${F(11)}" fill="var(--muted)">${it.sub}</text>`;});
+  return svgWrap(f,s+(o.extra?o.extra(f):''),o.label||'bar chart');
+}
+function lineChart(o){ /* series:[{name,c,pts:[[x,y,label]]}] */
+  const f=frame2(o),F=f.F;let s=o.under?o.under(f):'';
+  o.series.forEach(se=>{const d=se.pts.map(([x,y],i)=>`${i?'L':'M'}${f.sx(x).toFixed(1)} ${f.sy(y).toFixed(1)}`).join('');
+    s+=`<path d="${d}" fill="none" stroke="var(${se.c})" stroke-width="3" stroke-linejoin="round"/>`;
+    se.pts.forEach(([x,y,l,t])=>{s+=`<circle cx="${f.sx(x)}" cy="${f.sy(y)}" r="${5*(o.fs||1)}" fill="var(${se.c})" stroke="var(--panel)" stroke-width="1.5"><title>${t||l||''}: ${minus(y)} ${o.unit||''}</title></circle>`;
+      if(l)s+=`<text x="${f.sx(x)+(o.ldx??8)}" y="${f.sy(y)+(o.ldy??-8)}" font-size="${F(12)}" font-weight="700" fill="var(--text)">${l}</text>`;});});
+  return svgWrap(f,s+(o.extra?o.extra(f):''),o.label||'line chart');
+}
+const legend=list=>`<div class="cap">${list.map(([c,t])=>`<span class="chip" style="background:var(${c});color:#231f20">${t}</span>`).join(' ')}</div>`;
+
+/* ---------- molecules for the Molecule Mixer ---------- */
+const MOLS={
+  H2O:{n:'H₂O',e:10,pol:1,don:1,acc:1,r:.6,info:'<b>Water:</b> polar, with 2 H on O and 2 lone pairs. Forms dispersion, dipole–dipole and strong hydrogen bonds.',
+    at:[['O',0,.08,0,.32],['H',-.4,-.22,0,.17],['H',.4,-.22,0,.17]]},
+  NH3:{n:'NH₃',e:10,pol:1,don:1,acc:1,r:.6,info:'<b>Ammonia:</b> polar, with H on N and one lone pair. Forms dispersion, dipole–dipole and hydrogen bonds.',
+    at:[['N',0,.1,0,.31],...[90,210,330].map(a=>['H',.42*Math.cos(a*Math.PI/180),-.2,.42*Math.sin(a*Math.PI/180),.17])]},
+  HCl:{n:'HCl',e:18,pol:1,don:0,acc:0,r:.62,info:'<b>Hydrogen chloride:</b> polar (δ− on Cl, δ+ on H). Forms dispersion and dipole–dipole. H is on Cl, not N, O or F, so no hydrogen bond.',
+    at:[['Cl',-.15,0,0,.4],['H',.44,0,0,.18]]},
+  CH4:{n:'CH₄',e:10,pol:0,don:0,acc:0,r:.58,info:'<b>Methane:</b> nonpolar (C–H bonds share almost equally). Dispersion only.',
+    at:[['C',0,0,0,.28],...[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(([x,y,z])=>['H',x*.29,y*.29,z*.29,.17])]},
+  CO2:{n:'CO₂',e:22,pol:0,don:0,acc:0,r:.78,info:'<b>Carbon dioxide:</b> the C=O bonds are polar, but they point opposite ways and cancel. Nonpolar: dispersion only.',
+    at:[['C',0,0,0,.26],['O',-.52,0,0,.3],['O',.52,0,0,.3]]},
+  I2:{n:'I₂',e:106,pol:0,don:0,acc:0,r:.88,info:'<b>Iodine:</b> nonpolar, but a huge, soft electron cloud. Very strong dispersion, so iodine is a solid at room temperature.',
+    at:[['I',-.4,0,0,.46],['I',.4,0,0,.46]]},
+  Ar:{n:'Ar',e:18,pol:0,don:0,acc:0,r:.44,info:'<b>Argon:</b> a single atom, nonpolar. Dispersion only.',at:[['Ar',0,0,0,.44]]}
+};
+const FORCE={ld:'London dispersion',dd:'dipole–dipole',hb:'hydrogen bond'};
+
+/* ---------- boiling point data (°C, 1 atm; standard textbook values) ---------- */
+const BPT={
+  hyd:{tab:'Hydrides',h:'Boiling points of the hydrides (groups 14–17)',
+    svg:()=>lineChart({W:520,H:330,fs:1.15,x0:1.7,x1:5.3,y0:-180,y1:120,yt:[-150,-100,-50,0,50,100],xt:[[2,'2'],[3,'3'],[4,'4'],[5,'5']],xlab:'Period (row of the periodic table)',ylab:'Boiling point (°C)',unit:'°C',label:'Boiling points of hydrides',
+      under:f=>`<line x1="${f.L}" x2="${f.W-f.R}" y1="${f.sy(0)}" y2="${f.sy(0)}" stroke="var(--axis)" stroke-dasharray="4 4"/>`,
+      series:[{c:'--s4',pts:[[2,-162,'CH₄'],[3,-112,0,'SiH₄'],[4,-89,0,'GeH₄'],[5,-52,0,'SnH₄']]},
+        {c:'--s1',pts:[[2,-33,'NH₃'],[3,-88,0,'PH₃'],[4,-62,0,'AsH₃'],[5,-17,0,'SbH₃']]},
+        {c:'--s2',pts:[[2,100,'H₂O'],[3,-60,0,'H₂S'],[4,-41,0,'H₂Se'],[5,-2,0,'H₂Te']]},
+        {c:'--s3',pts:[[2,20,'HF'],[3,-85,0,'HCl'],[4,-67,0,'HBr'],[5,-35,0,'HI']]}]}),
+    leg:legend([['--s4','Group 14: CH₄ → SnH₄'],['--s1','Group 15: NH₃ → SbH₃'],['--s2','Group 16: H₂O → H₂Te'],['--s3','Group 17: HF → HI']]),
+    see:['Group 14 rises smoothly: bigger molecules have more electrons, so stronger dispersion.','NH₃, H₂O and HF jump far above their families. That jump is hydrogen bonding.','H₂O is the highest: each molecule has 2 H and 2 lone pairs, so it can make up to 4 hydrogen bonds.'],
+    st:'<b>Hydrides:</b> tap a dot to see its value. Period 2 (left) breaks the trend because of hydrogen bonds.'},
+  noble:{tab:'Noble gases',h:'Noble gases: more electrons, higher boiling point',
+    svg:()=>barChart({W:520,H:320,fs:1.15,y0:-280,y1:-80,base:-280,yt:[-250,-200,-150,-100],ylab:'Boiling point (°C)',unit:'°C',label:'Noble gas boiling points',
+      items:[{l:'He',v:-269,sub:'2 e⁻'},{l:'Ne',v:-246,sub:'10 e⁻'},{l:'Ar',v:-186,sub:'18 e⁻'},{l:'Kr',v:-153,sub:'36 e⁻'},{l:'Xe',v:-108,sub:'54 e⁻'}]}),
+    see:['Noble gases are single atoms with no dipole. Only London dispersion holds them together.','More electrons = bigger, softer cloud = easier to wobble = stronger dispersion.','So the boiling point climbs from He to Xe.'],
+    st:'<b>Noble gases:</b> dispersion only. Bigger cloud → stronger pull → higher boiling point.'},
+  alk:{tab:'Chain length',h:'Alkanes: longer chain, higher boiling point',
+    svg:()=>lineChart({W:520,H:330,fs:1.15,x0:.5,x1:8.5,y0:-180,y1:140,yt:[-150,-100,-50,0,50,100],xt:[1,2,3,4,5,6,7,8].map(n=>[n,n]),xlab:'Number of carbon atoms',ylab:'Boiling point (°C)',unit:'°C',label:'Alkane boiling points',ldx:-12,ldy:-12,
+      extra:f=>`<line x1="${f.L}" x2="${f.W-f.R}" y1="${f.sy(25)}" y2="${f.sy(25)}" stroke="var(--s2)" stroke-dasharray="6 5" stroke-width="2"/><text x="${f.W-f.R-4}" y="${f.sy(25)+18}" text-anchor="end" font-size="${f.F(12)}" fill="var(--s2)">room temperature (25 °C)</text>`,
+      series:[{c:'--s1',pts:[[1,-162,'CH₄','Methane'],[2,-89,0,'Ethane'],[3,-42,0,'Propane'],[4,-0.5,0,'Butane'],[5,36,0,'Pentane'],[6,69,0,'Hexane'],[7,98,0,'Heptane'],[8,126,'C₈H₁₈','Octane']]}]}),
+    see:['Each extra CH₂ adds more electrons and more surface to touch.','More contact = more dispersion = higher boiling point.','Methane to butane are gases at room temperature. Pentane and longer are liquids (petrol, oils, waxes).'],
+    st:'<b>Chain length:</b> every extra carbon raises the boiling point. Below the red line = gas at room temperature.'},
+  mass:{tab:'Same mass',h:'Almost the same mass, different forces',
+    svg:()=>barChart({W:520,H:320,fs:1.15,y0:-60,y1:100,base:-60,yt:[-50,0,50,100],ylab:'Boiling point (°C)',unit:'°C',label:'Propane, ethanal and ethanol',
+      items:[{l:'Propane',v:-42,sub:'44 g/mol',c:'--s1'},{l:'Ethanal',v:20,sub:'44 g/mol',c:'--s2'},{l:'Ethanol',v:78,sub:'46 g/mol',c:'--s3'}]}),
+    leg:legend([['--s1','dispersion only'],['--s2','+ dipole–dipole'],['--s3','+ hydrogen bond']]),
+    see:['All three have about the same mass and size, so their dispersion forces are similar.','Ethanal (CH₃CHO) adds dipole–dipole from its polar C=O.','Ethanol (CH₃CH₂OH) adds hydrogen bonds from its O–H. Each extra kind of force raises the boiling point.'],
+    st:'<b>Same mass:</b> the kind of force decides the boiling point, not only the size.'},
+  shape:{tab:'Shape',h:'Same formula (C₅H₁₂), different shape',
+    svg:()=>barChart({W:520,H:320,fs:1.15,y0:0,y1:45,base:0,yt:[0,10,20,30,40],ylab:'Boiling point (°C)',unit:'°C',label:'Pentane isomers',
+      items:[{l:'n-Pentane',v:36,sub:'long chain',c:'--s1'},{l:'Isopentane',v:28,sub:'branched',c:'--s1'},{l:'Neopentane',v:10,sub:'round ball',c:'--s1'}]}),
+    see:['All three are C₅H₁₂, so they have the same electrons and the same mass.','Long, straight chains lie side by side like spaghetti and touch a lot.','Round, branched molecules touch only at small points like marbles. Less contact = weaker dispersion = lower boiling point.'],
+    st:'<b>Shape:</b> more surface contact gives stronger dispersion forces.'},
+  st:{tab:'Surface tension',h:'Surface tension of some liquids (20 °C)',
+    svg:()=>barChart({W:520,H:320,fs:1.15,y0:0,y1:80,base:0,yt:[0,20,40,60,80],ylab:'Surface tension (mN/m)',unit:'mN/m',label:'Surface tension',
+      items:[{l:'Water',v:72.8,c:'--s3'},{l:'Glycerol',v:63.4,c:'--s3'},{l:'Ethanol',v:22.3,c:'--s3'},{l:'Hexane',v:18.4,c:'--s1'},{l:'Ether',v:17.0,c:'--s2'}]}),
+    leg:legend([['--s3','hydrogen bonds'],['--s2','dipole–dipole'],['--s1','dispersion only']]),
+    see:['Surface tension = how tightly the top layer of a liquid holds together.','Water has many hydrogen bonds per molecule, so its surface is like a stretchy skin: drops stay round and small insects can stand on it.','The same forces make liquids thicker (more viscous) and slower to evaporate. Stronger forces → higher boiling point, higher melting point, higher surface tension, lower vapour pressure.'],
+    st:'<b>Other properties:</b> the stronger the forces between molecules, the more the liquid “sticks” to itself.'}
+};
+
 /* ---------- scenes ---------- */
 const SCENES=[
 /* 1 */ {id:'cloud',title:'Electron cloud',bm:'Awan elektron',cam:4.4,rot:[.2,0],
@@ -403,9 +521,23 @@ const SCENES=[
     c.render(`<b>Room ${u.key}</b> on floor ${u.n}: one of ${cnt} ${u.t} room${cnt>1?'s':''}. Shape: ${shape}. Holds 2 electrons.`);},
   update(c,now){Object.values(c.subs).forEach(s=>s.rooms.forEach(r=>[r.up,r.dn].forEach(e=>{if(e.userData.pop){const k=Math.min(1,(now-e.userData.pop)/350);e.scale.setScalar(reduce?1:.2+.8*(1-Math.pow(1-k,3)));if(k>=1)delete e.userData.pop;}})));}
 },
-/* 2 */ {id:'sigma',title:'Sigma (σ) bond',bm:'Ikatan sigma',cam:5,rot:[.15,0],
+/* 2 */ {id:'sigma',title:'Sigma (σ) bond',bm:'Ikatan sigma',cam:5,rot:[.15,0],gLabel:'Energy diagram',
+  graphHTML(c){const ss=c.mode==='ss',M=ss?{De:436,re:74,a:.0194,k:74,x0:30,x1:250,y0:-500,y1:300,yt:[-400,-200,0,200],xt:[50,100,150,200,250],nm:'H–H bond (s + s)'}:{De:159,re:142,a:.029,k:100,x0:80,x1:380,y0:-200,y1:200,yt:[-150,-100,-50,0,50,100,150],xt:[100,150,200,250,300,350],nm:'F–F bond (p + p)'};
+    const f=frame2({x0:M.x0,x1:M.x1,y0:M.y0,y1:M.y1,yt:M.yt,xt:M.xt.map(v=>[v,v]),H:260,xlab:'Distance between the two nuclei (pm)',ylab:'Energy (kJ/mol)'}),E=r=>M.De*((1-Math.exp(-M.a*(r-M.re)))**2-1);
+    let d='',on=false;for(let r=M.x0;r<=M.x1;r+=1){const e=E(r);if(e>M.y1){on=false;continue;}d+=(on?'L':'M')+f.sx(r).toFixed(1)+' '+f.sy(e).toFixed(1);on=true;}
+    const z=f.sy(0),bx=f.sx(M.re),by=f.sy(-M.De);
+    const inner=`<line x1="${f.L}" x2="${f.W-f.R}" y1="${z}" y2="${z}" stroke="var(--axis)" stroke-dasharray="4 4"/><text x="${f.W-f.R-4}" y="${z-7}" text-anchor="end" font-size="11.5" fill="var(--muted)">0 = atoms far apart, no bond</text>
+      <line x1="${bx}" x2="${bx}" y1="${by}" y2="${f.H-f.B}" stroke="var(--s3)" stroke-width="2" stroke-dasharray="4 4"/><line x1="${f.L}" x2="${bx}" y1="${by}" y2="${by}" stroke="var(--s3)" stroke-width="2" stroke-dasharray="4 4"/>
+      <path d="${d}" fill="none" stroke="var(--s1)" stroke-width="3.5"/>
+      <text x="${bx+34}" y="${f.sy(-M.De*.86)}" font-size="12.5" font-weight="700" fill="var(--text)">← valley = the bond</text><text x="${bx+34}" y="${f.sy(-M.De*.86)+16}" font-size="11.5" fill="var(--muted)">length ${M.re} pm · energy ${M.De} kJ/mol</text>
+      <text x="${bx+10}" y="${f.T+14}" font-size="11.5" fill="var(--s2)">← too close: nuclei push apart</text>
+      <circle id="gDot" cx="-20" cy="-20" r="8" fill="var(--s3)" stroke="var(--outline)" stroke-width="2.5"/>`;
+    c.updG=dd=>{const dot=document.getElementById('gDot'),rd=document.getElementById('gRead');if(!dot)return;const r=dd*M.k,e=E(r);
+      dot.setAttribute('cx',f.sx(Math.min(M.x1,Math.max(M.x0,r))));dot.setAttribute('cy',f.sy(Math.min(M.y1,e)));
+      if(rd)rd.innerHTML=`Now: <b>${Math.round(r)} pm</b> apart · energy <b>${e>M.y1?'very high (push apart)':minus(Math.round(e))+' kJ/mol'}</b>`;};
+    return `<div class="chart"><h3>Energy diagram: ${M.nm}</h3>${svgWrap(f,inner,'Energy versus distance between nuclei')}<div class="cap" id="gRead"></div><div class="cap">Move the slider and watch the lime dot. The bottom of the valley is the most stable place: its distance is the <b>bond length</b>, its depth is the <b>bond energy</b> (energy needed to break the bond).</div></div>`;},
   analogy:"Two friends shake hands head-on. Their grip sits right in the middle, on the line between them. A σ bond is that head-on grip: the shared electrons sit between the two nuclei.",
-  see:["Move the slider to bring the two atoms together.","Lime dots = shared electrons where the clouds overlap.","Every single bond is one σ bond. It can be s + s, s + p or p + p (end to end)."],
+  see:["Move the slider to bring the two atoms together.","Lime dots = shared electrons where the clouds overlap.","Every single bond is one σ bond. It can be s + s, s + p or p + p (end to end).","Energy diagram: far apart = no bond (0). Closer = attraction, energy drops into a valley. Too close = the nuclei push, energy shoots up."],
   controls:`<button class="stk" data-a="ss" aria-pressed="true">s + s (H₂)</button><button class="stk" data-a="pp">p + p end-on (F₂)</button>
     <div class="slider"><label for="rng">Distance between nuclei</label><input id="rng" type="range" min="0" max="100" value="85"></div>${VIEW}`,
   q:{t:"Where are the shared electrons in a σ bond?",o:["Above and below the line joining the nuclei","Directly between the two nuclei","Outside both atoms"],a:1,why:"σ = head-on overlap, so the electron density sits on the bond axis, between the nuclei."},
@@ -416,10 +548,10 @@ const SCENES=[
     c.load=()=>{const ss=c.mode==='ss';c.sc=ss?.5:.15;c.R=ss?4:12;c.base=ss?sample(D.s1,2000,4,.5):sample(D.p(V(1,0,0)),2000,12,.15);
       c.psi1=ss?(x,y,z)=>Math.exp(-r3(x,y,z)):(x,y,z)=>x*Math.exp(-r3(x,y,z)/2);c.th1=thresh(c.psi1,c.base,c.sc);
       const one=solidArrays(radii(c.psi1,c.th1,c.R,c.sc),P.cloud);setSurf(c.sA,one);setSurf(c.sB,one);c.key='';};c.load();},
-  act(c,a,btn){if(a==='ss'||a==='pp'){c.mode=a;c.load();pressOnly(btn);}if(a==='rng')c.v=btn.value/100;},
+  act(c,a,btn){if(a==='ss'||a==='pp'){c.mode=a;c.load();pressOnly(btn);$('graph').innerHTML=SCENES.find(x=>x.id==='sigma').graphHTML(c);}if(a==='rng')c.v=btn.value/100;},
   update(c){const ss=c.mode==='ss',d=ss?.5+c.v*2.7:.9+c.v*2.8,reach=ss?1.05:1.45,h=d/2;
     c.nA.position.x=-h;c.nB.position.x=h;
-    const key=c.mode+d.toFixed(3);if(key!==c.key){c.key=key;const hu=h/c.sc,merged=ss&&2*Math.exp(-hu)>=c.th1;
+    const key=c.mode+d.toFixed(3);if(key!==c.key){c.key=key;c.updG&&c.updG(d);const hu=h/c.sc,merged=ss&&2*Math.exp(-hu)>=c.th1;
       c.sA.position.x=-h;c.sB.position.x=h;c.sA.visible=c.sB.visible=!merged;c.sM.visible=merged;
       if(merged){const psi=(x,y,z)=>Math.exp(-r3(x+hu,y,z))+Math.exp(-r3(x-hu,y,z));setSurf(c.sM,solidArrays(radii(psi,c.th1,c.R+hu,c.sc),P.cloud));}}
     const p=c.pts.geometry.attributes.position.array,col=c.pts.geometry.attributes.color.array,b=c.base;
@@ -434,7 +566,18 @@ const SCENES=[
     c.bonded=bonded;c.bMode=c.mode;
     setStatus(d>far?'<b>Too far.</b> The clouds barely touch, so no bond yet.':d>start?'<b>Clouds start to overlap.</b> Pull a little closer.':d>=close?`<b>⚡ Bond formed!</b> Best overlap: the shared pair sits between the nuclei${ss?' (H–H = 74 pm)':' (F–F, end-to-end p overlap)'}.`:'<b>Too close.</b> The two positive nuclei push each other apart.');}
 },
-/* 3 */ {id:'pi',title:'Pi (π) bond',bm:'Ikatan pi',cam:4.8,rot:[.35,-.5],
+/* 3 */ {id:'pi',title:'Pi (π) bond',bm:'Ikatan pi',cam:4.8,rot:[.35,-.5],gLabel:'Energy diagrams',
+  graphHTML(c){const f=frame2({x0:0,x1:90,y0:0,y1:320,yt:[0,100,200,300],xt:[[0,'0°'],[30,'30°'],[60,'60°'],[90,'90°']],H:240,xlab:'Twist of one carbon',ylab:'Energy (kJ/mol)'}),E=a=>266*Math.sin(a*Math.PI/180)**2;
+    let d='';for(let a=0;a<=90;a++)d+=(a?'L':'M')+f.sx(a).toFixed(1)+' '+f.sy(E(a)).toFixed(1);
+    const inner=`<line x1="${f.L}" x2="${f.W-f.R}" y1="${f.sy(266)}" y2="${f.sy(266)}" stroke="var(--s2)" stroke-dasharray="5 4"/><text x="${f.L+6}" y="${f.sy(266)-7}" font-size="11.5" fill="var(--s2)">π bond fully broken ≈ 266 kJ/mol</text>
+      <path d="${d}" fill="none" stroke="var(--s3)" stroke-width="3.5"/><text x="${f.sx(3)}" y="${f.sy(150)}" font-size="11.5" fill="var(--muted)">0° = flat, full side-by-side overlap</text>
+      <circle id="gDot" cx="${f.sx(0)}" cy="${f.sy(0)}" r="8" fill="var(--s3)" stroke="var(--outline)" stroke-width="2.5"/>`;
+    c.updG=th=>{const dot=document.getElementById('gDot'),rd=document.getElementById('gRead');if(!dot)return;dot.setAttribute('cx',f.sx(th));dot.setAttribute('cy',f.sy(E(th)));
+      if(rd)rd.innerHTML=`Twist <b>${Math.round(th)}°</b> · π overlap <b>${Math.round(Math.cos(th*Math.PI/180)**2*100)}%</b> · energy cost <b>${Math.round(E(th))} kJ/mol</b>`;};
+    const len=barChart({H:200,y0:0,y1:180,base:0,yt:[0,50,100,150],ylab:'Length (pm)',unit:'pm',label:'Carbon–carbon bond lengths',items:[{l:'C–C',v:154,sub:'1 σ',c:'--s1'},{l:'C=C',v:134,sub:'1 σ + 1 π',c:'--s2'},{l:'C≡C',v:120,sub:'1 σ + 2 π',c:'--s3'}]});
+    const en=barChart({H:200,y0:0,y1:1000,base:0,yt:[0,250,500,750,1000],ylab:'Energy (kJ/mol)',unit:'kJ/mol',label:'Carbon–carbon bond energies',items:[{l:'C–C',v:348,sub:'single',c:'--s1'},{l:'C=C',v:614,sub:'double',c:'--s2'},{l:'C≡C',v:839,sub:'triple',c:'--s3'}]});
+    return `<div class="chart"><h3>Twisting breaks the π bond</h3>${svgWrap(f,inner,'Energy versus twist angle')}<div class="cap" id="gRead"></div><div class="cap">Twist the slider: the π overlap falls and the energy climbs. At 90° the π bond is gone. That is why C=C does not spin freely.</div></div>
+      <div class="chart"><h3>More bonds between the carbons: shorter and stronger</h3>${len}${en}<div class="cap">Each π bond adds shared electrons that pull the two nuclei closer. The π part of C=C is about 614 − 348 = 266 kJ/mol, the same energy as the top of the twist graph.</div></div>`;},
   analogy:"Now the two friends stand side by side and link arms. If one turns around, the arms must let go. A π bond is a side-by-side link, so it stops the bond from spinning.",
   see:["Teal middle = the σ bond. Coral = p orbitals standing up.","Lime = π overlap: above and below the bond line, never on it.","Double bond = 1 σ + 1 π. Triple bond = 1 σ + 2 π."],
   controls:`<div class="slider"><label for="rng">Twist one carbon</label><input id="rng" type="range" min="0" max="90" value="0"></div>${VIEW}`,
@@ -458,7 +601,7 @@ const SCENES=[
       if(k){const y2=y*co-z*si,z2=y*si+z*co;y=y2;z=z2;}p[j]=x;p[j+1]=y;p[j+2]=z;
       const mid=Math.abs(x)<.42&&Math.abs(k?(c.pz[i*3+2]):z)>.12&&c.rnd[k*c.nP+i]<ov;const C=mid?cg:cp;col[j]=C.r;col[j+1]=C.g;col[j+2]=C.b;}
     c.pts.geometry.attributes.position.needsUpdate=c.pts.geometry.attributes.color.needsUpdate=true;
-    const pct=Math.round(ov*100);
+    const pct=Math.round(ov*100);c.updG&&c.updG(c.th);
     setStatus(c.th<8?'<b>π bond:</b> full side-by-side overlap, above and below the σ bond.':c.th<80?`<b>Twisting…</b> π overlap drops to ${pct}%. The π bond is breaking.`:'<b>π bond broken!</b> Only the σ bond is left. Breaking it costs energy, so C=C does not spin freely.');}
 },
 /* 4 */ {id:'hyb',title:'Hybridization',bm:'Penghibridan',cam:4.6,rot:[.35,.5],
@@ -522,7 +665,8 @@ const SCENES=[
   act(c,a,btn){if(['p','A','B','real'].includes(a)){c.go(a,true);pressOnly(btn);}},
   update(c,now){c.mo.step(now);Object.entries(c.M).forEach(([k,mat])=>{const tgt=k===c.mode?.32:0;mat.opacity+=(tgt-mat.opacity)*(reduce?1:.08);c.G[k].visible=mat.opacity>.01;});const T={p:'<b>6 sp² carbons.</b> Each has one p orbital standing up, out of the flat ring.',A:'<b>Drawing A:</b> three fixed C=C bonds. This is only a drawing.',B:'<b>Drawing B:</b> the double bonds moved. Also only a drawing.',real:'<b>Real benzene:</b> 6 π electrons spread evenly in two donut clouds, above and below the ring. Very stable (aromatic).'};setStatus(T[c.mode]);}
 },
-/* 6 */ {id:'hb',title:'Hydrogen bond',bm:'Ikatan hidrogen',cam:5,rot:[.25,-.3],
+/* 6 */ {id:'hb',title:'Hydrogen bond',bm:'Ikatan hidrogen',cam:5,rot:[.25,-.3],gLabel:'Graph',
+  graphHTML(){return `<div class="chart"><h3>Water and its family: boiling point (°C)</h3>${barChart({H:230,y0:-100,y1:120,base:-100,yt:[-100,-50,0,50,100],ylab:'Boiling point (°C)',unit:'°C',label:'Group 16 hydrides',items:[{l:'H₂O',v:100,sub:'18 g/mol',c:'--s3'},{l:'H₂S',v:-60,sub:'34 g/mol',c:'--s2'},{l:'H₂Se',v:-41,sub:'81 g/mol',c:'--s2'},{l:'H₂Te',v:-2,sub:'130 g/mol',c:'--s2'}]})}<div class="cap">H₂O is the lightest but boils the highest. Hydrogen bonds hold water molecules together, so much more heat is needed to pull them apart. More in scene 12, Boiling points.</div></div>`;},
   analogy:"Oxygen pulls the electrons in O–H towards itself, so the H becomes a tiny, very positive magnet tip. That tip sticks to a lone pair on the next O, N or F. That sticky link is a hydrogen bond.",
   see:["Grey stick = O–H covalent bond, strong, inside the molecule.","Lime dots = hydrogen bond, about 20 times weaker, between molecules.","Only H joined to N, O or F can do this. Heat it up: boiling breaks H-bonds, not O–H bonds."],
   controls:`<div class="slider"><label for="rng">Heat (temperature)</label><input id="rng" type="range" min="0" max="100" value="10"></div>`,
@@ -548,7 +692,8 @@ const SCENES=[
     c.l4.position.copy(c.A.position).lerp(H1,.5).add(V(0,-.3,0));
     setStatus(c.heat<60?'<b>Held together</b> by the hydrogen bond (O–H···O). Slide the heat up.':extra<1.1?'<b>Getting hot…</b> the molecules shake and the H-bond stretches.':'<b>Boiling!</b> The H-bond is broken and the molecules fly apart. Every O–H bond is still there.');}
 },
-/* 7 */ {id:'vdw',title:'Van der Waals forces',bm:'Daya van der Waals',cam:6.2,rot:[.2,0],
+/* 7 */ {id:'vdw',title:'Van der Waals forces',bm:'Daya van der Waals',cam:6.2,rot:[.2,0],gLabel:'Graph',
+  graphHTML(){return `<div class="chart"><h3>Same size, different forces: boiling point (°C)</h3>${barChart({H:230,y0:-60,y1:100,base:-60,yt:[-50,0,50,100],ylab:'Boiling point (°C)',unit:'°C',label:'Propane, ethanal, ethanol',items:[{l:'Propane',v:-42,sub:'dispersion',c:'--s1'},{l:'Ethanal',v:20,sub:'+ dipole',c:'--s2'},{l:'Ethanol',v:78,sub:'+ H-bond',c:'--s3'}]})}<div class="cap">All three weigh about 44–46 g/mol. Adding dipole–dipole forces (ethanal) and then hydrogen bonds (ethanol) raises the boiling point.</div></div>`;},
   analogy:"Van der Waals is the family name for weak pulls between molecules. Polar molecules like HCl act like tiny bar magnets: they turn around until the + end faces the − end of the next one.",
   see:["δ+ end (H) attracts the δ− end (Cl) of the next molecule: a dipole–dipole force.","The other family member is London dispersion, which every molecule has (next scene).","Hydrogen bonding is a special, much stronger kind of dipole–dipole force."],
   controls:`<button class="stk" data-a="mix">Mix them up</button><button class="stk" data-a="align" aria-pressed="true">Let them attract</button>`,
@@ -568,7 +713,8 @@ const SCENES=[
     c.links.forEach(([g1,g2,b])=>{const h=V(.5,0,0).applyEuler(g1.rotation).add(g1.position),cl=V(-.45,0,0).applyEuler(g2.rotation).add(g2.position);setBeads(b,h,cl,op);});
     setStatus(c.aligned?'<b>Lined up:</b> each δ+ H faces the δ− Cl of the next molecule. Lime dots = dipole–dipole attraction.':'<b>Mixed up:</b> random directions, weak attraction. Tap “Let them attract”.');}
 },
-/* 8 */ {id:'disp',title:'London dispersion',bm:'Daya serakan London',cam:6,rot:[.15,0],
+/* 8 */ {id:'disp',title:'London dispersion',bm:'Daya serakan London',cam:6,rot:[.15,0],gLabel:'Graph',
+  graphHTML(c){const L=['He','Ne','Ar','Kr','Xe'];return `<div class="chart"><h3>Noble gases: boiling point (°C)</h3>${barChart({H:230,y0:-280,y1:-80,base:-280,yt:[-250,-200,-150,-100],ylab:'Boiling point (°C)',unit:'°C',label:'Noble gas boiling points',hi:L.indexOf(c.el),items:[{l:'He',v:-269,sub:'2 e⁻'},{l:'Ne',v:-246,sub:'10 e⁻'},{l:'Ar',v:-186,sub:'18 e⁻'},{l:'Kr',v:-153,sub:'36 e⁻'},{l:'Xe',v:-108,sub:'54 e⁻'}]})}<div class="cap">More electrons → bigger, softer cloud → bigger temporary dipoles → stronger pull → higher boiling point.</div></div>`;},
   analogy:"Electrons are like people in a room. If for a moment more people crowd to one side, the people in the next room feel the push and move too. One temporary dipole makes the next one, like a stadium wave.",
   see:["The cloud shifts for a moment: one side becomes δ−, the other δ+.","This pushes the neighbour's electrons the same way, so δ− faces δ+ and they attract.","Bigger cloud = easier to wobble = stronger force = higher boiling point. All molecules have this force."],
   controls:`<button class="stk" data-a="He" aria-pressed="true">He</button><button class="stk" data-a="Ar">Ar</button><button class="stk" data-a="Xe">Xe</button><button class="stk" data-a="pause">Pause</button>`,
@@ -583,7 +729,7 @@ const SCENES=[
       fitCam(4+c.sp*1.5);};
     c.setup('He');},
   act(c,a,btn){if(a==='pause'){c.paused=!c.paused;btn.setAttribute('aria-pressed',String(c.paused));btn.textContent=c.paused?'Play':'Pause';return;}
-    c.setup(a);btn.parentElement.querySelectorAll('[data-a="He"],[data-a="Ar"],[data-a="Xe"]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));},
+    c.setup(a);$('graph').innerHTML=SCENES.find(x=>x.id==='disp').graphHTML(c);btn.parentElement.querySelectorAll('[data-a="He"],[data-a="Ar"],[data-a="Xe"]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));},
   update(c,now){const dt=(now-c.last)/1000;c.last=now;if(!c.paused&&!reduce)c.T+=dt;const T=c.T,f=t=>c.A*(Math.sin(2.2*t)+.6*Math.sin(3.7*t+1.3))/1.6;
     const o=c.atoms.map((a,i)=>f(T-.25*i));
     c.atoms.forEach((a,i)=>{a.pts.position.x=a.x+o[i];const s=Math.min(1,Math.abs(o[i])/(c.A*.55)),right=o[i]>0;
@@ -592,22 +738,117 @@ const SCENES=[
       setBeads(b,V(c.atoms[i].x+c.sz*1.4,0,0),V(c.atoms[i+1].x-c.sz*1.4,0,0),op);});
     const bp={He:'−269 °C',Ar:'−186 °C',Xe:'−108 °C'}[c.el];
     setStatus(`<b>${c.el}</b> · boiling point ${bp}. ${c.el==='He'?'Small, tight cloud: tiny wobble, weak pull.':c.el==='Ar'?'Medium cloud: more wobble.':'Big, loose cloud: large wobble, strongest pull.'} ${c.paused?'(paused: look at δ− facing δ+)':''}`);}
+},
+/* 9 */ {id:'mix',title:'Molecule mixer',bm:'Pengadun molekul',cam:7.4,rot:[0,0],noRotate:true,gLabel:'Forces over time',
+  analogy:"Think of a busy party. Everyone gives quick, light touches as they pass by (London dispersion). Polar friends hold hands for a while (dipole–dipole). Water friends hug tightly (hydrogen bonds). But people keep moving, so hugs break and new ones form all the time. Turn up the heat and the party gets wild: hugs do not last.",
+  see:["Tap a molecule below, then tap the 3D stage to place it. Drag a molecule to move it. Tap one to read about it.","Molecules close together attract. Teal = London dispersion, coral = dipole–dipole, lime = hydrogen bond.","The links flicker: forces between molecules form and break all the time. The graph counts them. Heat makes them break more often."],
+  controls:`<div class="controls" id="pal" style="width:100%">${Object.entries(MOLS).map(([k,m],i)=>`<button class="stk" type="button" data-a="m-${k}" aria-pressed="${i===0}">${m.n}</button>`).join('')}</div>
+    <div class="slider"><label for="rng">Heat (temperature)</label><input id="rng" type="range" min="0" max="100" value="20"></div>
+    <button class="stk" data-a="freeze">⏸ Pause</button><button class="stk" data-a="undo">Remove last</button><button class="stk" data-a="clear">Clear</button>
+    <div class="controls" style="width:100%"><span style="font-size:.8em;color:var(--muted)">Try a set:</span><button class="stk" data-a="p-water">Water</button><button class="stk" data-a="p-meth">Methane</button><button class="stk" data-a="p-mix">Mixed</button></div>
+    <div class="mixlist" id="mixList"></div>`,
+  q:{t:"Which pair can form a hydrogen bond?",o:["CH₄ + CH₄","HCl + HCl","NH₃ + H₂O"],a:2,why:"The H must be joined to N, O or F, and the other molecule needs a lone pair on N, O or F. NH₃ and H₂O both have these. HCl has H on Cl, so it only makes dipole–dipole."},
+  graphHTML(){return `<div class="chart"><canvas id="mixCv" width="600" height="170" aria-label="Number of forces over time"></canvas><div class="cap"><span class="chip hb">hydrogen bonds</span><span class="chip dd">dipole–dipole</span><span class="chip ld">dispersion</span> · last 20 seconds. The lines go up and down: forces come and go all the time.</div></div>`;},
+  build(c){c.mols=[];c.pairs=new Map();c.sel='H2O';c.heat=.2;c.frozen=false;c.hist=[];c.acc=0;c.tPrev=performance.now();c.pickables=[];c.nid=0;c.sig='';c.note=null;
+    c.BX=2.95;c.BT=1.5;c.BB=-1.35;
+    const COL=()=>({H:P.H,C:theme==='day'?0x55606e:0x9aa5b1,O:P.cloud2,N:0x6aa8ff,Cl:P.Cl,Ar:0x8fd3ff,I:0xa070d0});
+    c.clampV=v=>v.set(Math.max(-c.BX,Math.min(c.BX,v.x)),Math.max(c.BB,Math.min(c.BT,v.y)),0);
+    c.addMol=(k,x,y)=>{if(c.mols.length>=10){c.note={t:performance.now()+2500,h:'The stage is full (10 molecules). Remove one first.'};return;}
+      const M=MOLS[k],g=new THREE.Group(),col=COL(),a0=M.at[0];
+      M.at.forEach(([el,ax,ay,az,r])=>g.add(ball(col[el],r,V(ax,ay,az))));
+      M.at.slice(1).forEach(([el,ax,ay,az])=>g.add(stick(V(a0[1],a0[2],a0[3]),V(ax,ay,az),.045,P.stick)));
+      const halo=ball(P.cloud,M.r*1.05,null,{transparent:true,opacity:.08,depthWrite:false});g.add(halo);
+      const lb=label(M.n,P.label,.26);lb.position.set(0,M.r+.2,0);
+      const m={id:c.nid++,k,M,g,lb,home:c.clampV(V(x,y,0)),ph:Math.random()*50,sp:(Math.random()<.5?-1:1)*(.4+Math.random()*.6)};
+      g.traverse(o=>o.userData.mol=m);g.position.copy(m.home);g.rotation.set(Math.random()*6,Math.random()*6,0);c.add(g);c.add(lb);c.mols.push(m);c.pickables.push(g);};
+    c.removeMol=m=>{c.remove(m.g);c.remove(m.lb);c.mols.splice(c.mols.indexOf(m),1);c.pickables=c.mols.map(x=>x.g);
+      for(const [key,p] of c.pairs)if(p.a===m||p.b===m){Object.values(p.L).forEach(b=>c.remove(b));c.pairs.delete(key);}};
+    c.preset=name=>{[...c.mols].forEach(c.removeMol);
+      const L={water:['H2O','H2O','H2O','H2O','H2O','H2O'],meth:['CH4','CH4','CH4','CH4','CH4','CH4'],mix:['H2O','NH3','HCl','CH4','CO2','I2']}[name];
+      [[-1.9,.85],[0,.85],[1.9,.85],[-1.9,-.75],[0,-.75],[1.9,-.75]].forEach(([x,y],i)=>c.addMol(L[i],x+(Math.random()-.5)*.15,y+(Math.random()-.5)*.15));};
+    c.drawHist=()=>{const cv=document.getElementById('mixCv');if(!cv)return;const g=cv.getContext('2d'),W=cv.width,Ht=cv.height,cs=getComputedStyle(document.documentElement),gv=k=>cs.getPropertyValue(k).trim(),col=[gv('--s3'),gv('--s2'),gv('--s1')];
+      g.clearRect(0,0,W,Ht);const mx=Math.max(4,...c.hist.flat()),L=34,T=10,B=24,st=Math.max(1,Math.ceil(mx/4));
+      g.lineWidth=1;g.font='15px Questrial, sans-serif';
+      for(let v=0;v<=mx;v+=st){const y=Ht-B-(v/mx)*(Ht-T-B);g.strokeStyle=gv('--grid');g.beginPath();g.moveTo(L,y);g.lineTo(W,y);g.stroke();g.fillStyle=gv('--axis');g.fillText(v,8,y+5);}
+      g.fillStyle=gv('--axis');g.fillText('20 s ago',L,Ht-5);g.textAlign='right';g.fillText('now',W-2,Ht-5);g.textAlign='left';
+      [2,1,0].forEach(k=>{g.strokeStyle=col[k];g.lineWidth=k===0?4:3;g.beginPath();c.hist.forEach((r,i)=>{const x=L+(i+80-c.hist.length)/79*(W-L-4),y=Ht-B-(r[k]/mx)*(Ht-T-B);i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();});};
+    c.preset('water');},
+  act(c,a,btn){
+    if(a.startsWith('m-')){c.sel=a.slice(2);pressOnly(btn);c.note={t:performance.now()+3500,h:`${MOLS[c.sel].info}<br>Now tap the stage to place it.`};return;}
+    if(a.startsWith('p-')){c.preset(a.slice(2));return;}
+    if(a==='rng'){c.heat=btn.value/100;return;}
+    if(a==='freeze'){c.frozen=!c.frozen;btn.setAttribute('aria-pressed',String(c.frozen));btn.textContent=c.frozen?'▶ Play':'⏸ Pause';return;}
+    if(a==='undo'&&c.mols.length)c.removeMol(c.mols[c.mols.length-1]);
+    if(a==='clear')[...c.mols].forEach(c.removeMol);},
+  pdown(c,e){const r=rayAt(e),hit=r.intersectObjects(c.pickables,true)[0];
+    if(hit&&hit.object.userData.mol){c.drag=hit.object.userData.mol;c.moved=false;c.dx={x:e.clientX,y:e.clientY};return;}
+    if(r.ray.intersectPlane(PLANE,HITP))c.addMol(c.sel,HITP.x,HITP.y);},
+  pmove(c,e){if(!c.drag)return;if(Math.hypot(e.clientX-c.dx.x,e.clientY-c.dx.y)>5)c.moved=true;if(c.moved&&rayAt(e).ray.intersectPlane(PLANE,HITP))c.clampV(c.drag.home.copy(HITP));},
+  pup(c){if(c.drag&&!c.moved)c.note={t:performance.now()+4000,h:c.drag.M.info};c.drag=null;},
+  update(c,now){const dt=Math.min(.05,(now-c.tPrev)/1000);c.tPrev=now;const run=!c.frozen,h=c.heat;
+    c.mols.forEach(m=>{if(run)m.ph+=dt;const amp=reduce?0:.03+.3*h,t=m.ph;
+      m.g.position.set(m.home.x+(Math.sin(t*3.1+m.id)+.4*Math.sin(t*7.3+m.id))*amp,m.home.y+(Math.sin(t*2.7+m.id*2)+.4*Math.sin(t*6.1))*amp,0);
+      if(run&&!reduce){m.g.rotation.z+=m.sp*(.3+2.5*h)*dt;m.g.rotation.y+=m.sp*.5*dt;}
+      m.lb.position.set(m.g.position.x,m.g.position.y+m.M.r+.22,.6);});
+    const n={hb:0,dd:0,ld:0},kinds=new Map(),cg={ld:P.cloud,dd:P.cloud2,hb:P.glow},off={ld:-.11,dd:.11,hb:0};
+    for(let i=0;i<c.mols.length;i++)for(let j=i+1;j<c.mols.length;j++){const A=c.mols[i],B=c.mols[j],key=A.id+'-'+B.id;
+      const pa=A.g.position,pb=B.g.position,d=pa.distanceTo(pb),near=d<A.M.r+B.M.r+.95,homeNear=A.home.distanceTo(B.home)<A.M.r+B.M.r+.95;
+      let p=c.pairs.get(key);
+      if(!p&&!near)continue;
+      const can={ld:1,dd:A.M.pol&&B.M.pol,hb:(A.M.don&&B.M.acc)||(B.M.don&&A.M.acc)};
+      if(!p){p={a:A,b:B,on:{ld:0,dd:0,hb:0},op:{ld:0,dd:0,hb:0},L:{}};['ld','dd','hb'].forEach(t=>{if(can[t]){p.L[t]=beads(5,cg[t]);c.add(p.L[t]);}});c.pairs.set(key,p);}
+      if(homeNear){const nm=[A.M.n,B.M.n].sort().join(' + ');kinds.set(nm,can);}
+      const eAvg=(A.M.e+B.M.e)/2,K={ld:[1.4*(1+eAvg/22)*(1-.55*h),3+3*h],dd:[2.5*(1-h)+.15,.7+4*h],hb:[4*(1-h)+.2,.25+4*h]};
+      const dir=pb.clone().sub(pa).normalize(),perp=V(-dir.y,dir.x,0);let alive=false;
+      ['ld','dd','hb'].forEach(t=>{if(!can[t])return;
+        if(run){if(!near)p.on[t]=0;else{const [kon,koff]=K[t],pr=1-Math.exp(-(p.on[t]?koff:kon)*dt);if(Math.random()<pr){p.on[t]=p.on[t]?0:1;if(p.on[t]&&t==='hb')spark(c,pa.clone().lerp(pb,.5),P.glow,{quiet:true,n:14,speed:.4});}}}
+        p.op[t]+=((p.on[t]?1:0)-p.op[t])*(reduce?1:.25);if(p.on[t])n[t]++;if(p.op[t]>.02||p.on[t])alive=true;
+        const s=pa.clone().add(dir.clone().multiplyScalar(A.M.r*.85)).add(perp.clone().multiplyScalar(off[t])),e=pb.clone().sub(dir.clone().multiplyScalar(B.M.r*.85)).add(perp.clone().multiplyScalar(off[t]));
+        setBeads(p.L[t],s,e,p.op[t]*(t==='ld'?.75:1));});
+      if(!near&&!alive){Object.values(p.L).forEach(b=>c.remove(b));c.pairs.delete(key);}}
+    /* graph: counts over time */
+    if(run){c.acc+=dt;if(c.acc>=.25){c.acc=0;c.hist.push([n.hb,n.dd,n.ld]);if(c.hist.length>80)c.hist.shift();c.drawHist();}}
+    /* list of forces for each kind of neighbour pair */
+    const sig=[...kinds.keys()].sort().join('|');
+    if(sig!==c.sig){c.sig=sig;const el=document.getElementById('mixList');
+      if(el)el.innerHTML=kinds.size?[...kinds.entries()].sort().map(([nm,k])=>`<div><b>${nm}</b> ${['ld','dd','hb'].filter(t=>k[t]).map(t=>`<span class="chip ${t}">${FORCE[t]}</span>`).join('')} · strongest: <b>${FORCE[k.hb?'hb':k.dd?'dd':'ld']}</b></div>`).join(''):'<div>Place two molecules close together to see which forces form between them.</div>';}
+    const heatW=h<.34?'Cool: forces last a long time':h<.67?'Warm: forces break more often':'Hot: forces break almost at once';
+    if(c.note&&now<c.note.t)setStatus(c.note.h);
+    else setStatus(c.mols.length?`Right now: <b>${n.hb}</b> hydrogen bonds · <b>${n.dd}</b> dipole–dipole · <b>${n.ld}</b> dispersion. ${heatW}.${c.frozen?' (paused)':''}`:'Empty. Tap a molecule below, then tap here to place it.');},
+},
+/* 10 */ {id:'bp',title:'Boiling points',bm:'Takat didih',cam:5,rot:[0,0],chart:true,
+  analogy:"Boiling is like leaving a crowded party. If friends only touch you lightly (dispersion), you leave easily. If they hug you tightly (hydrogen bonds), you need much more energy to break free. In a liquid, that energy is heat. Stronger hugs between molecules → higher boiling point.",
+  see:BPT.hyd.see,
+  controls:Object.entries(BPT).map(([k,T],i)=>`<button class="stk" type="button" data-a="t-${k}" aria-pressed="${i===0}">${T.tab}</button>`).join(''),
+  q:{t:"Why does H₂O boil at 100 °C while H₂S boils at −60 °C?",o:["Water molecules form hydrogen bonds","Water molecules are heavier","H₂S has no electrons for dispersion forces"],a:0,why:"H₂S is actually heavier (34 vs 18 g/mol). Water wins because of hydrogen bonds, which need much more heat to break."},
+  build(c){c.tab='hyd';c.need=true;},
+  act(c,a,btn){if(a.startsWith('t-')){c.tab=a.slice(2);c.need=true;pressOnly(btn);}},
+  update(c){if(!c.need)return;c.need=false;const T=BPT[c.tab];
+    $('board').innerHTML=`<div class="chart" style="max-width:640px;margin:0 auto"><h3>${T.h}</h3>${T.svg()}${T.leg||''}</div>`;
+    $('see').innerHTML=T.see.map(s=>`<li>${s}</li>`).join('');setStatus(T.st);}
 }
 ];
 
 /* ---------- engine ---------- */
 let cur=0,ctx=null;const solved=new Set();
+const SPIN=['cloud','shapes','hyb','sigma','pi'],PLANE=new THREE.Plane(new THREE.Vector3(0,0,1),0),HITP=new THREE.Vector3();
+let spinOn=store.get('ecl.spin','on')==='on';
+function rayAt(e){const r=stage.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);return ray;}
 function fitCam(z){const a=camera.aspect||1;camera.position.set(0,0,z/Math.min(1,a*1.05));camera.lookAt(0,0,0);camera.updateProjectionMatrix();if(ctx)ctx.camZ=z;}
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;fitCam(ctx?ctx.camZ:5);}
 new ResizeObserver(resize).observe(stage);
 function clear(){while(world.children.length){const o=world.children.pop();o.traverse(m=>{if(m.geometry&&![SPH,CYL,BOX,CONE].includes(m.geometry))m.geometry.dispose();});}}
-function pressOnly(btn){if(!btn||!btn.parentElement)return;btn.parentElement.querySelectorAll(':scope > button.stk').forEach(b=>{if(!['snap','clear','pause','outline','hotel','tour'].includes(b.dataset.a))b.setAttribute('aria-pressed',String(b===btn));});}
+function pressOnly(btn){if(!btn||!btn.parentElement)return;btn.parentElement.querySelectorAll(':scope > button.stk').forEach(b=>{if(!['snap','clear','pause','outline','hotel','tour','freeze','undo'].includes(b.dataset.a))b.setAttribute('aria-pressed',String(b===btn));});}
 function gotoScene(id,after){const i=SCENES.findIndex(s=>s.id===id);if(i<0)return;load(i);if(after)after(ctx);}
 
 function load(i){
   cur=i;clear();const S=SCENES[i];
   const root=new THREE.Group();world.add(root);world.rotation.set(S.rot[0],S.rot[1],0);
   ctx=root;ctx.camZ=S.cam;S.build(ctx);fitCam(ctx.camZ);
+  stage.classList.toggle('chartmode',!!S.chart);$('board').innerHTML='';
+  $('graphBox').hidden=!S.graphHTML;if(S.graphHTML){$('gLbl').textContent=S.gLabel||'Graph';$('graph').innerHTML=S.graphHTML(ctx);}else $('graph').innerHTML='';
+  $('spinBtn').hidden=!SPIN.includes(S.id);$('stHint').textContent=S.chart?'':S.noRotate?'Drag molecules to move them':'Drag to rotate';
+  stage.setAttribute('aria-label',S.chart?'Charts':'3D view');
   $('stTitle').innerHTML=`${i+1}. ${S.title}<small>${S.bm}</small>`;
   $('cTitle').innerHTML=`${S.title}<small>${S.bm}</small>`;
   $('analogy').textContent=S.analogy;
@@ -634,9 +875,9 @@ function renderNav(){
 }
 
 let drag=null;
-stage.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};stage.setPointerCapture(e.pointerId);});
-stage.addEventListener('pointermove',e=>{if(!drag)return;world.rotation.y+=(e.clientX-drag.x)*.01;world.rotation.x=Math.max(-1.5,Math.min(1.5,world.rotation.x+(e.clientY-drag.y)*.01));drag={x:e.clientX,y:e.clientY};});
-['pointerup','pointercancel'].forEach(ev=>stage.addEventListener(ev,()=>drag=null));
+stage.addEventListener('pointerdown',e=>{const S=SCENES[cur];if(S.chart||e.target.closest('.st-tools'))return;if(S.noRotate){stage.setPointerCapture(e.pointerId);S.pdown&&S.pdown(ctx,e);return;}drag={x:e.clientX,y:e.clientY};stage.setPointerCapture(e.pointerId);});
+stage.addEventListener('pointermove',e=>{const S=SCENES[cur];if(S.noRotate){S.pmove&&S.pmove(ctx,e);return;}if(!drag)return;world.rotation.y+=(e.clientX-drag.x)*.01;world.rotation.x=Math.max(-1.5,Math.min(1.5,world.rotation.x+(e.clientY-drag.y)*.01));drag={x:e.clientX,y:e.clientY};});
+['pointerup','pointercancel'].forEach(ev=>stage.addEventListener(ev,()=>{drag=null;const S=SCENES[cur];if(S.noRotate&&S.pup)S.pup(ctx);}));
 let downAt=null;const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
 stage.addEventListener('pointerdown',e=>{downAt={x:e.clientX,y:e.clientY};});
 stage.addEventListener('pointerup',e=>{const S=SCENES[cur];if(!downAt||!S.pick||!ctx.pickables)return;
@@ -646,7 +887,7 @@ stage.addEventListener('pointerup',e=>{const S=SCENES[cur];if(!downAt||!S.pick||
 
 function frame(now){
   updateSparks(now);
-  if(ctx){SCENES[cur].update(ctx,now);if(!drag&&!reduce&&['cloud','shapes','hyb','sigma','pi'].includes(SCENES[cur].id))world.rotation.y+=.0025;}
+  if(ctx){SCENES[cur].update(ctx,now);if(!drag&&!reduce&&spinOn&&SPIN.includes(SCENES[cur].id))world.rotation.y+=.0025;}
   renderer.render(scene,camera);requestAnimationFrame(frame);
 }
 function applyTheme(){if(theme==='day')document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');
@@ -655,6 +896,8 @@ $('themeBtn').onclick=()=>{theme=theme==='night'?'day':'night';store.set('ecl.th
 
 const sb=$('soundBtn'),paintSound=()=>{sb.textContent=soundOn?'🔊 Sound on':'🔇 Sound off';sb.setAttribute('aria-pressed',String(soundOn));};
 sb.onclick=()=>{soundOn=!soundOn;store.set('ecl.sound',soundOn?'on':'off');paintSound();};paintSound();
+const spb=$('spinBtn'),paintSpin=()=>{spb.textContent=spinOn?'⏸ Pause spin':'▶ Spin';spb.setAttribute('aria-pressed',String(!spinOn));};
+spb.onclick=()=>{spinOn=!spinOn;store.set('ecl.spin',spinOn?'on':'off');paintSpin();};paintSpin();
 applyTheme();resize();
 let start=parseInt(store.get('ecl.scene','0'),10);if(!(start>=0&&start<SCENES.length))start=0;
 load(start);requestAnimationFrame(frame);
