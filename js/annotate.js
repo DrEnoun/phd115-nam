@@ -13,7 +13,7 @@ const PENK='phd115-inkpen';let lastPen=-1e9,activeType=null,gT=0,blockClick=0;
 try{const o=JSON.parse(localStorage.getItem(PENK)||'null');if(o){penSeen=true;fingerDraw=!!o.finger}}catch(_){}
 function savePen(){try{localStorage.setItem(PENK,JSON.stringify({finger:fingerDraw}))}catch(_){}}
 const tnow=()=>performance.now();
-const penRecent=()=>activeType==='pen'||tnow()-lastPen<500;          // pencil touching, or lifted a moment ago
+const penRecent=()=>(activeType==='pen'&&tnow()-lastPen<3000)||tnow()-lastPen<500;          // pencil touching, or lifted a moment ago
 const big=e=>e.pointerType==='touch'&&Math.max(e.width||0,e.height||0)>140; // only a very wide contact is a palm
 let ink={};try{ink=JSON.parse(sessionStorage.getItem(KEY)||'{}')}catch(_){}
 const G=(0,eval);const cur=()=>{try{const v=G('typeof cur!=="undefined"?cur:0');return typeof v==='number'?v:0}catch(_){return 0}};
@@ -128,19 +128,27 @@ function allowed(e){if(e.pointerType==='pen'){if(!penSeen){penSeen=true;fingerDr
  if(e.pointerType==='touch')return fingerDraw&&!big(e)&&!penRecent();return e.button===0}
 function eraseAt(q){const S=strokesNow();const r=SIZES.er[size];let hit=false;for(let i=S.length-1;i>=0;i--){const pts=SHAPES.includes(S[i].t)?shapePts(S[i]):S[i].p;if(pts.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<r+S[i].w/2)){if(!erPushed){pushHist();erPushed=true}S.splice(i,1);hit=true}}if(hit){save();redraw()}}
 function picAt(x,y){if(!window.ZOOM)return null;for(const el of document.elementsFromPoint(x,y)){if(el.tagName==='IMG'&&ZOOM.can(el))return el}return null}
+function unstick(){if(active!==null&&activeType==='pen'&&tnow()-lastPen>3000)end({pointerId:active,pointerType:'pen',type:'pointercancel',clientX:0,clientY:0})}
+function resetTouches(){tp.clear();gest=0;gVoid=false;gPrev=null;if(active!==null&&activeType==='touch'){active=null;activeType=null;drawing=null;tapI=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}}
+// iPad palm rejection often cancels a palm without a lift event. Use the real list of touches on the screen to clean up.
+function prune(n){if(tp.size<=n)return;const v=[...tp.entries()].sort((x,y)=>x[1].u-y[1].u);while(tp.size>n)tp.delete(v.shift()[0]);
+ if(!tp.size){gest=0;gVoid=false;gPrev=null}else{gT=tnow();gVoid=penRecent();for(const q of tp.values()){q.x0=q.x;q.y0=q.y}gPrev=gInfo()}}
+addEventListener('touchend',e=>{if(!e.touches.length)resetTouches();else prune(e.touches.length)},true);
+addEventListener('touchcancel',e=>{if(!e.touches.length)resetTouches();else prune(e.touches.length)},true);
+addEventListener('touchstart',e=>{const n=e.touches.length;unstick();prune(n);setTimeout(()=>prune(n),0)},true);
 function endAll(){tp.clear();gest=0;gVoid=false;active=null;activeType=null;edit=null;tapI=null;drawing=null;const s=SF;s.lc.clearRect(0,0,s.live.width,s.live.height)}
 // swipe to change slide while drawing: two fingers, or one finger when only the pencil draws.
 // On a zoomed picture the same gestures move (one finger) and pinch-zoom (two fingers) the picture instead.
 const tp=new Map();let gest=0,gVoid=false,wAcc=0,wT=0,wLock=0,gPrev=null;
 function nav(d){const n=document.getElementById(d<0?'bNext':'bPrev');if(n){n.click();setTimeout(redraw,60)}}
 function gInfo(){const v=[...tp.values()];const cx=v.reduce((a,q)=>a+q.x,0)/v.length,cy=v.reduce((a,q)=>a+q.y,0)/v.length;const d=v.length>1?Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y):0;return {cx,cy,d,n:v.length}}
-function gestDown(e){if(e.pointerType!=='touch')return false;tp.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,t:performance.now()});try{live().setPointerCapture(e.pointerId)}catch(_){}
+function gestDown(e){if(e.pointerType!=='touch')return false;tp.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,t:performance.now(),u:tnow()});try{live().setPointerCapture(e.pointerId)}catch(_){}
  const penBusy=(active!==null&&!tp.has(active))||penRecent(),palm=big(e);
  if(tp.size>=2||!fingerDraw||penBusy||palm){if(!gest){gest=1;gT=tnow();gVoid=penBusy||palm}else if(palm||penBusy)gVoid=true
   if(active!==null&&!penBusy&&tp.has(active)){active=null;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}
   if(tp.size>=2)for(const v of tp.values()){v.x0=v.x;v.y0=v.y}
   gPrev=gInfo();e.preventDefault();return true}return false}
-function gestMove(e){const v=tp.get(e.pointerId);if(!v)return false;v.x=e.clientX;v.y=e.clientY;if(!gest)return false;e.preventDefault();
+function gestMove(e){const v=tp.get(e.pointerId);if(!v)return false;v.x=e.clientX;v.y=e.clientY;v.u=tnow();if(!gest)return false;e.preventDefault();
  if(SF.zoom&&!gVoid&&window.ZOOM){const g=gInfo();if(gPrev&&gPrev.n===g.n){ZOOM.panBy(g.cx-gPrev.cx,g.cy-gPrev.cy);if(g.n>1&&gPrev.d)ZOOM.scaleBy(g.d/gPrev.d)}gPrev=g}
  return true}
 function gestUp(e){const v=tp.get(e.pointerId);if(!v)return false;const was=gest;
@@ -157,7 +165,7 @@ function bind(c){
  c.addEventListener('pointerdown',e=>{if(!on)return;
   if(pickZoom){if(e.pointerType==='touch'&&(big(e)||penRecent()))return;e.preventDefault();const im=picAt(e.clientX,e.clientY);pickZoom=false;paint();if(im)ZOOM.open(im);else toast('Tap on a picture to zoom it.');return}
   if(gestDown(e))return;if(!allowed(e))return;if(gest)gVoid=true;e.preventDefault();
-  if(e.pointerType==='pen'){lastPen=tnow();if(active!==null&&activeType!=='pen'){active=null;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}}
+  if(e.pointerType==='pen'){if(active!==null&&activeType==='pen'&&e.pointerId!==active)end({pointerId:active,pointerType:'pen',type:'pointercancel',clientX:0,clientY:0});lastPen=tnow();if(active!==null&&activeType!=='pen'){active=null;drawing=null;SF.lc.clearRect(0,0,SF.live.width,SF.live.height)}}
   if(active!==null)return;active=e.pointerId;activeType=e.pointerType;try{c.setPointerCapture(e.pointerId)}catch(_){}
   tapI={x:e.clientX,y:e.clientY,t:tnow(),moved:false};erPushed=false;
   const q=pt(e);if(tool==='er'){eraseAt(q);return}if(tool==='laser'){laser.push([q[0],q[1],performance.now()]);runLaser();return}
@@ -176,7 +184,7 @@ function bind(c){
   const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
   for(const ev of (evs.length?evs:[e])){const q=pt(ev);if(tool==='er')eraseAt(q);else if(tool==='laser')laser.push([q[0],q[1],performance.now()]);else if(drawing){const l=drawing.p[drawing.p.length-1];if(Math.hypot(q[0]-l[0],q[1]-l[1])>.6)drawing.p.push(q)}}
   if(drawing)liveDraw()});
- c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end)}
+ c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);c.addEventListener('lostpointercapture',e=>{if(on&&(e.pointerId===active||tp.has(e.pointerId)))end(e)})}
 function end(e){if(e.pointerType==='pen')lastPen=tnow();if(gestUp(e)&&e.pointerId!==active)return;if(e.pointerId!==active)return;active=null;activeType=null;
  const tap=tapI&&!tapI.moved&&tnow()-tapI.t<300&&e.type==='pointerup';tapI=null;
  if(edit){const st=sel.s;if(edit.moved){if(st.t!=='arrow'){const b=box(st);st.p=[[b[0],b[1],.5],[b[2],b[3],.5]]}save()}else hist.pop();edit=null;redraw();return}
@@ -244,7 +252,7 @@ function initDrag(){const g=bar.querySelector('.grip');let d=null;
  const up=e=>{if(!d||e.pointerId!==d.id)return;d=null;bar.classList.remove('dragging');clampBar();savePos()};g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
  g.addEventListener('dblclick',e=>{e.stopPropagation();setMini(!bar.classList.contains('mini'))})}
 let tt=0;function toast(m){let t=document.getElementById('ink-toast');if(!t){t=document.createElement('div');t.id='ink-toast';document.body.appendChild(t)}t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,2600)}
-addEventListener('pointerdown',e=>{if(!on||e.pointerType!=='touch')return;const t=e.target;
+addEventListener('pointerdown',e=>{if(!on||e.pointerType!=='touch')return;unstick();const t=e.target;
  if(t&&t.closest&&(t.closest('#ink-bar')||(t.classList&&t.classList.contains('ink-live'))))return;
  if(penRecent()||big(e)){e.stopPropagation();e.preventDefault();blockClick=tnow()+600}},true);
 addEventListener('click',e=>{if(tnow()<blockClick&&!(e.target&&e.target.closest&&e.target.closest('#ink-bar'))){e.stopPropagation();e.preventDefault()}},true);
