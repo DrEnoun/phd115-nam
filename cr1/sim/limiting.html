@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limiting Reactant Lab · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#081426;--panel:#0f2340;--panel2:#13304f;--ink:#e3eef8;--muted:#9fb6c8;--teal:#2dd4bf;--lime:#d4ff3a;--hot:#fc7a7a;--edge:rgba(111,214,200,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden}
+sub{font-size:.7em;line-height:0}
+#app{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(330px,1fr);height:100%;gap:10px;padding:10px}
+#view{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(120% 90% at 70% 0%,#12385a 0%,#081426 65%);border:1px solid var(--edge);display:flex;flex-direction:column;padding:12px 14px}
+#eq{font:800 26px 'League Spartan',sans-serif;text-align:center;letter-spacing:.01em}
+#eq .c{color:var(--lime)}
+#recipe{text-align:center;font-size:16px;color:var(--muted);margin:2px 0 8px}
+#recipe .mini{display:inline-flex;vertical-align:middle;gap:2px;margin:0 2px}
+#recipe .mini svg,#recipe .mini span{width:24px;height:24px;font-size:20px;line-height:24px}
+#zones{flex:1;display:grid;grid-template-columns:1fr 24px 1fr 30px 1.15fr;align-items:stretch;gap:6px;min-height:0}
+.op{display:grid;place-items:center;font:800 28px 'League Spartan',sans-serif;color:var(--muted)}
+.zone{position:relative;display:flex;flex-direction:column;border-radius:16px;background:rgba(15,35,64,.65);border:2px solid var(--edge);padding:8px 6px 6px;min-height:0;transition:border-color .3s,box-shadow .3s}
+.zone h3{margin:0;text-align:center;font:800 19px 'League Spartan',sans-serif}
+.zone .cnt{text-align:center;font-size:15px;color:var(--muted);margin-bottom:4px}
+.zone .cnt b{color:var(--ink);font-size:18px}
+.pile{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:4px;min-height:0;overflow:hidden}
+.it{width:40px;height:40px;display:grid;place-items:center;font-size:32px;line-height:1}
+.it svg{width:40px;height:40px;overflow:visible}
+.it.pop{animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.zone.lim{border-color:var(--hot);box-shadow:0 0 0 2px rgba(252,122,122,.35),0 0 26px rgba(252,122,122,.35)}
+.zone.exc{border-color:var(--lime);box-shadow:0 0 0 2px rgba(212,255,58,.25),0 0 22px rgba(212,255,58,.25)}
+.zone.exc .pile .it{animation:glow 1.2s ease-in-out infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 6px rgba(212,255,58,.9))}}
+.badge{position:absolute;left:50%;bottom:6px;transform:translateX(-50%) scale(.6);opacity:0;white-space:nowrap;border-radius:999px;padding:4px 12px;font:800 15px 'League Spartan',sans-serif;transition:.35s cubic-bezier(.2,1.4,.4,1);pointer-events:none}
+.badge.show{opacity:1;transform:translateX(-50%) scale(1)}
+.badge.lim{background:var(--hot);color:#2a0606}.badge.exc{background:var(--lime);color:#0a1628}.badge.tie{background:var(--teal);color:#062a2b}
+#fx{position:absolute;inset:0;pointer-events:none}
+.fly{position:absolute;width:40px;height:40px;display:grid;place-items:center;font-size:32px}
+.fly svg{width:40px;height:40px;overflow:visible}
+#boom{position:absolute;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(212,255,58,.85),rgba(45,212,191,.35) 45%,transparent 70%);transform:translate(-50%,-50%) scale(0);opacity:0}
+#side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:8px 4px;border-radius:12px;font:700 16px 'League Spartan',sans-serif;cursor:pointer}
+.tabs button.on{background:var(--teal);color:#062a2b;border-color:var(--teal)}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:9px 12px}
+.row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:18px;margin:3px 0}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:38px;height:38px;border-radius:50%;border:1px solid var(--edge);background:var(--panel2);color:var(--ink);font:800 22px 'League Spartan',sans-serif;cursor:pointer;line-height:1}
+.step output{min-width:34px;text-align:center;font:800 24px 'League Spartan',sans-serif;color:var(--lime)}
+.guess{font-size:17px}
+.guess .gb{display:flex;gap:6px;margin-top:6px}
+.guess .gb button{flex:1;border:1px solid var(--edge);background:var(--panel2);color:var(--ink);border-radius:10px;padding:7px 4px;font:700 16px Questrial,sans-serif;cursor:pointer}
+.guess .gb button.on{background:var(--teal);color:#062a2b;border-color:var(--teal)}
+.btns{display:flex;gap:6px}
+.btns button{flex:1;border:0;border-radius:12px;padding:10px;font:800 18px 'League Spartan',sans-serif;cursor:pointer}
+.go{background:var(--lime);color:#0a1628}.rs{background:var(--panel2);color:var(--ink);border:1px solid var(--edge)!important}
+button:disabled{opacity:.45;cursor:default}
+#work{font-size:17px;line-height:1.45}
+#work .ln{opacity:0;transform:translateY(6px);transition:.35s;white-space:nowrap}
+#work .ln.show{opacity:1;transform:none}
+#work .h{color:var(--teal);font-weight:700;margin-top:4px;white-space:normal}
+#work b{color:var(--lime)}
+#work .red{color:var(--hot);font-weight:700}
+#say{font-size:17px;line-height:1.4}
+#say b{color:var(--teal)}
+#say .ok{color:var(--lime);font-weight:700}#say .no{color:var(--hot);font-weight:700}
+.hide{display:none!important}
+@media (max-width:760px){html,body{overflow:auto}#app{grid-template-columns:1fr;height:auto}#view{height:400px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="view">
+    <div id="eq"></div>
+    <div id="recipe"></div>
+    <div id="zones">
+      <div class="zone" id="zA"><h3 id="nA"></h3><div class="cnt">left: <b id="cA">0</b></div><div class="pile" id="pA"></div><div class="badge" id="bA"></div></div>
+      <div class="op">+</div>
+      <div class="zone" id="zB"><h3 id="nB"></h3><div class="cnt">left: <b id="cB">0</b></div><div class="pile" id="pB"></div><div class="badge" id="bB"></div></div>
+      <div class="op">→</div>
+      <div class="zone" id="zP"><h3 id="nP"></h3><div class="cnt">made: <b id="cP">0</b></div><div class="pile" id="pP"></div></div>
+    </div>
+    <div id="fx"><div id="boom"></div></div>
+  </div>
+
+  <div id="side">
+    <div class="tabs" id="tabs"></div>
+    <div class="card">
+      <div class="row"><span id="lA"></span><div class="step"><button id="mA" aria-label="less">−</button><output id="vA"></output><button id="aA" aria-label="more">+</button></div></div>
+      <div class="row"><span id="lB"></span><div class="step"><button id="mB" aria-label="less">−</button><output id="vB"></output><button id="aB" aria-label="more">+</button></div></div>
+    </div>
+    <div class="card guess"><span>🤔 <b>Guess first:</b> which one runs out first?</span><div class="gb" id="gb"></div></div>
+    <div class="btns"><button class="go" id="go">▶ React!</button><button class="rs" id="reset">↺ Reset</button></div>
+    <div class="card" id="say"></div>
+    <div class="card hide" id="work"></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+// ---------- pictures
+const ball=(x,y,r,c1,c2,id)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#${id})"/>`;
+const grads=`<defs>
+<radialGradient id="gH" cx="35%" cy="30%"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#cfd8e3"/><stop offset="1" stop-color="#8a97a8"/></radialGradient>
+<radialGradient id="gO" cx="35%" cy="30%"><stop offset="0" stop-color="#ff9b8f"/><stop offset=".55" stop-color="#d23a2c"/><stop offset="1" stop-color="#7d1810"/></radialGradient>
+<radialGradient id="gN" cx="35%" cy="30%"><stop offset="0" stop-color="#9cc8ff"/><stop offset=".55" stop-color="#2f6fd6"/><stop offset="1" stop-color="#163a80"/></radialGradient></defs>`;
+const bond=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#9fb0c4" stroke-width="4"/>`;
+const SVG=inner=>`<svg viewBox="0 0 40 40">${grads}${inner}</svg>`;
+const PIC={
+ H2:SVG(bond(12,20,28,20)+ball(12,20,8,0,0,'gH')+ball(28,20,8,0,0,'gH')),
+ O2:SVG(bond(11,20,29,20)+ball(11,20,10,0,0,'gO')+ball(29,20,10,0,0,'gO')),
+ N2:SVG(bond(11,20,29,20)+ball(11,20,10,0,0,'gN')+ball(29,20,10,0,0,'gN')),
+ H2O:SVG(bond(20,22,8,13)+bond(20,22,32,13)+ball(8,13,6.5,0,0,'gH')+ball(32,13,6.5,0,0,'gH')+ball(20,23,10.5,0,0,'gO')),
+ NH3:SVG(bond(20,17,8,29)+bond(20,17,32,29)+bond(20,17,20,34)+ball(8,29,6,0,0,'gH')+ball(32,29,6,0,0,'gH')+ball(20,34,6,0,0,'gH')+ball(20,17,10.5,0,0,'gN')),
+ bread:'<span>🍞</span>',cheese:'<span>🧀</span>',sandwich:'<span>🥪</span>'
+};
+// ---------- the three set-ups
+const M={
+ sandwich:{tab:'🥪 Sandwich',A:['Bread','bread',2,'slices of bread'],B:['Cheese','cheese',1,'cheese slices'],P:['Sandwich','sandwich',1],w:{A:'bread',B:'cheese',P:'sandwiches'},eq:'<span class="c">2</span> bread + <span class="c">1</span> cheese → <span class="c">1</span> sandwich',a0:10,b0:3,maxA:16,maxB:8},
+ water:{tab:'2H<sub>2</sub> + O<sub>2</sub>',A:['H<sub>2</sub>','H2',2,'H<sub>2</sub> molecules'],B:['O<sub>2</sub>','O2',1,'O<sub>2</sub> molecules'],P:['H<sub>2</sub>O','H2O',2],eq:'<span class="c">2</span>H<sub>2</sub> + <span class="c">1</span>O<sub>2</sub> → <span class="c">2</span>H<sub>2</sub>O',a0:8,b0:3,maxA:12,maxB:8},
+ ammonia:{tab:'N<sub>2</sub> + 3H<sub>2</sub>',A:['N<sub>2</sub>','N2',1,'N<sub>2</sub> molecules'],B:['H<sub>2</sub>','H2',3,'H<sub>2</sub> molecules'],P:['NH<sub>3</sub>','NH3',2],eq:'<span class="c">1</span>N<sub>2</sub> + <span class="c">3</span>H<sub>2</sub> → <span class="c">2</span>NH<sub>3</sub>',a0:4,b0:9,maxA:8,maxB:15}
+};
+let mode='sandwich',nA=0,nB=0,busy=false,done=false,guess=null,runId=0;
+const strip=s=>s.replace(/<[^>]+>/g,'');
+
+function buildTabs(){$('tabs').innerHTML=Object.entries(M).map(([k,m])=>`<button data-m="${k}" class="${k===mode?'on':''}">${m.tab}</button>`).join('');
+  $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(busy)return;mode=b.dataset.m;buildTabs();setup(true)})}
+function setup(fresh){
+  runId++;busy=false;done=false;guess=null;const m=M[mode];
+  if(fresh){nA=m.a0;nB=m.b0}
+  $('eq').innerHTML=m.eq;
+  $('recipe').innerHTML=`One round uses <span class="mini">${PIC[m.A[1]].repeat(m.A[2])}</span> + <span class="mini">${PIC[m.B[1]].repeat(m.B[2])}</span> and makes <span class="mini">${PIC[m.P[1]].repeat(m.P[2])}</span>`;
+  $('nA').innerHTML=m.A[0];$('nB').innerHTML=m.B[0];$('nP').innerHTML=m.P[0];
+  $('lA').innerHTML=m.A[0]+' <small style="color:var(--muted)">(+'+m.A[2]+')</small>';$('lB').innerHTML=m.B[0]+' <small style="color:var(--muted)">(+'+m.B[2]+')</small>';
+  $('gb').innerHTML=`<button data-g="A">${m.A[0]}</button><button data-g="B">${m.B[0]}</button><button data-g="T">Same time</button>`;
+  $('gb').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(busy||done)return;guess=b.dataset.g;$('gb').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b))});
+  fill();
+  ['zA','zB'].forEach(z=>$(z).classList.remove('lim','exc'));['bA','bB'].forEach(b=>{$(b).className='badge';$(b).textContent=''});
+  $('work').classList.add('hide');$('work').innerHTML='';
+  $('say').innerHTML=mode==='sandwich'
+   ?`You run a sandwich shop. Each sandwich needs <b>2 bread</b> and <b>1 cheese</b>. Change the numbers, guess, then press <b>React!</b>`
+   :`Each picture is <b>1 molecule</b> (or think of it as 1 mol). Change the numbers, guess which one runs out first, then press <b>React!</b>`;
+  $('go').disabled=false;
+}
+function fill(){const m=M[mode];
+  $('vA').textContent=nA;$('vB').textContent=nB;$('cA').textContent=nA;$('cB').textContent=nB;$('cP').textContent=0;
+  $('pA').innerHTML=Array(nA).fill(`<div class="it">${PIC[m.A[1]]}</div>`).join('');
+  $('pB').innerHTML=Array(nB).fill(`<div class="it">${PIC[m.B[1]]}</div>`).join('');
+  $('pP').innerHTML='';
+}
+function change(which,dir){if(busy)return;const m=M[mode];
+  if(which==='A')nA=Math.max(m.A[2],Math.min(m.maxA,nA+dir*m.A[2]));else nB=Math.max(m.B[2],Math.min(m.maxB,nB+dir*m.B[2]));
+  if(done)setup(false);else fill();}
+$('mA').onclick=()=>change('A',-1);$('aA').onclick=()=>change('A',1);$('mB').onclick=()=>change('B',-1);$('aB').onclick=()=>change('B',1);
+$('reset').onclick=()=>setup(true);
+
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+async function fly(els,tx,ty,id){
+  const fx=$('fx').getBoundingClientRect();const jobs=[];
+  els.forEach((el,i)=>{const r=el.getBoundingClientRect();const c=document.createElement('div');c.className='fly';c.innerHTML=el.innerHTML;
+    c.style.left=(r.left-fx.left)+'px';c.style.top=(r.top-fx.top)+'px';$('fx').appendChild(c);el.style.visibility='hidden';
+    const dx=tx-(r.left-fx.left)-20+(i-(els.length-1)/2)*14,dy=ty-(r.top-fx.top)-20;
+    jobs.push(c.animate([{transform:'translate(0,0) scale(1)'},{transform:`translate(${dx}px,${dy}px) scale(.85)`}],{duration:RM?1:520,easing:'cubic-bezier(.5,0,.3,1)',fill:'forwards'}).finished.then(()=>c));
+  });
+  const cs=await Promise.all(jobs);if(id!==runId){cs.forEach(c=>c.remove());return false}
+  return cs;
+}
+async function react(){
+  if(busy)return;if(done)setup(false);
+  busy=true;$('go').disabled=true;const id=runId;const m=M[mode];const a=m.A[2],b=m.B[2],p=m.P[2];
+  const rA=nA/a,rB=nB/b,rounds=Math.min(rA,rB);
+  $('say').innerHTML='Mixing… watch which pile gets empty first!';
+  const view=$('fx').getBoundingClientRect(),pr=$('zP').getBoundingClientRect();
+  const tx=(pr.left-view.left)-14,ty=(pr.top-view.top)+pr.height/2;
+  let left={A:nA,B:nB},made=0;
+  for(let k=0;k<rounds;k++){
+    const takeA=[...$('pA').children].filter(e=>e.style.visibility!=='hidden').slice(-a);
+    const takeB=[...$('pB').children].filter(e=>e.style.visibility!=='hidden').slice(-b);
+    const cs=await fly([...takeA,...takeB],tx,ty,id);if(!cs)return;
+    takeA.concat(takeB).forEach(e=>e.remove());left.A-=a;left.B-=b;$('cA').textContent=left.A;$('cB').textContent=left.B;
+    const boom=$('boom');boom.style.left=tx+'px';boom.style.top=ty+'px';
+    boom.animate([{transform:'translate(-50%,-50%) scale(.2)',opacity:1},{transform:'translate(-50%,-50%) scale(1.3)',opacity:0}],{duration:RM?1:380});
+    cs.forEach(c=>c.remove());
+    for(let j=0;j<p;j++){const d=document.createElement('div');d.className='it pop';d.innerHTML=PIC[m.P[1]];$('pP').appendChild(d)}
+    made+=p;$('cP').textContent=made;
+    await wait(RM?1:230);if(id!==runId)return;
+  }
+  // result
+  const tie=rA===rB,lim=tie?'T':(rA<rB?'A':'B'),exc=lim==='A'?'B':'A';
+  if(tie){['A','B'].forEach(z=>{$('b'+z).className='badge tie show';$('b'+z).textContent='Used up exactly'})}
+  else{$('z'+lim).classList.add('lim');$('b'+lim).className='badge lim show';$('b'+lim).textContent='LIMITING · ran out first';
+    $('z'+exc).classList.add('exc');$('b'+exc).className='badge exc show';$('b'+exc).textContent='EXCESS · '+left[exc]+' left over'}
+  const W0=m.w||{A:m.A[0],B:m.B[0],P:m.P[0]};const nm=x=>W0[x];
+  let g='';if(guess){g=guess===lim?'<span class="ok">Your guess was right! 🎉</span><br>':'<span class="no">Not quite this time.</span> Look at Step 2.<br>'}
+  $('say').innerHTML=g+(tie?`Both ran out together. There is <b>no limiting reactant</b>: the amounts were in the perfect ratio.`
+    :`<b>${cap(nm(lim))}</b> ran out first, so it is the <b>limiting reactant</b>. It decides how much ${W0.P} you make.`);
+  const W=$('work');W.classList.remove('hide');
+  const lines=[
+   `<div class="h">Step 1 · Divide each amount by its big number</div>`,
+   `${m.A[0]}: ${nA} ÷ ${a} = <b>${fmt(rA)}</b>`,
+   `${m.B[0]}: ${nB} ÷ ${b} = <b>${fmt(rB)}</b>`,
+   `<div class="h">Step 2 · The smaller number runs out first</div>`,
+   tie?`Same number, so no limiting reactant`:`<span class="red">${cap(nm(lim))} is the limiting reactant</span>`,
+   `<div class="h">Step 3 · Product made</div>`,
+   `${fmt(rounds)} × ${p} = <b>${fmt(rounds*p)} ${W0.P}</b>`,
+   ...(tie?[]:[`<div class="h">Step 4 · Excess left over</div>`,
+   `${exc==='A'?nA:nB} − ${fmt(rounds)} × ${exc==='A'?a:b} = <b>${left[exc]} ${nm(exc)}</b>`])];
+  W.innerHTML=lines.map(l=>`<div class="ln">${l}</div>`).join('');
+  const L=[...W.children];for(const el of L){await wait(RM?1:260);if(id!==runId)return;el.classList.add('show')}
+  W.scrollIntoView&&$('side').scrollTo({top:$('side').scrollHeight,behavior:RM?'auto':'smooth'});
+  busy=false;done=true;$('go').disabled=false;
+}
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const fmt=x=>Number.isInteger(x)?String(x):x.toFixed(1);
+$('go').onclick=react;
+
+// pass slide keys to the deck
+addEventListener('keydown',e=>{const t=e.target.tagName;if(t==='INPUT'||t==='SELECT')return;
+  const map={ArrowRight:'next',PageDown:'next',' ':'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+
+const q=new URLSearchParams(location.search);if(M[q.get('mode')])mode=q.get('mode');
+buildTabs();setup(true);
+</script>
+</body>
+</html>
