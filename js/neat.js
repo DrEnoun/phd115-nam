@@ -42,6 +42,7 @@ const NB=' ';
 function prevTokOK(acc){
   const s=acc.replace(/\s+$/,'');
   if(s.replace(/<[^>]*>/g,'').trim().length<4)return false;      // "1." / "(a)" labels
+  if((s.match(/\(/g)||[]).length>(s.match(/\)/g)||[]).length)return false;  // still inside ( ... )
   const m=s.match(/(\S+)[.!?]["”’)]*$/);if(!m)return true;
   const t=m[1].replace(/^[(“"‘]+/,'').toLowerCase();
   if(ABBR.has(t))return false;
@@ -114,13 +115,33 @@ function glueMath(node,block){
   if(t!==o){node.data=t;let a=GLUED.get(block);if(!a){a=[];GLUED.set(block,a)}a.push([node,o]);block.classList.add('neat-g')}
 }
 // If glued text is wider than its box, let it wrap again.
-function unglue(slide){
-  slide.querySelectorAll('.neat-g').forEach(b=>{
-    if(b.scrollWidth>b.clientWidth+2){const a=GLUED.get(b);if(a)a.forEach(([nd,o])=>{nd.data=nd.data.replace(/ /g,' ')});b.classList.remove('neat-g')}
+function keepBrackets(slide){
+  const blocks=new Set();
+  const w=document.createTreeWalker(slide,NodeFilter.SHOW_TEXT);let n;
+  while(n=w.nextNode()){const p=n.parentElement;if(!p||p.closest(SKIP))continue;blocks.add(p.closest(BLOCK)||p)}
+  blocks.forEach(block=>{
+    const ns=[];const tw=document.createTreeWalker(block,NodeFilter.SHOW_TEXT);let t;
+    while(t=tw.nextNode()){const p=t.parentElement;if(p.closest(SKIP))continue;if((p.closest(BLOCK)||p)!==block)continue;ns.push(t)}
+    if(!ns.length)return;
+    let all='',map=[];ns.forEach((nd,k)=>{for(let i=0;i<nd.data.length;i++)map.push([k,i]);all+=nd.data});
+    const re=/\([^()\n]{2,46}\)/g;let m;const hit=new Set();
+    while(m=re.exec(all)){for(let i=m.index;i<m.index+m[0].length;i++)if(all[i]===' ')hit.add(i)}
+    if(!hit.size)return;
+    const byNode=new Map();hit.forEach(i=>{const [k,j]=map[i];if(!byNode.has(k))byNode.set(k,[]);byNode.get(k).push(j)});
+    byNode.forEach((js,k)=>{const nd=ns[k],o=nd.data;const a=o.split('');js.forEach(j=>a[j]=NB);nd.data=a.join('');
+      let g=GLUED.get(block);if(!g){g=[];GLUED.set(block,g)}g.push([nd,o]);block.classList.add('neat-g')});
   });
 }
-
-stage.querySelectorAll('.slide').forEach(processSlide);
+// If glued text is wider than its box or the slide, let it wrap again.
+function unglue(slide){
+  const body=slide.querySelector('.body');const lim=body?body.getBoundingClientRect().right+1:Infinity;let changed=false;
+  slide.querySelectorAll('.neat-g').forEach(b=>{
+    if(b.scrollWidth>b.clientWidth+2||b.getBoundingClientRect().right>lim){const a=GLUED.get(b);if(a)a.forEach(([nd])=>{nd.data=nd.data.replace(/\u00a0/g,' ')});b.classList.remove('neat-g');changed=true}
+  });
+  return changed;
+}
+function processAll(sl){processSlide(sl);if(!sl.dataset.neatBr){sl.dataset.neatBr=1;keepBrackets(sl)}}
+stage.querySelectorAll('.slide').forEach(processAll);
 const orig=window.autofit;
 function fitNow(s){
   const b=s.querySelector('.body');if(!b){orig(s);return}
@@ -147,7 +168,7 @@ function fitNow(s){
 window.autofit=function(s){
   if(!s)return orig(s);
   if(s.dataset.neatFit){orig(s);return}
-  s.dataset.neatFit=1;unglue(s);fitNow(s);
+  s.dataset.neatFit=1;unglue(s);fitNow(s);for(let k=0;k<3&&unglue(s);k++)fitNow(s);
 };
 stage.querySelectorAll('.body').forEach(b=>delete b.dataset.fit);
 // pictures and fonts that finish loading late change the height: fit the current slide again
