@@ -40,8 +40,8 @@ sub{font-size:.7em;line-height:0}
 .fly svg{width:40px;height:40px;overflow:visible}
 #boom{position:absolute;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(212,255,58,.85),rgba(45,212,191,.35) 45%,transparent 70%);transform:translate(-50%,-50%) scale(0);opacity:0}
 #side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto}
-.tabs{display:flex;gap:6px}
-.tabs button{flex:1;border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:8px 4px;border-radius:12px;font:700 16px 'League Spartan',sans-serif;cursor:pointer}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.tabs button{border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:7px 3px;border-radius:10px;font:700 14px 'League Spartan',sans-serif;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tabs button.on{background:var(--teal);color:#062a2b;border-color:var(--teal)}
 .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:9px 12px}
 .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:18px;margin:3px 0}
@@ -91,7 +91,7 @@ button:disabled{opacity:.45;cursor:default}
       <div class="row"><span id="lB"></span><div class="step"><button id="mB" aria-label="less">−</button><output id="vB"></output><button id="aB" aria-label="more">+</button></div></div>
     </div>
     <div class="card guess"><span>🤔 <b>Guess first:</b> which one runs out first?</span><div class="gb" id="gb"></div></div>
-    <div class="btns"><button class="go" id="go">▶ React!</button><button class="rs" id="reset">↺ Reset</button></div>
+    <div class="btns"><button class="go" id="go">▶ React!</button><button class="rs" id="rnd">🎲 Random</button><button class="rs" id="reset">↺ Reset</button></div>
     <div class="card" id="say"></div>
     <div class="card hide" id="work"></div>
   </div>
@@ -104,6 +104,11 @@ const ball=(x,y,r,c1,c2,id)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#${
 const grads=`<defs>
 <radialGradient id="gH" cx="35%" cy="30%"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#cfd8e3"/><stop offset="1" stop-color="#8a97a8"/></radialGradient>
 <radialGradient id="gO" cx="35%" cy="30%"><stop offset="0" stop-color="#ff9b8f"/><stop offset=".55" stop-color="#d23a2c"/><stop offset="1" stop-color="#7d1810"/></radialGradient>
+<radialGradient id="gCl" cx="35%" cy="30%"><stop offset="0" stop-color="#c8ffb0"/><stop offset=".55" stop-color="#3cc23c"/><stop offset="1" stop-color="#16661a"/></radialGradient>
+<radialGradient id="gNa" cx="35%" cy="30%"><stop offset="0" stop-color="#e2c8ff"/><stop offset=".55" stop-color="#9a5ae0"/><stop offset="1" stop-color="#4b2386"/></radialGradient>
+<radialGradient id="gC" cx="35%" cy="30%"><stop offset="0" stop-color="#9aa3ad"/><stop offset=".55" stop-color="#454b55"/><stop offset="1" stop-color="#1b1e24"/></radialGradient>
+<radialGradient id="gFe" cx="35%" cy="30%"><stop offset="0" stop-color="#ffd1a8"/><stop offset=".55" stop-color="#c06a2b"/><stop offset="1" stop-color="#6a3210"/></radialGradient>
+<radialGradient id="gAl" cx="35%" cy="30%"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#b9c6d3"/><stop offset="1" stop-color="#6d7f91"/></radialGradient>
 <radialGradient id="gN" cx="35%" cy="30%"><stop offset="0" stop-color="#9cc8ff"/><stop offset=".55" stop-color="#2f6fd6"/><stop offset="1" stop-color="#163a80"/></radialGradient></defs>`;
 const bond=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#9fb0c4" stroke-width="4"/>`;
 const SVG=inner=>`<svg viewBox="0 0 40 40">${grads}${inner}</svg>`;
@@ -113,13 +118,27 @@ const PIC={
  N2:SVG(bond(11,20,29,20)+ball(11,20,10,0,0,'gN')+ball(29,20,10,0,0,'gN')),
  H2O:SVG(bond(20,22,8,13)+bond(20,22,32,13)+ball(8,13,6.5,0,0,'gH')+ball(32,13,6.5,0,0,'gH')+ball(20,23,10.5,0,0,'gO')),
  NH3:SVG(bond(20,17,8,29)+bond(20,17,32,29)+bond(20,17,20,34)+ball(8,29,6,0,0,'gH')+ball(32,29,6,0,0,'gH')+ball(20,34,6,0,0,'gH')+ball(20,17,10.5,0,0,'gN')),
+ HCl:SVG(bond(13,20,26,20)+ball(12,20,6.5,0,0,'gH')+ball(26,20,10.5,0,0,'gCl')),
+ Cl2:SVG(bond(11,20,29,20)+ball(11,20,10,0,0,'gCl')+ball(29,20,10,0,0,'gCl')),
+ Na:SVG(ball(20,20,13,0,0,'gNa')),
+ NaCl:SVG(ball(13,20,9,0,0,'gNa')+ball(27,20,11,0,0,'gCl')),
+ CH4:SVG(bond(20,20,8,10)+bond(20,20,32,10)+bond(20,20,9,31)+bond(20,20,31,31)+ball(8,10,5.5,0,0,'gH')+ball(32,10,5.5,0,0,'gH')+ball(9,31,5.5,0,0,'gH')+ball(31,31,5.5,0,0,'gH')+ball(20,20,10,0,0,'gC')),
+ CO2:SVG(bond(7,20,33,20)+ball(7,20,7.5,0,0,'gO')+ball(33,20,7.5,0,0,'gO')+ball(20,20,9,0,0,'gC')),
+ Fe:SVG(ball(20,20,13,0,0,'gFe')),
+ Fe2O3:SVG(ball(13,15,8,0,0,'gFe')+ball(27,15,8,0,0,'gFe')+ball(8,29,6.5,0,0,'gO')+ball(20,31,6.5,0,0,'gO')+ball(32,29,6.5,0,0,'gO')),
+ AlOH3:SVG(ball(20,22,9.5,0,0,'gAl')+ball(8,12,6,0,0,'gO')+ball(32,12,6,0,0,'gO')+ball(20,36,6,0,0,'gO')+ball(4,7,3.5,0,0,'gH')+ball(36,7,3.5,0,0,'gH')+ball(27,38,3.5,0,0,'gH')),
+ AlCl3:SVG(ball(20,22,9,0,0,'gAl')+ball(9,12,7,0,0,'gCl')+ball(31,12,7,0,0,'gCl')+ball(20,36,6.5,0,0,'gCl')),
  bread:'<span>🍞</span>',cheese:'<span>🧀</span>',sandwich:'<span>🥪</span>'
 };
 // ---------- the three set-ups
 const M={
  sandwich:{tab:'🥪 Sandwich',A:['Bread','bread',2,'slices of bread'],B:['Cheese','cheese',1,'cheese slices'],P:['Sandwich','sandwich',1],w:{A:'bread',B:'cheese',P:'sandwiches'},eq:'<span class="c">2</span> bread + <span class="c">1</span> cheese → <span class="c">1</span> sandwich',a0:10,b0:3,maxA:16,maxB:8},
- water:{tab:'2H<sub>2</sub> + O<sub>2</sub>',A:['H<sub>2</sub>','H2',2,'H<sub>2</sub> molecules'],B:['O<sub>2</sub>','O2',1,'O<sub>2</sub> molecules'],P:['H<sub>2</sub>O','H2O',2],eq:'<span class="c">2</span>H<sub>2</sub> + <span class="c">1</span>O<sub>2</sub> → <span class="c">2</span>H<sub>2</sub>O',a0:8,b0:3,maxA:12,maxB:8},
- ammonia:{tab:'N<sub>2</sub> + 3H<sub>2</sub>',A:['N<sub>2</sub>','N2',1,'N<sub>2</sub> molecules'],B:['H<sub>2</sub>','H2',3,'H<sub>2</sub> molecules'],P:['NH<sub>3</sub>','NH3',2],eq:'<span class="c">1</span>N<sub>2</sub> + <span class="c">3</span>H<sub>2</sub> → <span class="c">2</span>NH<sub>3</sub>',a0:4,b0:9,maxA:8,maxB:15}
+ water:{tab:'💧 2H<sub>2</sub> + O<sub>2</sub>',A:['H<sub>2</sub>','H2',2,'H<sub>2</sub> molecules'],B:['O<sub>2</sub>','O2',1,'O<sub>2</sub> molecules'],P:['H<sub>2</sub>O','H2O',2],eq:'<span class="c">2</span>H<sub>2</sub> + <span class="c">1</span>O<sub>2</sub> → <span class="c">2</span>H<sub>2</sub>O',a0:8,b0:3,maxA:12,maxB:8},
+ antacid:{tab:'💊 Antacid',A:['Al(OH)<sub>3</sub>','AlOH3',1,'Al(OH)<sub>3</sub>'],B:['HCl','HCl',3,'HCl'],P:['AlCl<sub>3</sub>','AlCl3',1],P2:['H<sub>2</sub>O','H2O',3],eq:'<span class="c">1</span>Al(OH)<sub>3</sub> + <span class="c">3</span>HCl → <span class="c">1</span>AlCl<sub>3</sub> + <span class="c">3</span>H<sub>2</sub>O',a0:3,b0:6,maxA:6,maxB:15},
+ methane:{tab:'🔥 CH<sub>4</sub> + 2O<sub>2</sub>',A:['CH<sub>4</sub>','CH4',1,'CH<sub>4</sub>'],B:['O<sub>2</sub>','O2',2,'O<sub>2</sub>'],P:['CO<sub>2</sub>','CO2',1],P2:['H<sub>2</sub>O','H2O',2],eq:'<span class="c">1</span>CH<sub>4</sub> + <span class="c">2</span>O<sub>2</sub> → <span class="c">1</span>CO<sub>2</sub> + <span class="c">2</span>H<sub>2</sub>O',a0:4,b0:6,maxA:8,maxB:14},
+ salt:{tab:'🧂 2Na + Cl<sub>2</sub>',A:['Na','Na',2,'Na'],B:['Cl<sub>2</sub>','Cl2',1,'Cl<sub>2</sub>'],P:['NaCl','NaCl',2],eq:'<span class="c">2</span>Na + <span class="c">1</span>Cl<sub>2</sub> → <span class="c">2</span>NaCl',a0:6,b0:4,maxA:14,maxB:8},
+ rust:{tab:'🔩 4Fe + 3O<sub>2</sub>',A:['Fe','Fe',4,'Fe'],B:['O<sub>2</sub>','O2',3,'O<sub>2</sub>'],P:['Fe<sub>2</sub>O<sub>3</sub>','Fe2O3',2],eq:'<span class="c">4</span>Fe + <span class="c">3</span>O<sub>2</sub> → <span class="c">2</span>Fe<sub>2</sub>O<sub>3</sub>',a0:8,b0:3,maxA:12,maxB:9},
+ ammonia:{tab:'🌱 N<sub>2</sub> + 3H<sub>2</sub>',A:['N<sub>2</sub>','N2',1,'N<sub>2</sub> molecules'],B:['H<sub>2</sub>','H2',3,'H<sub>2</sub> molecules'],P:['NH<sub>3</sub>','NH3',2],eq:'<span class="c">1</span>N<sub>2</sub> + <span class="c">3</span>H<sub>2</sub> → <span class="c">2</span>NH<sub>3</sub>',a0:4,b0:9,maxA:8,maxB:15}
 };
 let mode='sandwich',nA=0,nB=0,busy=false,done=false,guess=null,runId=0;
 const strip=s=>s.replace(/<[^>]+>/g,'');
@@ -130,8 +149,8 @@ function setup(fresh){
   runId++;busy=false;done=false;guess=null;const m=M[mode];
   if(fresh){nA=m.a0;nB=m.b0}
   $('eq').innerHTML=m.eq;
-  $('recipe').innerHTML=`One round uses <span class="mini">${PIC[m.A[1]].repeat(m.A[2])}</span> + <span class="mini">${PIC[m.B[1]].repeat(m.B[2])}</span> and makes <span class="mini">${PIC[m.P[1]].repeat(m.P[2])}</span>`;
-  $('nA').innerHTML=m.A[0];$('nB').innerHTML=m.B[0];$('nP').innerHTML=m.P[0];
+  $('recipe').innerHTML=`One round uses <span class="mini">${PIC[m.A[1]].repeat(m.A[2])}</span> + <span class="mini">${PIC[m.B[1]].repeat(m.B[2])}</span> and makes <span class="mini">${PIC[m.P[1]].repeat(m.P[2])}</span>${m.P2?` + <span class="mini">${PIC[m.P2[1]].repeat(m.P2[2])}</span>`:''}`;
+  $('nA').innerHTML=m.A[0];$('nB').innerHTML=m.B[0];$('nP').innerHTML=m.P[0]+(m.P2?' + '+m.P2[0]:'');
   $('lA').innerHTML=m.A[0]+' <small style="color:var(--muted)">(+'+m.A[2]+')</small>';$('lB').innerHTML=m.B[0]+' <small style="color:var(--muted)">(+'+m.B[2]+')</small>';
   $('gb').innerHTML=`<button data-g="A">${m.A[0]}</button><button data-g="B">${m.B[0]}</button><button data-g="T">Same time</button>`;
   $('gb').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(busy||done)return;guess=b.dataset.g;$('gb').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b))});
@@ -154,6 +173,7 @@ function change(which,dir){if(busy)return;const m=M[mode];
   if(done)setup(false);else fill();}
 $('mA').onclick=()=>change('A',-1);$('aA').onclick=()=>change('A',1);$('mB').onclick=()=>change('B',-1);$('aB').onclick=()=>change('B',1);
 $('reset').onclick=()=>setup(true);
+$('rnd').onclick=()=>{if(busy)return;const m=M[mode];const r=(c,mx)=>c*(1+Math.floor(Math.random()*Math.floor(mx/c)));nA=r(m.A[2],m.maxA);nB=r(m.B[2],m.maxB);setup(false)};
 
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -183,8 +203,8 @@ async function react(){
     const boom=$('boom');boom.style.left=tx+'px';boom.style.top=ty+'px';
     boom.animate([{transform:'translate(-50%,-50%) scale(.2)',opacity:1},{transform:'translate(-50%,-50%) scale(1.3)',opacity:0}],{duration:RM?1:380});
     cs.forEach(c=>c.remove());
-    for(let j=0;j<p;j++){const d=document.createElement('div');d.className='it pop';d.innerHTML=PIC[m.P[1]];$('pP').appendChild(d)}
-    made+=p;$('cP').textContent=made;
+    for(const [pp,np] of [[m.P,p],[m.P2,m.P2?m.P2[2]:0]])for(let j=0;j<np;j++){const d=document.createElement('div');d.className='it pop';d.innerHTML=PIC[pp[1]];$('pP').appendChild(d)}
+    made+=p;$('cP').innerHTML=m.P2?`${made} ${m.P[0]} + ${made/p*m.P2[2]} ${m.P2[0]}`:made;
     await wait(RM?1:230);if(id!==runId)return;
   }
   // result
@@ -205,6 +225,7 @@ async function react(){
    tie?`Same number, so no limiting reactant`:`<span class="red">${cap(nm(lim))} is the limiting reactant</span>`,
    `<div class="h">Step 3 · Product made</div>`,
    `${fmt(rounds)} × ${p} = <b>${fmt(rounds*p)} ${W0.P}</b>`,
+   ...(m.P2?[`${fmt(rounds)} × ${m.P2[2]} = <b>${fmt(rounds*m.P2[2])} ${m.P2[0]}</b>`]:[]),
    ...(tie?[]:[`<div class="h">Step 4 · Excess left over</div>`,
    `${exc==='A'?nA:nB} − ${fmt(rounds)} × ${exc==='A'?a:b} = <b>${left[exc]} ${nm(exc)}</b>`])];
   W.innerHTML=lines.map(l=>`<div class="ln">${l}</div>`).join('');

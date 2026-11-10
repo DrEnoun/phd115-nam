@@ -26,7 +26,7 @@ const css=`
 const st=document.createElement('style');st.id='neat-css';st.textContent=css;document.head.appendChild(st);
 
 // ---------- 1–3. text rules
-const SKIP='.ftap,.fb,.floop,h1,h2,h3,.head,.foot,.feq,.eqbox,.cw,.board,.chip,.eyebrow,.divn,.divp,.rail,svg,script,style,.lo,.num,.who,.attrib,.srcl,code,pre,.lr,.lrs,[data-neat-off],.opt>b,.opt .k,.oc .n';
+const SKIP='.ftap,.fb,.floop,h1,h2,h3,.head,.foot,.feq,.eqbox,.cm,.chip,.eyebrow,.divn,.divp,.rail,svg,script,style,.lo,.num,.who,.attrib,.srcl,code,pre,.lr,.lrs,[data-neat-off],.opt>b,.opt .k,.oc .n';
 const NOBREAK='table,figcaption,.cap,.tap,.fhint,.ftab,.opts,.opt,.sum b,.close';      // glue only, no sentence breaks
 const BLOCK='li,p,td,th,div,figcaption,button,h4,label,dd,dt';
 const ABBR=new Set(['e.g','i.e','dr','mr','mrs','ms','vs','approx','fig','figs','no','etc','st','cf','al','eq','ch','pp','p','vol','ed','sec','ref','min','max','prof','ts','b']);
@@ -143,6 +143,7 @@ function unglue(slide){
 function processAll(sl){processSlide(sl);if(!sl.dataset.neatBr){sl.dataset.neatBr=1;keepBrackets(sl)}}
 stage.querySelectorAll('.slide').forEach(processAll);
 const orig=window.autofit;
+const MAXF=/slides-v2/.test(location.pathname)?1.2:1.1;
 function fitNow(s){
   const b=s.querySelector('.body');if(!b){orig(s);return}
   // how far text goes below the bottom of the slide body (pictures themselves are ignored)
@@ -157,8 +158,9 @@ function fitNow(s){
   const imgs=[...b.querySelectorAll('img')].filter(i=>!i.closest('.lra,.simbox'));
   imgs.forEach(i=>{i.style.maxHeight='';const sc=b.getBoundingClientRect().height/(b.offsetHeight||1);i._h0=i.getBoundingClientRect().height/sc});
   const setF=f=>{b.style.setProperty('--fs',f);imgs.forEach(i=>{if(i._h0>40){i.style.maxHeight=(i._h0*Math.max(.7,f))+'px';i.style.width='auto'}})};
-  const best=min=>{let f=1,bestF=1,bestW=Infinity;
-    for(f=1;f>=min-1e-9;f-=0.02){setF(f);const w=spill();
+  const wide=()=>{const R=b.getBoundingClientRect();for(const el of b.querySelectorAll('*')){if(el.closest('svg,canvas,.fb,.simbox'))continue;const r=el.getBoundingClientRect();if(r.width&&r.right>R.right+2)return true}return false};
+  const best=min=>{let f=MAXF,bestF=1,bestW=Infinity;
+    for(f=MAXF;f>=min-1e-9;f-=0.02){setF(f);const w=spill()+(f>1&&wide()?999:0);
       if(w<=1){bestF=f;bestW=0;break}if(w<bestW-2){bestW=w;bestF=f}}
     setF(bestF);return bestW};
   if(best(0.6)>1){const brs=[...s.querySelectorAll('br.nbrk')];if(brs.length){brs.forEach(br=>br.replaceWith(' '));best(0.54)}}
@@ -178,4 +180,22 @@ addEventListener('load',refitSoon);
 [400,1200,3000].forEach(t=>setTimeout(()=>{const sl=stage.querySelector('.slide.on');if(sl&&sl.dataset.neatFit)fitNow(sl)},t));
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(refitSoon);
 try{paint()}catch(e){}
+// ---------- keep the slide above the bottom toolbar
+(function(){
+  const wrap=document.getElementById('wrap'),ctl=document.getElementById('ctl');
+  if(!wrap||!ctl||typeof fit!=='function')return;
+  function reserve(){
+    wrap.style.height='';
+    const wt=wrap.getBoundingClientRect().top,c=ctl.getBoundingClientRect();
+    if(!c.height)return;
+    const vh=window.innerHeight,avail=Math.min(vh-wt,c.top-6-wt);
+    if(avail>160){wrap.style.height=avail+'px';try{fit()}catch(e){}}
+  }
+  addEventListener('resize',()=>setTimeout(reserve,30));
+  addEventListener('orientationchange',()=>setTimeout(reserve,300));
+  document.addEventListener('fullscreenchange',()=>setTimeout(reserve,100));
+  document.addEventListener('webkitfullscreenchange',()=>setTimeout(reserve,100));
+  reserve();setTimeout(reserve,400);setTimeout(reserve,1500);
+})();
+
 })();

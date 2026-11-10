@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How big is a mole? · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#081426;--panel:#0f2340;--panel2:#13304f;--ink:#e3eef8;--muted:#9fb6c8;--teal:#2dd4bf;--lime:#d4ff3a;--hot:#fc7a7a;--edge:rgba(111,214,200,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden}
+sub,sup{font-size:.68em;line-height:0}
+#app{display:flex;flex-direction:column;height:100%;padding:10px;gap:8px}
+.tabs{display:flex;gap:8px}
+.tabs button{flex:1;border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:9px 6px;border-radius:12px;font:700 18px 'League Spartan',sans-serif;cursor:pointer}
+.tabs button.on{background:var(--teal);color:#062a2b;border-color:var(--teal)}
+.pane{flex:1;min-height:0;display:none}
+.pane.on{display:grid}
+/* ---------- Count it */
+#count{grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:10px}
+.box{background:radial-gradient(120% 90% at 70% 0%,#12385a 0%,#0b1c33 70%);border:1px solid var(--edge);border-radius:16px;padding:12px 16px;min-height:0;display:flex;flex-direction:column}
+.num{font:800 46px/1.1 'League Spartan',sans-serif;color:var(--lime);text-align:center;min-height:52px}
+.num small{font-size:.45em;color:var(--muted);display:block;font-weight:600;margin-top:4px}
+.thing{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:0}
+.emo{font-size:64px;margin-bottom:6px;line-height:1;transition:transform .35s cubic-bezier(.2,1.5,.4,1)}
+.emo.pop{transform:scale(1.25)}
+.what{font-size:22px;line-height:1.35;max-width:560px}
+.what b{color:var(--teal)}
+.track{position:relative;height:64px;margin:6px 6px 0}
+.track .line{position:absolute;left:0;right:0;top:30px;height:8px;border-radius:999px;background:linear-gradient(90deg,#1d4a6e,var(--teal),var(--lime))}
+.track .tick{position:absolute;top:22px;width:4px;height:24px;margin-left:-2px;border-radius:2px;background:#fff;opacity:.55;cursor:pointer}
+.track .tick.on{opacity:1;background:var(--lime)}
+.track .tl{position:absolute;top:0;font-size:18px;transform:translateX(-50%);cursor:pointer}
+.track .ex{position:absolute;top:48px;font-size:12px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+input[type=range]{width:100%;margin:0;accent-color:var(--lime);height:28px}
+.ctrl{display:flex;gap:8px;margin-top:6px}
+.ctrl button{flex:1;border:0;border-radius:12px;padding:10px;font:800 18px 'League Spartan',sans-serif;cursor:pointer}
+.go{background:var(--lime);color:#0a1628}.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--edge)!important}
+.side h3{margin:0 0 6px;font:800 20px 'League Spartan',sans-serif;color:var(--teal)}
+.side p{margin:4px 0;font-size:18px;line-height:1.4}
+.big2{font:800 30px/1.2 'League Spartan',sans-serif;color:var(--lime);margin:4px 0}
+.clock{font-size:46px;text-align:center;margin:4px 0}
+.bar2{height:12px;border-radius:999px;background:#18324f;overflow:hidden;margin:6px 0}
+.bar2 i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--lime));transition:width .3s}
+.note{font-size:15px;color:var(--muted)}
+/* ---------- Weigh it */
+#weigh{grid-template-columns:minmax(0,1.3fr) minmax(320px,1fr);gap:10px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-content:start;overflow:auto}
+.sub{border:2px solid var(--edge);background:var(--panel);border-radius:14px;padding:8px 10px;cursor:pointer;color:var(--ink);text-align:left;font:inherit;transition:transform .2s,border-color .2s}
+.sub:hover{transform:translateY(-2px)}
+.sub.on{border-color:var(--lime);box-shadow:0 0 18px rgba(212,255,58,.25)}
+.sub .e{font-size:30px}
+.sub .n{font:800 18px 'League Spartan',sans-serif;display:block;margin-top:2px}
+.sub .f{font-size:16px;color:var(--teal)}
+.scale{align-items:center;text-align:center}
+.pan{position:relative;width:min(300px,90%);height:150px;margin:6px auto 0;display:flex;align-items:flex-end;justify-content:center}
+.pile{width:70%;border-radius:50% 50% 8px 8px/40% 40% 8px 8px;background:linear-gradient(180deg,var(--c1,#fff),var(--c2,#9fb6c8));height:0;transition:height .9s cubic-bezier(.2,.9,.3,1);box-shadow:0 -4px 18px rgba(0,0,0,.25) inset}
+.plate{width:min(330px,96%);height:14px;border-radius:999px;background:linear-gradient(180deg,#d6e2ee,#7c93ab);margin:0 auto}
+.stand{width:120px;height:40px;margin:0 auto;border-radius:0 0 14px 14px;background:linear-gradient(180deg,#1b3b5f,#0e2340);display:grid;place-items:center;font:800 22px 'League Spartan',monospace;color:var(--lime);box-shadow:inset 0 0 0 2px var(--edge)}
+.mass{font:800 34px 'League Spartan',sans-serif;color:var(--lime);margin-top:8px}
+.same{font-size:17px;color:var(--muted)}
+.same b{color:var(--ink)}
+.like{font-size:16px;line-height:1.35;margin-top:4px}
+.like b{color:var(--teal)}
+@media (max-width:760px){html,body{overflow:auto}#count,#weigh{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="tabs"><button class="on" data-p="count">🔢 Count it: how many is a mole?</button><button data-p="weigh">⚖️ Weigh it: how much is a mole?</button></div>
+
+  <div class="pane on" id="count">
+    <div class="box">
+      <div class="num" id="num"></div>
+      <div class="thing"><div class="emo" id="emo"></div><div class="what" id="what"></div></div>
+      <div class="track" id="track"><div class="line"></div></div>
+      <input type="range" id="sl" min="0" max="23.78" step="0.01" value="1.08" aria-label="Number of things, from 1 to one mole">
+      <div class="ctrl"><button class="go" id="zoom">▶ Zoom up to 1 mole</button><button class="ghost" id="mole">🧪 Jump to 1 mole</button></div>
+    </div>
+    <div class="box side">
+      <h3>⏱️ Count them, 1 per second</h3>
+      <div class="clock">🧑‍🔬</div>
+      <p>Time needed:</p>
+      <div class="big2" id="time"></div>
+      <div class="bar2"><i id="tbar"></i></div>
+      <p id="cmp"></p>
+      <p class="note">Age of the universe: about 13.8 billion years.</p>
+    </div>
+  </div>
+
+  <div class="pane" id="weigh">
+    <div class="box">
+      <h3 style="margin:0 0 8px;font:800 20px 'League Spartan',sans-serif;color:var(--teal)">Tap a substance. Each card is exactly 1 mole.</h3>
+      <div class="cards" id="cards"></div>
+    </div>
+    <div class="box scale">
+      <div class="same">Every pile has <b>6.022 × 10<sup>23</sup></b> particles</div>
+      <div class="pan"><div class="pile" id="pile"></div></div>
+      <div class="plate"></div>
+      <div class="stand" id="stand">0.00 g</div>
+      <div class="mass" id="mass">?</div>
+      <div class="like" id="like">Tap a card to weigh 1 mole.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+// ---------- Count it
+const MOLE=Math.log10(6.022e23);
+const MS=[ // [log10 value, emoji, text, short label]
+ [0,'🥚','<b>1</b> egg','1'],
+ [Math.log10(12),'🥚','<b>12</b> eggs make a dozen.<br>A mole is a "dozen" for tiny things.','12'],
+ [Math.log10(500),'📄','About <b>500</b> sheets in one ream of paper','500'],
+ [4,'👣','About <b>10,000</b> steps in a busy day','10⁴'],
+ [Math.log10(3.4e7),'🇲🇾','About <b>34 million</b> people live in Malaysia','10⁷'],
+ [Math.log10(8.1e9),'🌏','About <b>8 billion</b> people live on Earth','10¹⁰'],
+ [11,'✨','About <b>100 billion</b> or more stars in our galaxy','10¹¹'],
+ [Math.log10(3.7e13),'🧍','About <b>37 trillion</b> cells in one human body','10¹³'],
+ [Math.log10(7.5e18),'🏖️','About <b>7.5 × 10<sup>18</sup></b> grains of sand on all Earth\'s beaches (a famous estimate)','10¹⁸'],
+ [Math.log10(5.0e23),'🥄','About <b>5 × 10<sup>23</sup></b> water molecules in 1 tablespoon (15 mL) of water','10²³'],
+ [MOLE,'🧪','<b>1 MOLE</b> = 6.022 × 10<sup>23</sup> things.<br>That is just <b>18 g of water</b>, about one big sip!','mol']
+];
+const tr=$('track');
+MS.forEach((m,i)=>{const x=m[0]/MOLE*100;
+  tr.insertAdjacentHTML('beforeend',`<div class="tick" data-i="${i}" style="left:${x}%"></div>${i%2===0||i===MS.length-1?`<div class="tl" data-i="${i}" style="left:${x}%">${m[1]}</div><div class="ex" style="left:${x}%">${m[3]}</div>`:''}`)});
+tr.querySelectorAll('[data-i]').forEach(t=>t.onclick=()=>{stop();set(MS[+t.dataset.i][0])});
+const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+function sci(v){if(v<1e6)return Math.round(v).toLocaleString('en-US');const e=Math.floor(Math.log10(v)),m=v/10**e;return `${m.toFixed(2)} × 10<sup>${e}</sup>`}
+function words(v){const W=[[1e12,'trillion'],[1e9,'billion'],[1e6,'million']];if(v>=1e15)return '';for(const [k,w] of W)if(v>=k)return `about ${(v/k).toFixed(v/k<10?1:0)} ${w}`;return ''}
+let lastI=-1;
+function set(L){L=Math.max(0,Math.min(MOLE,L));$('sl').value=L;const v=10**L;
+  $('num').innerHTML=sci(v)+`<small>${words(v)||'&nbsp;'}</small>`;
+  let i=0;MS.forEach((m,k)=>{if(L>=m[0]-0.005)i=k});
+  if(i!==lastI){lastI=i;$('emo').textContent=MS[i][1];$('what').innerHTML=(L<MS[i][0]+0.02||i===MS.length-1?'':'More than: ')+MS[i][2];
+    const e=$('emo');e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop');
+    tr.querySelectorAll('.tick').forEach(t=>t.classList.toggle('on',+t.dataset.i<=i))}
+  else $('what').innerHTML=(L<MS[i][0]+0.02||i===MS.length-1?'':'More than: ')+MS[i][2];
+  // counting time
+  const Y=31557600,s=v;let t;
+  if(s<60)t=`${Math.round(s)} seconds`;else if(s<3600)t=`${(s/60).toFixed(0)} minutes`;else if(s<86400)t=`${(s/3600).toFixed(1)} hours`;
+  else if(s<Y)t=`${(s/86400).toFixed(0)} days`;else t=`${sci(s/Y)} years`;
+  $('time').innerHTML=t;
+  const age=13.8e9*Y;$('tbar').style.width=Math.min(100,Math.log10(Math.max(1,s))/Math.log10(age)*100)+'%';
+  $('cmp').innerHTML=s>age?`That is about <b style="color:var(--hot)">${sci(s/age)} times</b> the age of the universe! 🤯`:s>Y*80?'Longer than a human life.':s>Y?'Longer than a year.':'You could do this!';
+}
+$('sl').oninput=e=>{stop();set(+e.target.value)};
+let raf=0;function stop(){cancelAnimationFrame(raf);raf=0}
+$('zoom').onclick=()=>{stop();let L=0;const t0=performance.now();
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const step=t=>{L=Math.min(MOLE,(t-t0)/(RM?1:9000)*MOLE);set(L);if(L<MOLE)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)};
+$('mole').onclick=()=>{stop();set(MOLE)};
+set(Math.log10(12));
+
+// ---------- Weigh it
+const SUBS=[
+ ['💧','Water','H<sub>2</sub>O',18.02,'about <b>18 mL</b>: one big sip of water','#bfe7ff','#4aa3d8'],
+ ['🧂','Table salt','NaCl',58.44,'about <b>10 teaspoons</b> of salt','#ffffff','#c9d6e2'],
+ ['✏️','Carbon (graphite)','C',12.01,'only <b>12 g</b>: about the mass of a few small coins','#8a8f99','#2c3038'],
+ ['🥫','Aluminium','Al',26.98,'about <b>2 empty drink cans</b>','#e6edf3','#8fa3b5'],
+ ['💊','Aspirin','C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>',180.16,'about <b>360 tablets</b> of 500 mg aspirin','#ffffff','#e3d9c9'],
+ ['🍬','Table sugar','C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>',342.30,'about <b>85 teaspoons</b> of sugar','#fff7e8','#e7cfa0']
+];
+$('cards').innerHTML=SUBS.map((s,i)=>`<button class="sub" data-i="${i}"><span class="e">${s[0]}</span><span class="n">${s[1]}</span><span class="f">${s[2]}</span></button>`).join('');
+let tick=0;
+$('cards').querySelectorAll('.sub').forEach(b=>b.onclick=()=>{const s=SUBS[+b.dataset.i];
+  $('cards').querySelectorAll('.sub').forEach(x=>x.classList.toggle('on',x===b));
+  const pile=$('pile');pile.style.setProperty('--c1',s[5]);pile.style.setProperty('--c2',s[6]);pile.style.height=Math.max(10,s[3]/342.3*140)+'px';
+  cancelAnimationFrame(tick);const t0=performance.now(),D=900;
+  const run=t=>{const k=Math.min(1,(t-t0)/D);$('stand').textContent=(s[3]*k).toFixed(2)+' g';if(k<1)tick=requestAnimationFrame(run)};tick=requestAnimationFrame(run);
+  $('mass').innerHTML=`1 mol ${s[2]} = ${s[3].toFixed(2)} g`;
+  $('like').innerHTML=`That is ${s[4]}.<br>Same number of particles, different mass, because each particle has a different mass.`;
+});
+
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p))});
+
+addEventListener('keydown',e=>{const t=e.target.tagName;if(t==='INPUT')return;
+  const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
