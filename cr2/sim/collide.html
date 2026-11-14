@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collision Cards · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--teal:#2dd4bf;--lime:#d4ff3a;--pink:#ff8fb1;--gold:#ffd27a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#2a1f5c 0%,transparent 60%),var(--bg)}
+sub{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:flex;flex-direction:column;padding:10px;gap:10px}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}
+.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:15px}
+.bar .sp{flex:1}
+.bar button{border:1px solid rgba(45,212,191,.35);background:rgba(255,255,255,.06);color:var(--ink);border-radius:12px;padding:8px 14px;font-weight:800;font-size:15px}
+.bar button.main{background:linear-gradient(180deg,#e8ff76,#b8e61c);color:#13240a;border:0;box-shadow:0 6px 18px rgba(212,255,58,.3)}
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{perspective:1200px;min-height:0;cursor:pointer;outline:none}
+.inner{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.card.flip .inner{transform:rotateY(180deg)}
+.card:hover .inner{transform:translateY(-4px)}
+.card.flip:hover .inner{transform:rotateY(180deg) translateY(-4px)}
+.face{position:absolute;inset:0;border-radius:22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:12px 12px 10px;text-align:center}
+.front{background:linear-gradient(160deg,#1c5b6e 0%,#123a5c 55%,#24255a 100%);border:2px solid rgba(45,212,191,.45);box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 24px rgba(45,212,191,.15)}
+.front:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.18) 0 2px,transparent 3px),radial-gradient(circle at 80% 30%,rgba(255,255,255,.14) 0 2px,transparent 3px),radial-gradient(circle at 65% 85%,rgba(255,255,255,.12) 0 2px,transparent 3px);pointer-events:none}
+.num{width:40px;height:40px;border-radius:50%;background:var(--lime);color:#13240a;font:800 22px/40px 'League Spartan',sans-serif;box-shadow:0 0 16px rgba(212,255,58,.5);flex:none}
+.front h2{margin:8px 0 2px;font:800 19px/1.15 'League Spartan',sans-serif}
+.front .sc{font-size:16px;line-height:1.3;color:#d9ecf6;min-height:2.6em}
+.front .pic{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+.front .pic svg{width:100%;height:100%}
+.guess{font:800 16px 'League Spartan',sans-serif;color:var(--gold)}
+.tap{margin-top:6px;font:700 13px 'League Spartan',sans-serif;color:#13240a;background:var(--lime);border-radius:99px;padding:5px 12px;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07);box-shadow:0 0 16px rgba(212,255,58,.5)}}
+.back{transform:rotateY(180deg);background:linear-gradient(170deg,#0f2b45,#0a1a33);border:2px solid rgba(255,143,177,.5);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.back.win{border-color:rgba(212,255,58,.75);box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 26px rgba(212,255,58,.25)}
+.back .rule{font:800 14px 'League Spartan',sans-serif;letter-spacing:.05em;color:var(--muted);text-transform:uppercase}
+.back .stage{flex:1;min-height:0;width:100%}
+.back .stage svg{width:100%;height:100%}
+.verdict{font:800 17px 'League Spartan',sans-serif;border-radius:99px;padding:6px 14px;background:#ff6f96;color:#fff;white-space:nowrap}
+.win .verdict{background:var(--lime);color:#13240a}
+.back .why{margin-top:6px;font-size:14.5px;line-height:1.3;color:#d9ecf6}
+.back .why b{color:var(--lime);font-weight:400}
+/* kawaii face swaps (set per card with animations) */
+.f{transition:none}
+/* compact (inside a slide) */
+@media (max-height:520px) and (min-width:700px){
+  #app{padding:8px;gap:8px}.bar h1{font-size:19px}.bar p{display:none}.bar button{padding:6px 10px;font-size:14px}
+  .face{padding:8px 8px 7px}.num{width:32px;height:32px;font-size:18px;line-height:32px}
+  .front h2{font-size:16px;margin:5px 0 1px}.front .sc{font-size:13.5px}.guess{font-size:13.5px}.tap{font-size:12px;padding:4px 10px;margin-top:4px}
+  .verdict{font-size:14px;padding:5px 10px}.back .why{font-size:12.5px;margin-top:4px}.back .rule{font-size:12px}
+}
+@media (max-width:700px){
+  html,body{overflow:auto;height:auto}#app{height:auto}.bar{flex-wrap:wrap}.bar .sp{display:none}
+  .grid{grid-template-columns:1fr 1fr}.card{height:360px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div><h1>Collision <span>Cards</span> 🎴</h1><p>NO + O<sub>3</sub> → NO<sub>2</sub> + O<sub>2</sub>. Guess first: will they react? Tap a card to flip it.</p></div>
+    <div class="sp"></div>
+    <button class="main" id="all">🔄 Flip all</button><button id="reset">↺ Reset</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+/* ---------- kawaii atoms ---------- */
+const DEFS=`<defs>
+<radialGradient id="kN" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#e3eeff"/><stop offset=".5" stop-color="#8db4ff"/><stop offset="1" stop-color="#4a73e0"/></radialGradient>
+<radialGradient id="kO" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffe6ec"/><stop offset=".5" stop-color="#ff9cb0"/><stop offset="1" stop-color="#e65a7a"/></radialGradient>
+<filter id="kg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+// face: three expressions stacked; card CSS shows one at a time
+function face(r,id){const e=r*.32,y=-r*.05;return `
+ <g class="calm ${id}c"><ellipse cx="${-e}" cy="${y}" rx="${r*.11}" ry="${r*.15}" fill="#1b2340"/><ellipse cx="${e}" cy="${y}" rx="${r*.11}" ry="${r*.15}" fill="#1b2340"/>
+   <circle cx="${-e+r*.04}" cy="${y-r*.06}" r="${r*.045}" fill="#fff"/><circle cx="${e+r*.04}" cy="${y-r*.06}" r="${r*.045}" fill="#fff"/>
+   <path d="M${-r*.12},${r*.22} Q0,${r*.34} ${r*.12},${r*.22}" stroke="#1b2340" stroke-width="${r*.08}" fill="none" stroke-linecap="round"/></g>
+ <g class="ouch ${id}o" opacity="0"><path d="M${-e-r*.12},${y-r*.1} l${r*.16},${r*.1} l${-r*.16},${r*.1} M${e+r*.12},${y-r*.1} l${-r*.16},${r*.1} l${r*.16},${r*.1}" stroke="#1b2340" stroke-width="${r*.08}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M${-r*.16},${r*.3} q${r*.08},${-r*.1} ${r*.16},0 t${r*.16},0" stroke="#1b2340" stroke-width="${r*.07}" fill="none" stroke-linecap="round"/></g>
+ <g class="joy ${id}j" opacity="0"><path d="M${-e-r*.12},${y+r*.04} q${r*.12},${-r*.18} ${r*.24},0 M${e-r*.12},${y+r*.04} q${r*.12},${-r*.18} ${r*.24},0" stroke="#1b2340" stroke-width="${r*.08}" fill="none" stroke-linecap="round"/>
+   <path d="M${-r*.18},${r*.18} Q0,${r*.48} ${r*.18},${r*.18} Z" fill="#7a2140"/></g>
+ <ellipse cx="${-r*.55}" cy="${r*.22}" rx="${r*.15}" ry="${r*.09}" fill="#ff6f96" opacity=".55"/><ellipse cx="${r*.55}" cy="${r*.22}" rx="${r*.15}" ry="${r*.09}" fill="#ff6f96" opacity=".55"/>`}
+function atom(el,x,y,r,fc){return `<g transform="translate(${x},${y})"><circle r="${r}" fill="url(#k${el})"/><ellipse cx="${-r*.35}" cy="${-r*.45}" rx="${r*.28}" ry="${r*.16}" fill="#fff" opacity=".55" transform="rotate(-25 ${-r*.35} ${-r*.45})"/>
+  ${fc?face(r,fc):''}<text y="${fc?-r*.55:r*.18}" text-anchor="middle" font-family="League Spartan,Arial" font-weight="800" font-size="${fc?r*.42:r*.7}" fill="#fff" opacity="${fc?.9:1}">${el}</text></g>`}
+const bond=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".85"/>`;
+// NO, front atom faces right. nFront: true = N in front
+const NO=(id,nFront)=>bond(-16,0,16,0)+(nFront?atom('O',-16,0,16)+atom('N',16,0,18,id):atom('N',-16,0,18,id)+atom('O',16,0,16));
+const O3=id=>bond(-24,10,0,-10)+bond(0,-10,24,10)+atom('O',-24,10,16)+atom('O',24,10,16)+atom('O',0,-10,17,id);
+const NO2=id=>bond(-26,12,0,-8)+bond(0,-8,26,12)+atom('O',-26,12,16)+atom('O',26,12,16)+atom('N',0,-8,18,id);
+const O2=id=>bond(-16,0,16,0)+atom('O',-16,0,16,id)+atom('O',16,0,16);
+const SPARK=(x,y,c)=>`<g transform="translate(${x},${y})" stroke="${c}" stroke-width="4" stroke-linecap="round" filter="url(#kg)"><path d="M0,-12 v-14 M0,12 v14 M-12,0 h-14 M12,0 h14 M-9,-9 l-9,-9 M9,-9 l9,-9 M-9,9 l-9,9 M9,9 l9,9"/></g>`;
+const STAR=(x,y,s,c)=>`<path transform="translate(${x},${y}) scale(${s})" d="M0,-10 L2.5,-2.5 L10,0 L2.5,2.5 L0,10 L-2.5,2.5 L-10,0 L-2.5,-2.5 Z" fill="${c}"/>`;
+const HEART=(x,y,s)=>`<path transform="translate(${x},${y}) scale(${s})" d="M0,4 C-8,-2 -6,-9 0,-5 C6,-9 8,-2 0,4 Z" fill="#ff8fb1"/>`;
+
+/* ---------- cards ---------- */
+const CARDS=[
+ {h:'Do they hit?',sc:'They fly past each other.',v:'✗ Miss. No hit!',rule:'Rule 1 · They must hit',why:'No touch, no reaction. Particles must <b>collide</b> first.',
+  front:`<g transform="translate(70,60)">${NO('f1',true)}</g><g transform="translate(170,120)">${O3('f1b')}</g><path d="M110,58 h40" stroke="#a9c2d4" stroke-width="3" stroke-dasharray="4 6" stroke-linecap="round"/><path d="M130,122 h-40" stroke="#a9c2d4" stroke-width="3" stroke-dasharray="4 6" stroke-linecap="round"/>`,
+  back:`<g transform="translate(0,75)"><g class="m1a">${NO('b1',true)}</g></g><g transform="translate(240,165)"><g class="m1b">${O3('b1b')}</g></g>`},
+ {h:'Enough energy?',sc:'They meet slowly and gently. 🐢',v:'✗ Too slow. Bounce!',rule:'Rule 2 · Enough energy (≥ Eₐ)',why:'A gentle bump cannot break bonds. They just <b>bounce</b> away.',
+  front:`<g transform="translate(70,95)">${NO('f2',true)}</g><g transform="translate(170,95)">${O3('f2b')}</g><text x="70" y="62" text-anchor="middle" font-size="20">🐢</text>`,
+  back:`<g transform="translate(90,125)"><g class="m2a">${NO('b2',true)}</g></g><g transform="translate(165,120)"><g class="m2b">${O3('b2b')}</g></g><g class="m2s">${STAR(131,96,1.2,'#ffd27a')}${STAR(140,150,.8,'#ffd27a')}</g>`},
+ {h:'Right direction?',sc:'They meet fast ⚡, but the O hits first.',v:'✗ Wrong way. Bounce!',rule:'Rule 3 · Facing the right way',why:'The <b>N</b> must hit an end O. Wrong end first? Boing!',
+  front:`<g transform="translate(70,95)">${NO('f3',false)}</g><g transform="translate(170,95)">${O3('f3b')}</g><text x="66" y="60" text-anchor="middle" font-size="20">⚡</text>`,
+  back:`<g transform="translate(90,125)"><g class="m3a"><g class="spd"><path d="M-44,-10 h-22 M-48,0 h-30 M-44,10 h-22" stroke="#9bd8cf" stroke-width="3" stroke-linecap="round"/></g>${NO('b3',false)}</g></g><g transform="translate(165,120)"><g class="m3b">${O3('b3b')}</g></g><g class="m3s">${STAR(131,100,1.4,'#ffd27a')}${STAR(126,152,1,'#ff8fb1')}</g>`},
+ {h:'All 3 rules?',sc:'They meet fast ⚡, and N hits the end O.',v:'✓ Reaction!',rule:'Effective collision',why:'Hit ✓ Energy ✓ Direction ✓. Bonds break and new ones form: <b>NO₂ + O₂</b>.',win:1,
+  front:`<g transform="translate(70,95)">${NO('f4',true)}</g><g transform="translate(170,95)">${O3('f4b')}</g><text x="66" y="60" text-anchor="middle" font-size="20">⚡</text>`,
+  back:`<g transform="translate(90,125)"><g class="m4a"><g class="spd"><path d="M-44,-10 h-22 M-48,0 h-30 M-44,10 h-22" stroke="#9bd8cf" stroke-width="3" stroke-linecap="round"/></g>${NO('b4',true)}</g></g><g transform="translate(165,120)"><g class="m4b">${O3('b4b')}</g></g>
+    <g class="m4x">${SPARK(128,128,'#ffd27a')}</g>
+    <g transform="translate(120,110)"><g class="m4p">${NO2('b4p')}<text y="44" text-anchor="middle" font-family="League Spartan,Arial" font-weight="800" font-size="15" fill="#d4ff3a">NO₂</text></g></g>
+    <g transform="translate(150,150)"><g class="m4q">${O2('b4q')}<text y="-26" text-anchor="middle" font-family="League Spartan,Arial" font-weight="800" font-size="15" fill="#d4ff3a">O₂</text></g></g>
+    <g class="m4h">${HEART(60,55,1.6)}${HEART(205,70,1.2)}${STAR(40,170,1,'#d4ff3a')}${STAR(210,200,1.2,'#ffd27a')}${STAR(120,40,.9,'#d4ff3a')}</g>`}
+];
+
+/* ---------- animations on the back (6 s loop) ---------- */
+const CSS=`
+.run .m1a{animation:m1a 6s linear infinite}@keyframes m1a{0%{transform:translateX(-40px)}75%,100%{transform:translateX(290px)}}
+.run .m1b{animation:m1b 6s linear infinite}@keyframes m1b{0%{transform:translateX(40px)}75%,100%{transform:translateX(-290px)}}
+.run .m2a{animation:m2a 6s ease-in-out infinite}@keyframes m2a{0%{transform:translateX(-120px)}50%{transform:translateX(0)}90%,100%{transform:translateX(-70px)}}
+.run .m2s,.run .m3s{animation:pop 6s infinite;transform-box:fill-box;transform-origin:center}
+.run .m2s{animation-delay:0s}@keyframes pop{0%,49%{opacity:0;transform:scale(.3)}53%{opacity:1;transform:scale(1.1)}66%,100%{opacity:0;transform:scale(1.4)}}
+.run .m3a{animation:m3a 6s ease-in infinite}@keyframes m3a{0%,10%{transform:translateX(-140px)}30%{transform:translateX(0);animation-timing-function:ease-out}55%,100%{transform:translateX(-70px)}}
+.run .m3b{animation:m3b 6s ease-out infinite}@keyframes m3b{0%,30%{transform:translateX(0)}55%,100%{transform:translateX(28px)}}
+.run .m3s{animation:pop3 6s infinite}@keyframes pop3{0%,29%{opacity:0;transform:scale(.3)}33%{opacity:1;transform:scale(1.2)}46%,100%{opacity:0;transform:scale(1.5)}}
+.run .spd{animation:spd 6s infinite}@keyframes spd{0%,12%{opacity:0}15%,28%{opacity:1}31%,100%{opacity:0}}
+.run .m4a,.run .m4b{animation:m4b 6s infinite}
+.run .m4a{animation:m4a 6s ease-in infinite}@keyframes m4a{0%,10%{transform:translateX(-140px);opacity:1}30%{transform:translateX(0);opacity:1}32%,100%{transform:translateX(0);opacity:0}}
+@keyframes m4b{0%,30%{opacity:1}32%,100%{opacity:0}}
+.run .m4x{animation:pop3 6s infinite;transform-box:fill-box;transform-origin:center}
+.run .m4p{animation:m4p 6s ease-out infinite}@keyframes m4p{0%,30%{opacity:0;transform:translate(0,0)}33%{opacity:1}70%,100%{opacity:1;transform:translate(-38px,-42px)}}
+.run .m4q{animation:m4q 6s ease-out infinite}@keyframes m4q{0%,30%{opacity:0;transform:translate(0,0)}33%{opacity:1}70%,100%{opacity:1;transform:translate(38px,36px)}}
+.run .m4h{animation:hearts 6s infinite}@keyframes hearts{0%,36%{opacity:0}45%,92%{opacity:1}100%{opacity:0}}
+/* faces: card 2 and 3 say ouch after the bump; card 4 products are joyful */
+.run .b2c,.run .b2bc{animation:calm2 6s infinite}@keyframes calm2{0%,49%{opacity:1}51%,85%{opacity:0}88%,100%{opacity:1}}
+.run .b2o,.run .b2bo{animation:ouch2 6s infinite}@keyframes ouch2{0%,49%{opacity:0}51%,85%{opacity:1}88%,100%{opacity:0}}
+.run .b3c,.run .b3bc{animation:calm3 6s infinite}@keyframes calm3{0%,29%{opacity:1}31%,80%{opacity:0}84%,100%{opacity:1}}
+.run .b3o,.run .b3bo{animation:ouch3 6s infinite}@keyframes ouch3{0%,29%{opacity:0}31%,80%{opacity:1}84%,100%{opacity:0}}
+.b4pc,.b4qc{opacity:0}.b4pj,.b4qj{opacity:1}
+.f1c,.f1bc,.f2c,.f2bc,.f3c,.f3bc,.f4c,.f4bc{opacity:1}
+`;
+document.head.insertAdjacentHTML('beforeend',`<style>${CSS}</style>`);
+const svg=(inner,vb='0 0 240 240')=>`<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${DEFS}${inner}</svg>`;
+const grid=document.getElementById('grid');
+grid.innerHTML=CARDS.map((c,i)=>`<div class="card" tabindex="0" role="button" aria-label="Card ${i+1}: ${c.h} Tap to flip">
+ <div class="inner">
+  <div class="face front"><div class="num">${i+1}</div><h2>${c.h}</h2><div class="sc">${c.sc}</div><div class="pic">${svg(c.front,'22 34 196 110')}</div><div class="guess">🤔 Will they react?</div><div class="tap">Tap to flip 🔄</div></div>
+  <div class="face back ${c.win?'win':''}"><div class="rule">${c.rule}</div><div class="stage"></div><div class="verdict">${c.v}</div><div class="why">${c.why}</div></div>
+ </div></div>`).join('');
+const cards=[...grid.children];
+function play(card,on){const st=card.querySelector('.stage'),i=cards.indexOf(card);
+  st.innerHTML='';if(on)setTimeout(()=>{st.innerHTML=svg(CARDS[i].back,'18 55 204 150');st.firstChild.classList.add('run')},350)}
+function flip(card,on){on=on===undefined?!card.classList.contains('flip'):on;card.classList.toggle('flip',on);play(card,on)}
+cards.forEach(c=>{c.onclick=()=>flip(c);c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip(c)}}});
+document.getElementById('all').onclick=()=>{const any=cards.some(c=>!c.classList.contains('flip'));cards.forEach(c=>flip(c,any))};
+document.getElementById('reset').onclick=()=>cards.forEach(c=>flip(c,false));
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
