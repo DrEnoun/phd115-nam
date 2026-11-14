@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squeeze the Packs · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--cold:#7cc8ff;--hot:#ff9b5c}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+sub,sup{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:flex;flex-direction:column;padding:10px;gap:10px}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:15px}.bar .sp{flex:1}
+.bar button{border:1px solid rgba(45,212,191,.35);background:rgba(255,255,255,.06);color:var(--ink);border-radius:12px;padding:8px 14px;font-weight:800;font-size:15px}
+.bar button.main{background:linear-gradient(180deg,#e8ff76,#b8e61c);color:#13240a;border:0;box-shadow:0 6px 18px rgba(212,255,58,.3)}
+.duo{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.panel{position:relative;border-radius:22px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) 64px;grid-template-rows:auto minmax(0,1fr) auto;gap:6px 10px;min-height:0;
+  background:linear-gradient(160deg,rgba(22,70,92,.55),rgba(9,28,52,.9));box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.panel.c{border:2px solid rgba(124,200,255,.5)}.panel.h{border:2px solid rgba(255,155,92,.5)}
+.panel.c.on{box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 30px rgba(124,200,255,.35)}.panel.h.on{box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 30px rgba(255,155,92,.35)}
+.head{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{font:800 15px 'League Spartan',sans-serif;border-radius:99px;padding:5px 12px}
+.c .chip{background:var(--cold);color:#06223a}.h .chip{background:var(--hot);color:#3a1600}
+.eqn{font-size:14px;color:#d9ecf6}
+.stage{position:relative;min-height:0;cursor:pointer}
+.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.thermo{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:0}
+.thermo .tube{position:relative;flex:1;width:18px;border-radius:9px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.35);overflow:hidden;min-height:60px}
+.thermo .fill{position:absolute;left:0;right:0;bottom:0;border-radius:6px;transition:background .5s}
+.thermo .bulb{width:30px;height:30px;border-radius:50%;margin-top:-10px;border:2px solid rgba(255,255,255,.35)}
+.thermo b{font:800 20px 'League Spartan',sans-serif}
+.thermo small{font-size:11px;color:var(--muted)}
+.say{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.3;min-height:42px}
+.say .txt{flex:1}
+.say b{color:var(--lime);font-weight:400}
+.ed{width:180px;height:72px;flex:none;opacity:0;transition:opacity .6s}
+.on .ed{opacity:1}
+@media (max-height:520px) and (min-width:700px){
+  #app{padding:8px;gap:8px}.bar h1{font-size:19px}.bar p{display:none}.bar button{padding:6px 10px;font-size:14px}
+  .panel{padding:7px 9px;grid-template-columns:minmax(0,1fr) 52px}.chip{font-size:13px;padding:4px 10px}.eqn{font-size:12.5px}
+  .say{font-size:13px;min-height:36px}.ed{width:140px;height:56px}.thermo b{font-size:16px}.thermo .bulb{width:24px;height:24px}
+}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto}.bar{flex-wrap:wrap}.bar .sp{display:none}.duo{grid-template-columns:1fr}.panel{height:420px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div><h1>Squeeze the <span>Packs!</span> 🧊🔥</h1><p>Tap a pack to squeeze it. Watch which way the heat goes.</p></div>
+    <div class="sp"></div>
+    <button class="main" id="both">✊ Squeeze both</button><button id="reset">↺ New packs</button>
+  </div>
+  <div class="duo">
+    <div class="panel c" id="P0"></div>
+    <div class="panel h" id="P1"></div>
+  </div>
+</div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const CFG=[
+ {chip:'🧊 Cold pack · endothermic',eq:'NH<sub>4</sub>NO<sub>3</sub>(s) → NH<sub>4</sub><sup>+</sup>(aq) + NO<sub>3</sub><sup>−</sup>(aq) · ΔH = <b style="color:#7cc8ff">+25.7 kJ/mol</b>',
+  T1:5,ions:['#c9a2ff','#8fe3b0'],ionLab:['+','−'],tint:'#7cc8ff',heatIn:true,
+  idle:'Squeeze me! Inside: solid NH<sub>4</sub>NO<sub>3</sub> and a small bag of water. 🧊',
+  done:'Heat flows <b>IN</b> from your skin to the pack. The pack feels <b>cold</b>. ΔH is <b>positive</b>. 🥶'},
+ {chip:'🔥 Hot pack · exothermic',eq:'CaCl<sub>2</sub>(s) → Ca<sup>2+</sup>(aq) + 2Cl<sup>−</sup>(aq) · ΔH = <b style="color:#ff9b5c">−82.8 kJ/mol</b>',
+  T1:58,ions:['#ffd27a','#8fd3ff'],ionLab:['2+','−'],tint:'#ff9b5c',heatIn:false,
+  idle:'Squeeze me! Inside: solid CaCl<sub>2</sub> and a small bag of water. 🔥',
+  done:'Heat flows <b>OUT</b> of the pack to your skin. The pack feels <b>warm</b>. ΔH is <b>negative</b>. 🥵'}
+];
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const POUCH='M80,52 l12,-10 l12,10 l12,-10 l12,10 l12,-10 l12,10 l12,-10 l12,10 l12,-10 l12,10 l12,-10 l12,10 l12,-10 l12,10 L248,250 Q248,282 216,282 L112,282 Q80,282 80,250 Z';
+function edSVG(heatIn){ // tiny energy diagram
+  const r=heatIn?44:18,p=heatIn?18:44,c=heatIn?'#7cc8ff':'#ff9b5c';
+  return `<svg viewBox="0 0 140 56" class="ed"><line x1="8" y1="4" x2="8" y2="52" stroke="#a9c2d4" stroke-width="1.5"/>
+  <line x1="14" y1="${r}" x2="46" y2="${r}" stroke="#fff" stroke-width="3"/><line x1="64" y1="${p}" x2="96" y2="${p}" stroke="#fff" stroke-width="3"/>
+  <path d="M46,${r} L64,${p}" stroke="#fff" stroke-dasharray="2 2"/><path d="M96,${r} L110,${r}" stroke="#a9c2d4" stroke-dasharray="2 2"/><path d="M106,${r} L106,${p+(heatIn?4:-4)}" stroke="${c}" stroke-width="2.5" marker-end="url(#ah${heatIn?0:1})"/>
+  <defs><marker id="ah${heatIn?0:1}" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="${c}"/></marker></defs>
+  <text x="110" y="${(r+p)/2+3}" font-size="11" font-weight="700" fill="${c}">ΔH ${heatIn?'+':'−'}</text>
+  <text x="30" y="${r+(heatIn?-5:12)}" font-size="9" fill="#a9c2d4" text-anchor="middle">reactants</text><text x="80" y="${p+(heatIn?12:-5)}" font-size="9" fill="#a9c2d4" text-anchor="middle">products</text></svg>`}
+const packs=CFG.map((c,i)=>{
+  const P=document.getElementById('P'+i);
+  P.innerHTML=`<div class="head"><span class="chip">${c.chip}</span><span class="eqn">${c.eq}</span></div>
+   <div class="stage"><svg viewBox="0 0 330 300"></svg></div>
+   <div class="thermo"><b class="tv">25 °C</b><div class="tube"><div class="fill"></div></div><div class="bulb"></div><small>pack</small></div>
+   <div class="say"><span class="txt">${c.idle}</span>${edSVG(c.heatIn)}</div>`;
+  const svg=P.querySelector('svg');
+  el('defs',{},svg).innerHTML=`<clipPath id="cp${i}"><path d="${POUCH}"/></clipPath>
+   <linearGradient id="pg${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="${c.tint}" stop-opacity=".55"/></linearGradient>
+   <marker id="hm${i}" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="8" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#ff8a5c"/></marker>`;
+  // heat arrows (outside)
+  const arrows=el('g',{opacity:0},svg),AR=[];
+  [[18,110],[18,200],[312,110],[312,200]].forEach(([x,y],k)=>{const left=x<160,inward=c.heatIn;
+    const x1=left?(inward?10:70):(inward?320:258),x2=left?(inward?70:10):(inward?258:320);
+    const a=el('path',{d:`M${x1},${y} C${(x1+x2)/2},${y-14} ${(x1+x2)/2},${y+14} ${x2},${y}`,stroke:'#ff8a5c','stroke-width':5,fill:'none','stroke-linecap':'round','stroke-dasharray':'8 7','marker-end':`url(#hm${i})`},arrows);AR.push(a)});
+  const htxt=el('text',{x:165,y:22,'text-anchor':'middle','font-family':'League Spartan,Arial','font-weight':800,'font-size':15,fill:'#ff8a5c'},arrows);htxt.textContent=c.heatIn?'heat flows IN →  ← from your skin':'← heat flows OUT →  to your skin';
+  if(c.heatIn)htxt.textContent='heat IN from your skin';else htxt.textContent='heat OUT to your skin';
+  const body=el('g',{},svg); // squish group
+  el('path',{d:POUCH,fill:`url(#pg${i})`,stroke:'#fff','stroke-width':3,'stroke-linejoin':'round'},body);
+  const inside=el('g',{'clip-path':`url(#cp${i})`},body);
+  const liquid=el('rect',{x:70,y:290,width:190,height:0,fill:c.heatIn?'#9fd6ff':'#ffc89a',opacity:.7},inside);
+  const frost=el('rect',{x:70,y:30,width:190,height:260,fill:c.tint,opacity:0},inside);
+  // ions in a crystal at the bottom
+  const ions=[];for(let r=0;r<3;r++)for(let q=0;q<7;q++){const k=(r+q)%2,x=113+q*17,y=266-r*17;
+    const g=el('g',{transform:`translate(${x},${y})`},inside);el('rect',{x:-8,y:-8,width:16,height:16,rx:5,fill:c.ions[k]},g);
+    const t=el('text',{y:4,'text-anchor':'middle','font-size':9,'font-weight':800,fill:'#1b2340','font-family':'Arial'},g);t.textContent=c.ionLab[k];
+    ions.push({g,x,y,x0:x,y0:y,free:false,vx:0,vy:0,k,shape:g.firstChild})}
+  // water bag
+  const bag=el('g',{},inside);el('ellipse',{cx:165,cy:200,rx:52,ry:28,fill:'#bfe8ff',stroke:'#fff','stroke-width':2,opacity:.95},bag);
+  el('ellipse',{cx:150,cy:190,rx:16,ry:6,fill:'#fff',opacity:.8},bag);const bt=el('text',{x:165,y:210,'text-anchor':'middle','font-size':13,'font-family':'Arial','font-weight':700,fill:'#2a6aa0'},bag);bt.textContent='water';
+  const splash=el('g',{opacity:0},inside);for(let k=0;k<8;k++)el('circle',{cx:165+Math.cos(k*.785)*40,cy:200+Math.sin(k*.785)*22,r:5,fill:'#bfe8ff'},splash);
+  // kawaii face
+  const face=el('g',{transform:'translate(165,110)'},body);
+  const eyes=el('g',{},face);[-26,26].forEach(x=>{el('ellipse',{cx:x,cy:0,rx:7,ry:10,fill:'#1b2340'},eyes);el('circle',{cx:x+2,cy:-4,r:3,fill:'#fff'},eyes)});
+  const sq=el('path',{d:'M-34,-6 l12,6 l-12,6 M34,-6 l-12,6 l12,6',stroke:'#1b2340','stroke-width':4,fill:'none','stroke-linecap':'round','stroke-linejoin':'round',opacity:0},face);
+  el('ellipse',{cx:-40,cy:16,rx:10,ry:5,fill:c.heatIn?'#9fc8ff':'#ff6f96',opacity:.7},face);el('ellipse',{cx:40,cy:16,rx:10,ry:5,fill:c.heatIn?'#9fc8ff':'#ff6f96',opacity:.7},face);
+  const smile=el('path',{d:'M-10,14 Q0,24 10,14',stroke:'#1b2340','stroke-width':4,fill:'none','stroke-linecap':'round'},face);
+  const wavy=el('path',{d:'M-14,18 q4,-5 7,0 t7,0 t7,0 t7,0',stroke:'#1b2340','stroke-width':3.5,fill:'none','stroke-linecap':'round',opacity:0},face);
+  const sweat=el('path',{d:'M44,-20 q6,10 0,14 q-6,-4 0,-14 z',fill:'#8fd3ff',opacity:0},face);
+  // weather: snowflakes or steam
+  const fx=el('g',{},svg),bits=[];
+  for(let k=0;k<10;k++){const t=el('text',{'font-size':c.heatIn?16:18,opacity:0,'text-anchor':'middle'},fx);t.textContent=c.heatIn?'❄':'〰';if(!c.heatIn)t.setAttribute('fill','#ffd6b0');
+    bits.push({t,x:80+Math.random()*170,y:Math.random()*300,s:.4+Math.random()*.6})}
+  const fill=P.querySelector('.fill'),bulb=P.querySelector('.bulb'),tv=P.querySelector('.tv'),txt=P.querySelector('.txt');
+  const tcol=T=>T<25?`hsl(${200+(25-T)},85%,${60+(25-T)}%)`:`hsl(${30-(T-25)*.6},95%,60%)`;
+  const S={on:false,t:0,T:25};
+  function reset(){S.on=false;S.t=0;S.T=25;P.classList.remove('on');txt.innerHTML=c.idle;
+    ions.forEach(o=>{o.free=false;o.x=o.x0;o.y=o.y0;o.g.setAttribute('transform',`translate(${o.x},${o.y})`)});draw(0)}
+  function squeeze(){if(S.on)return;S.on=true;S.t=0}
+  P.querySelector('.stage').onclick=squeeze;
+  function draw(dt,now=0){const t=S.t;
+    if(S.on)S.t+=dt;
+    const pop=Math.min(1,Math.max(0,(t-.35)/.25)),fillUp=Math.min(1,Math.max(0,(t-.45)/1.2)),dis=Math.min(1,Math.max(0,(t-1)/4));
+    // squish
+    const sq1=t>0&&t<.45?Math.sin(t/.45*Math.PI):0;body.setAttribute('transform',`translate(165,160) scale(${1+.08*sq1},${1-.1*sq1}) translate(-165,-160)`+(S.on&&dis>.3&&c.heatIn?` translate(${Math.sin(now/40)*1.5},0)`:''));
+    bag.setAttribute('opacity',S.on?1-pop:1);bag.setAttribute('transform',`translate(165,200) scale(${1+pop*.4}) translate(-165,-200)`);
+    splash.setAttribute('opacity',pop>0&&pop<1?1-pop:(t>.6&&t<.9?(.9-t)*3:0));
+    const ly=282-fillUp*104;liquid.setAttribute('y',ly);liquid.setAttribute('height',300-ly);
+    // ions leave the crystal one by one and wander
+    const nFree=Math.floor(dis*ions.length);
+    ions.forEach((o,k)=>{if(S.on&&!o.free&&k>=ions.length-nFree&&fillUp>.6){o.free=true;o.vx=(Math.random()-.5)*60;o.vy=-30-Math.random()*40}
+      if(o.free){o.vx+=(Math.random()-.5)*120*dt;o.vy+=(Math.random()-.5)*120*dt;o.vx*=.98;o.vy*=.98;o.x+=o.vx*dt;o.y+=o.vy*dt;
+        if(o.x<92){o.x=92;o.vx=Math.abs(o.vx)}if(o.x>238){o.x=238;o.vx=-Math.abs(o.vx)}if(o.y<ly+12){o.y=ly+12;o.vy=Math.abs(o.vy)}if(o.y>272){o.y=272;o.vy=-Math.abs(o.vy)}
+        o.g.setAttribute('transform',`translate(${o.x.toFixed(1)},${o.y.toFixed(1)}) rotate(${(now/10+k*40)%360})`)}});
+    S.T=25+(c.T1-25)*dis;
+    tv.textContent=Math.round(S.T)+' °C';fill.style.height=(10+S.T/70*90)+'%';fill.style.background=tcol(S.T);bulb.style.background=tcol(S.T);
+    frost.setAttribute('opacity',dis*.35);
+    arrows.setAttribute('opacity',dis>0?Math.min(1,dis*3):0);AR.forEach(a=>a.setAttribute('stroke-dashoffset',(-now/25)%15));
+    const feel=dis>.3;eyes.setAttribute('opacity',feel?0:1);sq.setAttribute('opacity',feel?1:0);smile.setAttribute('opacity',feel?0:1);wavy.setAttribute('opacity',feel?1:0);
+    sweat.setAttribute('opacity',feel&&!c.heatIn?1:0);sweat.setAttribute('transform',`translate(0,${(now/30)%12})`);
+    bits.forEach(b=>{if(feel){b.y+=(c.heatIn?30:-40)*b.s*dt;if(b.y>300)b.y=-10;if(b.y<-10)b.y=300}
+      b.t.setAttribute('x',b.x+(c.heatIn?Math.sin(now/600+b.s*9)*8:0));b.t.setAttribute('y',b.y);b.t.setAttribute('opacity',feel?Math.min(1,dis)*.85:0)});
+    if(dis>=.99&&!P.classList.contains('on')){P.classList.add('on');txt.innerHTML=c.done}}
+  reset();return {draw,squeeze,reset};
+});
+document.getElementById('both').onclick=()=>packs.forEach(p=>p.squeeze());
+document.getElementById('reset').onclick=()=>packs.forEach(p=>p.reset());
+let last=performance.now();
+(function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;packs.forEach(p=>p.draw(dt,now));requestAnimationFrame(loop)})(last);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
