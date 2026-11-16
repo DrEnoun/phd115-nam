@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How fireworks work · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050b1a;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f2c4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f4c 0%,transparent 60%),var(--bg)}
+sub,sup{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;padding:10px}
+.bar{grid-column:1/-1;display:flex;align-items:center;gap:10px}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14.5px}
+.card{position:relative;border-radius:22px;border:2px solid rgba(45,212,191,.35);box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;min-height:0}
+.sky{background:linear-gradient(180deg,#0b1030 0%,#1a1a4a 60%,#2a2350 100%)}
+.card canvas{position:absolute;inset:0;width:100%;height:100%}
+.tag{position:absolute;left:12px;top:9px;margin:0;font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#7fe6d8;z-index:2;pointer-events:none}
+.side{display:grid;grid-template-rows:minmax(0,1.05fr) auto auto;gap:8px;min-height:0}
+.zoom{background:radial-gradient(circle at 40% 35%,#173c66,#0a1a33 75%)}
+.cap{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:700 13px 'League Spartan',sans-serif;color:#d9ecf6;pointer-events:none;padding:0 8px}
+.step{border-radius:16px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);box-shadow:0 0 18px rgba(212,255,58,.12);font-size:16px;line-height:1.35;min-height:76px}
+.step .n{font:800 13px 'League Spartan',sans-serif;color:var(--lime);letter-spacing:.06em;text-transform:uppercase}
+.step b{color:var(--gold);font-weight:400}
+.dots{display:flex;gap:5px;margin-top:5px}.dots i{width:22px;height:5px;border-radius:9px;background:rgba(255,255,255,.18)}.dots i.on{background:var(--lime)}
+.ctl{display:flex;flex-direction:column;gap:7px}
+.metals{display:flex;gap:6px}
+.metals button{flex:1;border-radius:12px;padding:6px 4px;border:2px solid transparent;background:rgba(255,255,255,.06);color:var(--ink);font-weight:800;font-size:13.5px;line-height:1.1}
+.metals button i{display:block;width:14px;height:14px;border-radius:50%;margin:0 auto 3px;background:var(--c);box-shadow:0 0 10px var(--c)}
+.metals button.on{border-color:var(--c);background:rgba(255,255,255,.12)}
+.btns{display:flex;gap:8px}
+.btns button{flex:1;border-radius:14px;padding:10px;font-weight:800;font-size:17px;border:0}
+#go{background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600;box-shadow:0 6px 20px rgba(255,180,60,.4)}
+#again{flex:.55;background:rgba(255,255,255,.06);border:1px solid rgba(45,212,191,.35)!important;color:var(--ink);font-size:15px}
+@media (max-height:520px) and (min-width:700px){
+  #app{padding:8px;gap:8px}.bar h1{font-size:19px}.bar p{display:none}
+  .step{font-size:13px;padding:6px 10px;min-height:60px}.step .n{font-size:11.5px}.metals button{font-size:11.5px;padding:4px 2px}.metals button i{width:11px;height:11px}
+  .btns button{padding:7px;font-size:14.5px}.cap{font-size:11.5px;bottom:4px}
+}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr}.sky{height:340px}.side{grid-template-rows:260px auto auto}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><div><h1>How do <span>fireworks</span> work? 🎆</h1><p>Black powder: 2KNO<sub>3</sub> + S + 3C → K<sub>2</sub>S + N<sub>2</sub> + 3CO<sub>2</sub> (very exothermic) + a metal salt for colour.</p></div></div>
+  <div class="card sky"><p class="tag">Night sky</p><canvas id="cs"></canvas></div>
+  <div class="side">
+    <div class="card zoom"><p class="tag" id="ztag">Zoom in: inside the shell</p><canvas id="cz"></canvas><div class="cap" id="zcap"></div></div>
+    <div class="step"><div class="n" id="sn"></div><div id="st"></div><div class="dots" id="dots"><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="ctl">
+      <div class="metals" id="metals"></div>
+      <div class="btns"><button id="go">🔥 Light the fuse</button><button id="again">↺ Again</button></div>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const METALS=[{k:'Sr',ion:'Sr²⁺',name:'Strontium',c:'#ff4d6a'},{k:'Na',ion:'Na⁺',name:'Sodium',c:'#ffd24d'},{k:'Ba',ion:'Ba²⁺',name:'Barium',c:'#6dff8a'},{k:'Cu',ion:'Cu²⁺',name:'Copper',c:'#4dbbff'}];
+let metal=METALS[0];
+$('metals').innerHTML=METALS.map((m,i)=>`<button style="--c:${m.c}" data-i="${i}" class="${i?'':'on'}"><i></i>${m.name}</button>`).join('');
+$('metals').onclick=e=>{const b=e.target.closest('button');if(!b)return;metal=METALS[+b.dataset.i];
+  [...$('metals').children].forEach(x=>x.classList.toggle('on',x===b));if(phase>=5){burst();shell=[]}else resetZoom()};
+const STEPS=[
+ ['Step 1 · Inside the shell','The powder has an <b>oxidiser</b> (KNO<sub>3</sub>), <b>fuels</b> (C and S) and a <b>metal salt</b>. The particles touch, but they do not have enough energy (E<sub>a</sub>). 😴'],
+ ['Step 2 · Light the fuse','The burning fuse gives the <b>activation energy</b>. The first particles glow and react. 🔥'],
+ ['Step 3 · A fast chain','KNO<sub>3</sub> gives <b>oxygen</b>. C and S burn and make hot <b>gas</b> (CO<sub>2</sub>, N<sub>2</sub>) and lots of <b>heat</b>. The heat sets off the next particles. Very <b>exothermic</b>!'],
+ ['Step 4 · Lift-off!','A lot of hot gas forms in a split second. It <b>rushes out</b> of the bottom and pushes the rocket up. 🚀'],
+ ['Step 5 · Burst and colour','The heat gives the metal ion\'s <b>electron</b> energy. It jumps up a level, then falls back and gives out <b>light</b>. Each metal has its own colour! Try another metal. 🌈']
+];
+function setStep(n){$('sn').textContent=STEPS[n][0];$('st').innerHTML=STEPS[n][1];[...$('dots').children].forEach((d,i)=>d.classList.toggle('on',i<=n))}
+function setup(id){const c=$(id),x=c.getContext('2d'),o={x,w:1,h:1};
+  const fit=()=>{const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);o.w=r.width;o.h=r.height;x.setTransform(d,0,0,d,0,0)};
+  new ResizeObserver(fit).observe(c.parentElement);fit();return o}
+const SK=setup('cs'),ZM=setup('cz');
+
+/* ---------- kawaii helpers ---------- */
+function blob(x,cx,cy,r,c1,c2,glow){x.save();if(glow){x.shadowColor='#ffb35c';x.shadowBlur=16*glow}
+  const g=x.createRadialGradient(cx-r*.35,cy-r*.4,r*.1,cx,cy,r);g.addColorStop(0,'#fff');g.addColorStop(.35,glow>.3?'#ffd9a8':c1);g.addColorStop(1,glow>.3?'#ff9b5c':c2);
+  x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,7);x.fill();x.restore()}
+function face(x,cx,cy,r,mood,dark){x.save();x.translate(cx,cy);x.fillStyle=dark?'#fff':'#1b2340';x.strokeStyle=x.fillStyle;x.lineCap='round';
+  if(mood==='hot'){x.lineWidth=r*.13;x.beginPath();x.moveTo(-r*.45,-r*.18);x.lineTo(-r*.2,-r*.04);x.lineTo(-r*.45,r*.1);x.moveTo(r*.45,-r*.18);x.lineTo(r*.2,-r*.04);x.lineTo(r*.45,r*.1);x.stroke();x.beginPath();x.ellipse(0,r*.32,r*.13,r*.16,0,0,7);x.fill()}
+  else if(mood==='joy'){x.lineWidth=r*.12;x.beginPath();x.arc(-r*.3,r*.05,r*.15,Math.PI*1.1,Math.PI*1.9);x.stroke();x.beginPath();x.arc(r*.3,r*.05,r*.15,Math.PI*1.1,Math.PI*1.9);x.stroke();x.beginPath();x.arc(0,r*.2,r*.22,.1,Math.PI-.1);x.fill()}
+  else{x.beginPath();x.ellipse(-r*.3,-r*.03,r*.11,r*.15,0,0,7);x.ellipse(r*.3,-r*.03,r*.11,r*.15,0,0,7);x.fill();x.fillStyle=dark?'#1b2340':'#fff';x.beginPath();x.arc(-r*.27,-r*.09,r*.045,0,7);x.arc(r*.33,-r*.09,r*.045,0,7);x.fill();
+    x.lineWidth=r*.09;x.strokeStyle=dark?'#fff':'#1b2340';x.beginPath();x.arc(0,r*.18,r*.14,.3,Math.PI-.3);x.stroke()}
+  x.fillStyle='rgba(255,111,150,.55)';x.beginPath();x.ellipse(-r*.58,r*.22,r*.15,r*.08,0,0,7);x.ellipse(r*.58,r*.22,r*.15,r*.08,0,0,7);x.fill();x.restore()}
+
+/* ---------- zoom: particles in the shell ---------- */
+const PT={ox:{lab:'KNO₃',c:['#ffe0ea','#ff8fb1'],r:1.15},C:{lab:'C',c:['#8a8fa3','#3b4052'],r:.95,dark:1},S:{lab:'S',c:['#fff3b0','#f2c94c'],r:.9},
+  M:{lab:'',c:['#fff','#ccc'],r:1},CO2:{lab:'CO₂',c:['#f2f5f8','#aab4c0'],r:.85},N2:{lab:'N₂',c:['#e3eeff','#8db4ff'],r:.8},res:{lab:'K₂S',c:['#d9d2c2','#9c937e'],r:.7}};
+let P=[],rings=[],phase=0,pt=0;
+function resetZoom(){const {w,h}=ZM;P=[];rings=[];
+  const add=(t,n)=>{for(let i=0;i<n;i++)P.push({t,x:20+Math.random()*(w-40),y:30+Math.random()*(h-70),vx:(Math.random()-.5)*30,vy:(Math.random()-.5)*30,hot:0,blink:Math.random()*4})};
+  add('ox',8);add('C',9);add('S',4);add('M',3)}
+function zr(){return Math.max(11,Math.min(20,Math.sqrt(ZM.w*ZM.h)/17))}
+function reactZoom(f){ // fuel f + nearest oxidiser -> gas + heat
+  let o=null,bd=(zr()*9)**2;P.forEach(q=>{if(q.t==='ox'){const d=(q.x-f.x)**2+(q.y-f.y)**2;if(d<bd){bd=d;o=q}}});
+  if(!o)return;const cx=(f.x+o.x)/2,cy=(f.y+o.y)/2;
+  P=P.filter(q=>q!==f&&q!==o);
+  const gas=(t)=>{const a=Math.random()*6.283;P.push({t,x:cx,y:cy,vx:Math.cos(a)*160,vy:Math.sin(a)*160,hot:1,blink:0})};
+  gas('CO2');if(Math.random()<.5)gas('N2');if(f.t==='S')P.push({t:'res',x:cx,y:cy,vx:0,vy:0,hot:.6,blink:0});
+  rings.push({x:cx,y:cy,r:0,max:zr()*9})}
+function drawZoom(dt){const {x,w,h}=ZM;x.clearRect(0,0,w,h);const r0=zr();
+  if(phase>=5){drawAtom(x,w,h,dt);return}
+  const speed=phase>=3?2.2:phase>=2?1.4:1;
+  P.forEach(p=>{p.x+=p.vx*dt*speed;p.y+=p.vy*dt*speed;if(phase<2){p.vx+=(Math.random()-.5)*40*dt;p.vy+=(Math.random()-.5)*40*dt}
+    const r=r0*PT[p.t].r;if(p.x<r){p.x=r;p.vx=Math.abs(p.vx)}if(p.x>w-r){p.x=w-r;p.vx=-Math.abs(p.vx)}if(p.y<r+18){p.y=r+18;p.vy=Math.abs(p.vy)}if(p.y>h-r-22){p.y=h-r-22;p.vy=-Math.abs(p.vy)}
+    p.hot=Math.max(0,p.hot-dt*.3)});
+  if(phase>=2){P.forEach(p=>{if((p.t==='C'||p.t==='S')&&p.hot>.4&&Math.random()<dt*8)reactZoom(p)})}
+  rings=rings.filter(g=>{g.r+=dt*180;P.forEach(p=>{if(Math.hypot(p.x-g.x,p.y-g.y)<g.r&&p.t!=='CO2'&&p.t!=='N2')p.hot=1});
+    x.strokeStyle=`rgba(255,179,92,${1-g.r/g.max})`;x.lineWidth=3;x.beginPath();x.arc(g.x,g.y,g.r,0,7);x.stroke();return g.r<g.max});
+  P.forEach(p=>{const T=PT[p.t],r=r0*T.r,c=p.t==='M'?[ '#fff',metal.c]:T.c;
+    blob(x,p.x,p.y,r,c[0],c[1],p.t==='M'?0:p.hot);
+    p.blink+=dt;const mood=p.hot>.4&&p.t!=='CO2'&&p.t!=='N2'?'hot':(p.t==='CO2'||p.t==='N2')?'joy':(p.blink%4<.12?'calm':'calm');
+    face(x,p.x,p.y+r*.05,r,mood,T.dark&&p.hot<.4);
+    x.fillStyle='#fff';x.shadowColor='#000';x.shadowBlur=4;x.font=`800 ${Math.max(10,r*.55)}px "League Spartan",Arial`;x.textAlign='center';
+    x.fillText(p.t==='M'?metal.ion:T.lab,p.x,p.y-r-3);x.shadowBlur=0});
+  // fuse ignites from the left edge in phase 1
+  if(phase===1){const f=Math.min(1,pt/1.2);x.save();x.shadowColor='#ffb35c';x.shadowBlur=20;x.fillStyle='#ffe27a';x.beginPath();x.arc(f*w*.3,h/2,8+Math.random()*4,0,7);x.fill();x.restore();
+    if(pt>1.1&&!P.some(p=>p.hot>.5)){P.filter(p=>p.x<w*.4&&(p.t==='C'||p.t==='S'||p.t==='ox')).forEach(p=>p.hot=1)}}
+  const nGas=P.filter(p=>p.t==='CO2'||p.t==='N2').length;
+  $('zcap').textContent=phase===0?'Particles touch… but nothing happens 😴':phase<=2?'Hot gas made: '+nGas+' molecules':'Gas made: '+nGas+' molecules · pressure is huge! 💨'}
+/* atom view: electron jumps and falls, giving light */
+let at=0;
+function drawAtom(x,w,h,dt){at+=dt;const cx=w*.42,cy=h*.47,R=Math.min(w,h)*.33,t=at%3;
+  $('ztag').textContent='Zoom in: one '+metal.name.toLowerCase()+' ion';
+  x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=2;x.setLineDash([5,6]);[.5,1].forEach(k=>{x.beginPath();x.arc(cx,cy,R*k,0,7);x.stroke()});x.setLineDash([]);
+  x.fillStyle='rgba(169,194,212,.8)';x.font='600 11px Questrial,Arial';x.textAlign='left';x.textAlign='center';x.fillText('low level',cx,cy-R*.5-6);x.fillText('high level',cx,cy+R+14);
+  blob(x,cx,cy,R*.3,'#fff',metal.c,0);face(x,cx,cy+R*.03,R*.3,t>1.2&&t<2.4?'joy':'calm');
+  x.fillStyle='#1b2340';x.font=`800 ${R*.16}px "League Spartan",Arial`;x.textAlign='center';x.fillText(metal.ion,cx,cy-R*.13);
+  // heat arrow
+  if(t<.8){const a=t/.8;x.strokeStyle=`rgba(255,155,92,${1-a*.3})`;x.lineWidth=4;x.beginPath();x.moveTo(cx-R*1.25,cy+R*.9);x.lineTo(cx-R*1.25+a*R*.55,cy+R*.9-a*R*.55);x.stroke();
+    x.fillStyle='#ff9b5c';x.font='800 13px "League Spartan",Arial';x.fillText('🔥 heat',cx-R*1.15,cy+R*1.08)}
+  // electron position
+  const ang=at*3.2,lvl=t<.8?.5:t<1.2?.5+(t-.8)/.4*.5:t<1.9?1:t<2.2?1-(t-1.9)/.3*.5:.5;
+  const ex=cx+Math.cos(ang)*R*lvl,ey=cy+Math.sin(ang)*R*lvl;
+  x.save();x.shadowColor=lvl>.6?'#fff':'#8fd3ff';x.shadowBlur=lvl>.6?20:8;x.fillStyle=lvl>.6?'#fff6c8':'#8fd3ff';x.beginPath();x.arc(ex,ey,7,0,7);x.fill();x.restore();
+  x.fillStyle='#d9ecf6';x.font='700 11px Arial';x.fillText('e⁻',ex,ey-11);
+  if(t>=.8&&t<1.9){x.fillStyle='#fff';x.font='800 13px "League Spartan",Arial';x.textAlign='right';x.fillText('⬆ jumps up!',w-12,40)}
+  // photon when it falls back
+  if(t>=1.9){const a=(t-1.9)/1.1,len=R*1.4;x.save();x.strokeStyle=metal.c;x.shadowColor=metal.c;x.shadowBlur=14;x.lineWidth=4;x.beginPath();
+    for(let k=0;k<=40;k++){const s=k/40,px=ex+s*len*a+8,py=ey+Math.sin(s*20-at*20)*7*(1-s*.3);k?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();x.restore();
+    x.fillStyle=metal.c;x.font='800 14px "League Spartan",Arial';x.fillText('light! ✨',Math.min(w-40,ex+len*a*.6+30),ey-14);
+    x.fillStyle='#fff';x.font='800 13px "League Spartan",Arial';x.textAlign='right';x.fillText('⬇ falls back',w-12,40)}
+  $('zcap').textContent=metal.name+' gives '+({Sr:'red',Na:'yellow',Ba:'green',Cu:'blue'})[metal.k]+' light';}
+
+/* ---------- sky ---------- */
+let rk={x:0,y:0,vy:0},shell=[],trail=[],smoke=[],stars=[];
+function resetSky(){const {w,h}=SK;rk={x:w*.5,y:h-60,vy:0,shake:0};shell=[];trail=[];smoke=[];
+  stars=Array.from({length:50},()=>({x:Math.random()*w,y:Math.random()*h*.7,r:Math.random()*1.4+.3,p:Math.random()*6}))}
+function burst(){const n=140;shell=[];const bx=rk.x,by=Math.min(rk.y,SK.h*.3);
+  for(let i=0;i<n;i++){const a=i/n*6.283+Math.random()*.05,sp=150+Math.random()*130;shell.push({x:bx,y:by,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,tr:[]})}}
+function drawRocket(x,cx,cy,s,mood){x.save();x.translate(cx,cy);
+  x.fillStyle='#ff6f96';x.beginPath();x.moveTo(-14*s,18*s);x.lineTo(-24*s,34*s);x.lineTo(-10*s,30*s);x.fill();x.beginPath();x.moveTo(14*s,18*s);x.lineTo(24*s,34*s);x.lineTo(10*s,30*s);x.fill();
+  const g=x.createLinearGradient(-14*s,0,14*s,0);g.addColorStop(0,'#fff');g.addColorStop(1,'#cfe3f7');x.fillStyle=g;x.beginPath();x.roundRect(-14*s,-20*s,28*s,52*s,10*s);x.fill();
+  x.fillStyle=metal.c;x.beginPath();x.moveTo(-14*s,-18*s);x.quadraticCurveTo(0,-48*s,14*s,-18*s);x.fill();
+  x.fillStyle=metal.c;x.globalAlpha=.6;x.fillRect(-14*s,14*s,28*s,6*s);x.globalAlpha=1;
+  face(x,0,-2*s,13*s,mood);x.restore()}
+function drawSky(dt){const {x,w,h}=SK;x.clearRect(0,0,w,h);const now=performance.now()/1000;
+  stars.forEach(s=>{x.fillStyle=`rgba(255,255,255,${.4+.4*Math.sin(now*2+s.p)})`;x.beginPath();x.arc(s.x,s.y,s.r,0,7);x.fill()});
+  // ground + hills
+  x.fillStyle='#14102e';x.beginPath();x.moveTo(0,h);x.lineTo(0,h-34);x.quadraticCurveTo(w*.25,h-60,w*.5,h-36);x.quadraticCurveTo(w*.75,h-14,w,h-40);x.lineTo(w,h);x.fill();
+  // fuse
+  if(phase<=1){x.strokeStyle='#8a6a3a';x.lineWidth=3;x.beginPath();x.moveTo(rk.x,h-28);x.quadraticCurveTo(rk.x-40,h-10,rk.x-80,h-22);x.stroke();
+    if(phase===1){const f=Math.min(1,pt/1.2),fx=rk.x-80+f*80,fy=h-22+Math.sin(f*3)*-6;x.save();x.shadowColor='#ffb35c';x.shadowBlur=18;x.fillStyle='#ffe27a';x.beginPath();x.arc(fx,fy,4+Math.random()*3,0,7);x.fill();x.restore()}}
+  // rocket motion
+  if(phase===2){rk.shake=3}
+  if(phase===3){rk.vy-=420*dt;rk.y+=rk.vy*dt;rk.shake=1;
+    for(let k=0;k<4;k++)trail.push({x:rk.x+(Math.random()-.5)*10,y:rk.y+34,vx:(Math.random()-.5)*40,vy:80+Math.random()*80,life:1});
+    if(rk.y<h*.3){phase=4;pt=0;burst();setStep(4)}}
+  trail=trail.filter(t=>{t.life-=dt*1.6;t.x+=t.vx*dt;t.y+=t.vy*dt;if(t.life<=0)return false;x.fillStyle=`rgba(255,${180+Math.random()*60},90,${t.life})`;x.beginPath();x.arc(t.x,t.y,3+t.life*3,0,7);x.fill();return true});
+  if(phase===2&&Math.random()<.5)smoke.push({x:rk.x+(Math.random()-.5)*20,y:h-30,life:1});
+  smoke=smoke.filter(s=>{s.life-=dt*.6;s.y-=20*dt;if(s.life<=0)return false;x.fillStyle=`rgba(200,200,220,${s.life*.25})`;x.beginPath();x.arc(s.x,s.y,10+(1-s.life)*14,0,7);x.fill();return true});
+  if(phase<=3){const s=Math.max(.9,Math.min(1.6,h/260));drawRocket(x,rk.x+(rk.shake?(Math.random()-.5)*rk.shake*2:0),rk.y,s,phase>=2?'hot':'calm')}
+  // burst sparks
+  shell=shell.filter(p=>{p.life-=dt*.45;p.vy+=60*dt;const dr=Math.pow(.45,dt);p.vx*=dr;p.vy*=dr;p.x+=p.vx*dt;p.y+=p.vy*dt;p.tr.push([p.x,p.y]);if(p.tr.length>8)p.tr.shift();
+    if(p.life<=0)return false;x.save();x.globalAlpha=Math.max(0,p.life);x.strokeStyle=metal.c;x.lineWidth=2;x.shadowColor=metal.c;x.shadowBlur=10;
+    x.beginPath();p.tr.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.stroke();x.fillStyle='#fff';x.beginPath();x.arc(p.x,p.y,1.8,0,7);x.fill();x.restore();return true});
+  if(phase>=4&&shell.length===0&&pt>.5){pt=0;burst()}  // keep showing bursts
+  if(phase>=4&&shell.length){x.fillStyle=metal.c;x.font='800 16px "League Spartan",Arial';x.textAlign='center';x.fillText(metal.name+' '+metal.ion,w/2,24)}}
+
+/* ---------- timeline ---------- */
+function start(){if(phase>0)return;phase=1;pt=0;setStep(1);$('go').textContent='🎆 Watch…'}
+function again(){phase=0;pt=0;at=0;resetSky();resetZoom();setStep(0);$('go').textContent='🔥 Light the fuse';$('ztag').textContent='Zoom in: inside the shell'}
+$('go').onclick=start;$('again').onclick=again;
+let last=performance.now();
+function loop(now){const dt=Math.min(.04,(now-last)/1000);last=now;pt+=dt;
+  if(phase===1&&pt>1.4){phase=2;pt=0;setStep(2)}
+  if(phase===2&&(pt>4.5||P.filter(p=>p.t==='C'||p.t==='S').length<=2)){phase=3;pt=0;setStep(3)}
+  if(phase===4&&pt>1.2){phase=5;pt=0;at=0}
+  drawSky(dt);drawZoom(dt);requestAnimationFrame(loop)}
+setTimeout(()=>{again();requestAnimationFrame(loop)},60);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
