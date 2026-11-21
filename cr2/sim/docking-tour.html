@@ -100,7 +100,7 @@ function lab3d(txt,p,col,bg){V.addLabel(txt,{position:p,backgroundColor:bg||'#3a
 /* ---------- the story (each beat: seconds, who, text, anchor, action) ---------- */
 const BEATS=[
  {s:7,who:'enzyme',at:()=>protCenter(),say:'Hi! I am <b>Abl kinase</b>, a real enzyme. This is my real 3D shape, found by X-ray crystallography. 🧬',go(){V.spin('y',.5)}},
- {s:7.5,who:'enzyme',at:()=>protCenter(),say:'I am a <b>catalyst</b>. I move a phosphate group from ATP onto other proteins. In one blood cancer (CML), I am stuck <b>ON</b>. 😵',go(){V.spin('y',.5)}},
+ {s:7.5,who:'enzyme',at:()=>protCenter(),say:'I am a <b>catalyst</b>. I move a phosphate group from ATP onto other proteins. In one blood cancer (CML), I am stuck <b>ON</b> 😵 Too much of a good thing! A medicine that <b>slows me down</b> would help.',go(){V.spin('y',.5)}},
  {s:10,who:'atp',at:()=>atpCenter(),say:'I am <b>ATP</b>, the enzyme&#39;s <b>real substrate</b>. I slide into the <b>empty active site</b>… the enzyme takes one of my phosphate groups ⚡ That is the reaction it catalyses.',
   go(){atpPlace(20);tween(2600,k=>atpPlace(20*(1-ease(k))),()=>{lab3d('⚡ phosphate moved: reaction!',atpCenter(),'#d4ff3a','#13240a');score('Active site','Working ⚡')});
    tween(7200,k=>{if(k>.82)atpPlace(20*ease((k-.82)/.18))});score('Active site','Empty')}},
