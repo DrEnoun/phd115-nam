@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real docking: imatinib in Abl kinase · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<script src="../../js/3Dmol-min.js"></script>
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--org:#ffa24c;--grn:#5be38b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+sub{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;padding:10px}
+.bar{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14px}
+.pill{flex:none;border-radius:999px;padding:4px 10px;font:700 12px 'League Spartan',sans-serif;color:#13240a;background:var(--lime)}
+.view{position:relative;border-radius:22px;border:2px solid rgba(45,212,191,.4);background:#040d1c;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;min-height:0}
+#mol{position:absolute;inset:0}
+.hud{position:absolute;left:12px;top:10px;z-index:5;pointer-events:none;font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7fe6d8}
+.hud2{position:absolute;left:12px;bottom:9px;z-index:5;pointer-events:none;font-size:12px;color:var(--muted)}
+.score3d{position:absolute;right:12px;top:10px;z-index:5;pointer-events:none;border-radius:14px;padding:6px 12px;background:rgba(6,15,31,.75);border:1px solid rgba(212,255,58,.5);text-align:right;opacity:0;transition:opacity .4s}
+.score3d span{display:block;font-size:11.5px;color:var(--muted)}.score3d b{font:800 24px 'League Spartan',sans-serif;color:var(--lime)}
+.score3d.on{opacity:1}
+.toggles{position:absolute;right:10px;bottom:8px;z-index:5;display:flex;gap:6px}
+.toggles button{border-radius:10px;padding:5px 9px;font-weight:700;font-size:12.5px;border:1px solid rgba(126,196,255,.35);background:rgba(6,15,31,.7);color:var(--ink)}
+.toggles button.on{background:rgba(212,255,58,.2);border-color:var(--lime)}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font:700 16px 'League Spartan',sans-serif;z-index:4}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0}
+.step{flex:1;min-height:0;overflow:auto;border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);box-shadow:0 0 18px rgba(212,255,58,.12);font-size:15.5px;line-height:1.4}
+.step .n{font:800 12.5px 'League Spartan',sans-serif;color:var(--lime);letter-spacing:.06em;text-transform:uppercase}
+.step b{color:var(--gold);font-weight:400}.step .g{color:var(--grn)}.step .o{color:var(--org)}
+.dots{display:flex;gap:5px;margin-top:7px}.dots i{flex:1;height:5px;border-radius:9px;background:rgba(255,255,255,.18)}.dots i.on{background:var(--lime)}
+.poses{border-radius:16px;padding:8px 12px;background:rgba(6,15,31,.55);border:1px solid rgba(126,196,255,.2)}
+.poses h3{margin:0 0 5px;font:800 12px 'League Spartan',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#7fe6d8}
+.pr{display:grid;grid-template-columns:52px 1fr 92px;gap:8px;align-items:center;font:700 13px 'League Spartan',sans-serif;margin:3px 0;opacity:.55;transition:.3s}
+.pr.on{opacity:1}.pr.on .tr i{background:linear-gradient(90deg,#ffa24c,#d4ff3a)}
+.tr{height:10px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}.tr i{display:block;height:100%;border-radius:9px;background:rgba(169,194,212,.6)}
+.pr b{text-align:right;color:var(--gold)}
+.poses small{display:block;margin-top:3px;color:var(--muted);font-size:11.5px}
+.btns{display:grid;grid-template-columns:.7fr 1.3fr .7fr;gap:6px}
+.btns button{border-radius:14px;padding:10px 4px;font-weight:800;font-size:15.5px;border:0}
+#bNext{background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600;box-shadow:0 6px 18px rgba(255,180,60,.35)}
+#bBack,#bReset{background:rgba(255,255,255,.06);border:1px solid rgba(45,212,191,.35);color:var(--ink)}
+@media (max-height:540px) and (min-width:700px){
+  #app{padding:8px;gap:7px}.bar h1{font-size:18px}.bar p{display:none}.pill{font-size:10.5px}
+  .step{font-size:12.5px;padding:6px 10px}.step .n{font-size:11px}.pr{font-size:11px;margin:1px 0}.tr{height:8px}.poses{padding:5px 10px}.poses h3{font-size:10.5px}.poses small{display:none}
+  .btns button{padding:7px 2px;font-size:13px}.toggles button{font-size:11px;padding:3px 7px}.score3d b{font-size:18px}
+}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr}.view{height:380px}.step{min-height:170px}.bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><div><h1>Real docking: <span>imatinib</span> in an enzyme 💊🔬</h1><p>Real data: Abl kinase X-ray structure (PDB 1IEP) and a real AutoDock Vina docking run. Drag to turn, pinch or scroll to zoom.</p></div><span class="pill">Computational chemistry</span></div>
+  <div class="view">
+    <div id="mol"></div><div class="loading" id="loading">Loading the enzyme… 🧬</div>
+    <div class="hud" id="hud">Abl kinase · PDB 1IEP</div>
+    <div class="score3d" id="score"><span id="scoreLab">Vina score</span><b id="scoreVal">–</b></div>
+    <div class="hud2">Drag to turn · pinch to zoom</div>
+    <div class="toggles"><button id="tSurf">Surface</button><button id="tSpin" class="on">Spin</button></div>
+  </div>
+  <div class="side">
+    <div class="step"><div class="n" id="sn"></div><div id="st"></div><div class="dots" id="dots"></div></div>
+    <div class="poses"><h3>Docking poses (kcal/mol)</h3><div id="plist"></div><small>Scores from AutoDock Vina. More negative = better fit.</small></div>
+    <div class="btns"><button id="bBack">◀ Back</button><button id="bNext">Next ▶</button><button id="bReset">↺</button></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const STEPS=[
+ ['1 · Meet the enzyme','This is a <b>real enzyme</b>: Abl kinase, solved by X-ray crystallography. Each ribbon is the protein chain. A kinase is a <b>catalyst</b>: it moves a phosphate group from ATP onto other proteins. In one blood cancer (chronic myeloid leukaemia), a faulty Abl kinase is <b>always switched on</b>.'],
+ ['2 · Find the active site','We zoom into the <b>active site</b>: the pocket where ATP normally fits. The side chains around it (thin sticks) give the pocket its <b>shape</b>, and its N–H and C=O groups can <b>hold hands</b> with a molecule that fits.'],
+ ['3 · Docking: try many poses','A docking program (<b>AutoDock Vina</b>) tries thousands of positions and twists of the drug <span class="o">imatinib</span>. Each pose gets a <b>score</b> in kcal/mol. <b>More negative = better fit.</b> Watch it test poses from the worst to the best.'],
+ ['4 · Best pose vs the real thing','The best pose (<b>−13.2 kcal/mol</b>, orange) is compared with where X-ray crystallography found the real drug (<span class="g">thin green</span>). They are only <b>0.38 Å</b> apart, smaller than one atom! This is how scientists check that docking works.'],
+ ['5 · Holding hands: hydrogen bonds','Yellow dashes are <b>hydrogen bonds</b> between imatinib and the pocket: Met318, Thr315, Glu286, Ile360, His361 and Asp381. Like <b>holding hands</b> in 6 places, they keep the drug tightly in the active site.'],
+ ['6 · Why it works as a medicine 💊','Imatinib (Gleevec) <b>sits in the active site</b>, so ATP cannot get in. The enzyme can no longer catalyse its reaction: it is an <b>enzyme inhibitor</b>. Designing drugs like this, with docking on a computer, is a real job in <b>pharmacy and drug discovery</b>.']];
+let D,V,rec,lig,xray,step=0,busy=0,spin=true,surf=false,surfIds=[],anim=null;
+const LIGSTYLE={stick:{radius:.22,colorscheme:'orangeCarbon'},sphere:{scale:.22,colorscheme:'orangeCarbon'}};
+function dotsUI(){$('dots').innerHTML=STEPS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('')}
+function poseUI(k){[...$('plist').children].forEach((r,i)=>r.classList.toggle('on',i===k))}
+function score(v,lab){if(v==null){$('score').classList.remove('on');return}$('scoreLab').textContent=lab||'Vina score';$('scoreVal').textContent=v;$('score').classList.add('on')}
+function coords(sdf){const L=sdf.split('\n'),n=parseInt(L[3].slice(0,3));const P=[];for(let i=0;i<n;i++){const l=L[4+i];P.push([+l.slice(0,10),+l.slice(10,20),+l.slice(20,30)])}return P}
+function setLig(P){lig.selectedAtoms({}).forEach((a,i)=>{a.x=P[i][0];a.y=P[i][1];a.z=P[i][2]});lig.setStyle({},LIGSTYLE);V.render()}
+function stopAnim(){if(anim){cancelAnimationFrame(anim);anim=null}}
+function tween(A,B,ms,done,arc){stopAnim();const t0=performance.now();const f=now=>{let k=Math.min(1,(now-t0)/ms);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+  const lift=arc?Math.sin(Math.PI*e)*arc:0;setLig(A.map((p,i)=>[p[0]+(B[i][0]-p[0])*e,p[1]+(B[i][1]-p[1])*e+lift,p[2]+(B[i][2]-p[2])*e]));
+  if(k<1)anim=requestAnimationFrame(f);else{anim=null;done&&done()}};anim=requestAnimationFrame(f)}
+function pocketSel(){return{chain:'A',resi:D.pocket.map(p=>p.num)}}
+function setSurface(on){surf=on;$('tSurf').classList.toggle('on',on);surfIds.forEach(id=>V.removeSurface(id));surfIds=[];
+  if(on){const id=V.addSurface($3Dmol.SurfaceType.VDW,{opacity:.5,color:'#cfe3ff'},pocketSel(),pocketSel());Promise.resolve(id).then(x=>{if(surf)surfIds.push(x);else V.removeSurface(x)})}V.render()}
+$('tSurf').onclick=()=>setSurface(!surf);
+$('tSpin').onclick=()=>{spin=!spin;$('tSpin').classList.toggle('on',spin);V.spin(spin?'y':false,.4)};
+function clearExtras(){V.removeAllLabels();V.removeAllShapes();if(xray){V.removeModel(xray);xray=null}}
+function show(n){step=Math.max(0,Math.min(STEPS.length-1,n));$('sn').textContent=STEPS[step][0];$('st').innerHTML=STEPS[step][1];dotsUI();
+  $('bBack').disabled=step===0;$('bNext').textContent=step===STEPS.length-1?'Play again ▶':'Next ▶';
+  stopAnim();clearExtras();busy++;const my=busy;
+  const PS=D.poses.map(p=>coords(p.sdf));const best=PS[0];
+  if(step===0){rec.setStyle({},{cartoon:{color:'spectrum',opacity:.95}});lig.setStyle({},{});score(null);poseUI(-1);setSurface(false);V.zoomTo();V.zoom(.95);spin=true;$('tSpin').classList.add('on');V.spin('y',.4);return}
+  rec.setStyle({},{cartoon:{color:'spectrum',opacity:.55}});rec.setStyle(pocketSel(),{cartoon:{color:'spectrum',opacity:.55},stick:{radius:.09,colorscheme:'whiteCarbon',opacity:.85}});
+  if(step===1){lig.setStyle({},{});score(null);poseUI(-1);setSurface(true);V.zoomTo(pocketSel());V.zoom(.85);V.spin(false);spin=false;$('tSpin').classList.remove('on');
+    const C=D.center;V.addLabel('Active site',{position:{x:C[0],y:C[1]+9,z:C[2]},backgroundColor:'#0b1a33',backgroundOpacity:.85,fontColor:'#d4ff3a',fontSize:14,borderColor:'#d4ff3a',borderThickness:1,inFront:true});V.render();return}
+  V.spin(false);spin=false;$('tSpin').classList.remove('on');if(surf)setSurface(false);
+  if(step===2){V.zoomTo(pocketSel());V.zoom(.8);
+    const order=[3,2,1,0];const start=PS[3].map(p=>[p[0]+22,p[1]+16,p[2]-10]);setLig(start);score('…','Searching');poseUI(-1);
+    let k=0;const nextPose=()=>{if(my!==busy)return;const i=order[k];poseUI(i);score(D.poses[i].score.toFixed(1)+' kcal/mol','Pose '+(i+1)+' score');
+      k++;if(k<order.length)setTimeout(()=>{if(my!==busy)return;tween(PS[i],PS[order[k]],1400,nextPose,4)},1300);
+      else{V.addLabel('Best pose: −13.2',{position:{x:D.center[0],y:D.center[1]+7,z:D.center[2]},backgroundColor:'#3a1600',backgroundOpacity:.85,fontColor:'#ffd27a',fontSize:13,inFront:true});V.render()}};
+    tween(start,PS[3],1800,nextPose,0);return}
+  setLig(best);poseUI(0);score('−13.2 kcal/mol','Best pose');V.zoomTo(pocketSel());V.zoom(.8);
+  if(step>=3){xray=V.addModel(D.xray,'sdf');xray.setStyle({},{stick:{radius:.1,colorscheme:'greenCarbon'}});if(step===3){score('0.38 Å','Best pose vs X-ray')}}
+  if(step>=4){D.hbonds.forEach(h=>{V.addCylinder({start:{x:h.l[0],y:h.l[1],z:h.l[2]},end:{x:h.p[0],y:h.p[1],z:h.p[2]},radius:.1,dashed:true,dashLength:.25,gapLength:.2,color:'#ffe066',fromCap:1,toCap:1});
+      V.addLabel(h.res,{position:{x:h.p[0],y:h.p[1],z:h.p[2]},backgroundColor:'#0b1a33',backgroundOpacity:.8,fontColor:'#ffe066',fontSize:11,inFront:true})});
+    if(step===4)score('6 H-bonds','Holding hands')}
+  if(step===5){setSurface(true);score('Blocked ✓','Active site')}
+  V.render()}
+$('bNext').onclick=()=>show(step===STEPS.length-1?0:step+1);
+$('bBack').onclick=()=>show(step-1);
+$('bReset').onclick=()=>show(0);
+fetch('data/dock_1iep.json').then(r=>r.json()).then(d=>{D=d;
+  $('plist').innerHTML=D.poses.map((p,i)=>`<div class="pr"><span>Pose ${i+1}</span><div class="tr"><i style="width:${Math.round(100*p.score/D.poses[0].score)}%"></i></div><b>${p.score.toFixed(1)}</b></div>`).join('');
+  V=$3Dmol.createViewer($('mol'),{backgroundColor:'#040d1c',antialias:true});
+  rec=V.addModel(D.receptor,'pdb');lig=V.addModel(D.poses[0].sdf,'sdf');
+  $('loading').remove();new ResizeObserver(()=>{V.resize();V.render()}).observe($('mol'));requestAnimationFrame(()=>{V.resize();show(0)})}).catch(()=>{$('loading').textContent='Oops! Please try again.'});
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
