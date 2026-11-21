@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big molecules vs small molecules · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--grn:#5be38b;--org:#ffa24c}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+sub{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(240px,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);gap:10px;padding:10px}
+.bar{grid-column:1/-1}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14.5px}
+.box{position:relative;border-radius:20px;border:2px solid rgba(45,212,191,.35);background:linear-gradient(160deg,rgba(22,70,92,.5),rgba(9,28,52,.9));box-shadow:0 12px 30px rgba(0,0,0,.4);overflow:hidden;min-height:0}
+.box canvas{position:absolute;inset:0;width:100%;height:100%}
+.tag{position:absolute;left:12px;top:8px;margin:0;font:800 12px 'League Spartan',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7fe6d8;z-index:2;pointer-events:none}
+.live{position:absolute;right:10px;top:7px;z-index:2;display:flex;gap:6px;pointer-events:none}
+.live span{border-radius:10px;padding:3px 8px;background:rgba(6,15,31,.7);border:1px solid rgba(126,196,255,.25);font:700 12.5px 'League Spartan',sans-serif;color:var(--muted)}
+.live b{color:var(--gold);font-weight:800}.live .r b{color:var(--lime)}
+#bS{grid-column:1;grid-row:2}#bB{grid-column:1;grid-row:3}
+.side{grid-column:2;grid-row:2/4;display:flex;flex-direction:column;gap:8px;min-height:0}
+.race{border-radius:16px;padding:9px 12px;background:rgba(6,15,31,.55);border:1px solid rgba(126,196,255,.2)}
+.race h3{margin:0 0 6px;font:800 13px 'League Spartan',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#7fe6d8}
+.row{display:grid;grid-template-columns:52px 1fr 46px;gap:8px;align-items:center;font:700 13.5px 'League Spartan',sans-serif;margin:4px 0}
+.track{height:14px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:9px;transition:width .4s}
+#tS{background:linear-gradient(90deg,#5be38b,#d4ff3a)}#tB{background:linear-gradient(90deg,#ffa24c,#ffd27a)}
+.row b{text-align:right;color:var(--lime)}
+.zoom{position:relative;flex:1.1;min-height:110px;border-radius:16px;border:1px solid rgba(45,212,191,.3);background:radial-gradient(circle at 40% 35%,#173c66,#0a1a33 75%);overflow:hidden}.zoom canvas{position:absolute;inset:0;width:100%;height:100%}
+.step{flex:0 0 auto;min-height:0;overflow:auto;border-radius:16px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);box-shadow:0 0 18px rgba(212,255,58,.12);font-size:15.5px;line-height:1.38}
+.step .n{font:800 12.5px 'League Spartan',sans-serif;color:var(--lime);letter-spacing:.06em;text-transform:uppercase}
+.step b{color:var(--gold);font-weight:400}.step .g{color:var(--grn)}.step .o{color:var(--org)}
+.dots{display:flex;gap:5px;margin-top:6px}.dots i{width:22px;height:5px;border-radius:9px;background:rgba(255,255,255,.18)}.dots i.on{background:var(--lime)}
+.btns{display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:6px}
+.btns button{border-radius:14px;padding:10px 4px;font-weight:800;font-size:15.5px;border:0}
+#bNext{background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600;box-shadow:0 6px 18px rgba(255,180,60,.35)}
+#bSlow{background:rgba(255,255,255,.08);border:1px solid rgba(212,255,58,.45);color:var(--ink)}
+#bSlow.on{background:var(--lime);color:#13240a}
+#bReset{background:rgba(255,255,255,.06);border:1px solid rgba(45,212,191,.35);color:var(--ink)}
+@media (max-height:540px) and (min-width:700px){
+  #app{padding:8px;gap:7px}.bar h1{font-size:19px}.bar p{display:none}.tag{font-size:10.5px}.live span{font-size:11px;padding:2px 6px}
+  .race{padding:6px 10px}.race h3{font-size:11px;margin-bottom:3px}.row{font-size:12px;margin:2px 0}.track{height:11px}
+  .step{font-size:12.5px;padding:6px 10px}.step .n{font-size:11px}.btns button{padding:7px 2px;font-size:13px}
+}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr;grid-template-rows:auto 230px 230px auto}
+  #bS,#bB,.side{grid-column:1}#bS{grid-row:2}#bB{grid-row:3}.side{grid-row:4}.step{min-height:150px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><h1><span>Small</span> molecules vs <span>big</span> molecules 🧪</h1><p>Same idea in both boxes: a <span style="color:#5be38b">green group</span> must touch an <span style="color:#ffa24c">orange group</span>. Every hit here has enough energy (≥ E<sub>a</sub>). Only the <b style="color:#ffd27a;font-weight:400">direction</b> is different.</p></div>
+  <div class="box" id="bS"><p class="tag">Small molecules</p><div class="live"><span>Hits <b id="hS">0</b></span><span class="r">Reactions <b id="rS">0</b></span></div><canvas id="cS"></canvas></div>
+  <div class="box" id="bB"><p class="tag">Big drug-like molecules</p><div class="live"><span>Hits <b id="hB">0</b></span><span class="r">Reactions <b id="rB">0</b></span></div><canvas id="cB"></canvas></div>
+  <div class="side">
+    <div class="race"><h3>% of hits that work</h3>
+      <div class="row"><span>Small</span><div class="track"><i id="tS"></i></div><b id="pS">0%</b></div>
+      <div class="row"><span>Big</span><div class="track"><i id="tB"></i></div><b id="pB">0%</b></div>
+    </div>
+    <div class="zoom"><p class="tag">Close-up · big molecules</p><canvas id="cZ"></canvas></div>
+    <div class="step"><div class="n" id="sn"></div><div id="st"></div><div class="dots" id="dots"><i></i><i></i><i></i><i></i></div></div>
+    <div class="btns"><button id="bNext">Next idea ▶</button><button id="bSlow">🐢 Slow-mo</button><button id="bReset">↺ Reset</button></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const IDEAS=[
+ ['Idea 1 · Watch both boxes','Both boxes have hits <b>all the time</b>. Every hit has enough energy. But a reaction only happens when the <span class="g">green group</span> touches the <span class="o">orange group</span> ✓. Any other hit just bounces off ✗.'],
+ ['Idea 2 · Small molecules','In a small molecule, the reacting group is <b>a big part</b> of the whole molecule. So many hits land on the right part. <b>Lots of hits work.</b>'],
+ ['Idea 3 · Big molecules','In a big molecule, the reacting group is <b>a tiny part</b> at one end. Most hits bring the <b>wrong parts</b> together ✗. Only hits facing the <b>right way</b> work, so the <b>rate is lower</b>.'],
+ ['Idea 4 · Pharmacy link 💊','Enzymes and drug receptors are big molecules too. A drug must meet its target <b>in the right direction</b>, like a key going into a lock. This is why the <b>shape</b> of a drug matters so much.']];
+let idea=0;function showIdea(){$('sn').textContent=IDEAS[idea][0];$('st').innerHTML=IDEAS[idea][1];[...$('dots').children].forEach((d,i)=>d.classList.toggle('on',i===idea))}
+$('bNext').onclick=()=>{idea=(idea+1)%IDEAS.length;showIdea()};
+
+function World(id,big,hEl,rEl){const c=$(id),g=c.getContext('2d');const w={c,g,W:1,H:1,big,M:[],stamps:[],hits:0,rx:0,s:10,hEl,rEl};
+  w.fit=()=>{const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);w.W=r.width;w.H=r.height;g.setTransform(d,0,0,d,0,0)};
+  new ResizeObserver(()=>w.fit()).observe(c.parentElement);w.fit();return w}
+const WS=World('cS',false,'hS','rS'),WB=World('cB',true,'hB','rB'),WORLDS=[WS,WB];
+
+/* molecule shapes in local units (s = atom spacing) */
+function shape(big,type){const A=[];
+  if(!big){A.push({x:-.42,y:0,r:.62,re:false,face:true});A.push({x:.52,y:0,r:.56,re:true})}
+  else{for(let i=0;i<7;i++)A.push({x:(i-3)*.92,y:(i%2?.32:-.32),r:.55,re:i===6,face:i===3});
+    A.push({x:-1.84,y:.95,r:.42,re:false});A.push({x:.9,y:-1.0,r:.42,re:false})} // side branches
+  return A}
+function spawn(w,type,tries=40){const s=w.s,big=w.big,A=shape(big,type);const R=(big?3.9:1.15)*s;
+  let x,y;for(let k=0;k<tries;k++){x=R+Math.random()*(w.W-2*R);y=R+22+Math.random()*(w.H-2*R-22);if(w.M.every(m=>Math.hypot(m.x-x,m.y-y)>m.R+R+4))break}
+  const a=Math.random()*6.283,sp=(big?62:70)*(.8+Math.random()*.4)*Math.sqrt(s/10);
+  return{id:Math.random(),cool:{},type,A,R,x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,ang:Math.random()*6.283,w:(Math.random()-.5)*(big?1.2:2.4),joined:0,blink:Math.random()*4}}
+function resetW(w){w.fit();w.M=[];w.stamps=[];w.hits=0;w.rx=0;
+  w.s=w.big?Math.max(7,Math.min(13,Math.min(w.W/36,w.H/13))):Math.max(8,Math.min(20,Math.min(w.W/30,w.H/9)));
+  const n=w.big?4:6;for(let i=0;i<n;i++){w.M.push(spawn(w,'A'));w.M.push(spawn(w,'B'))}}
+function reset(){WORLDS.forEach(resetW);idea=0;showIdea();upd()}
+$('bReset').onclick=reset;
+let slow=false;$('bSlow').onclick=()=>{slow=!slow;$('bSlow').classList.toggle('on',slow)};
+
+function atomsW(m,s){const c=Math.cos(m.ang),sn=Math.sin(m.ang);return m.A.map(a=>({x:m.x+(a.x*c-a.y*sn)*s,y:m.y+(a.x*sn+a.y*c)*s,r:a.r*s,re:a.re,face:a.face}))}
+function step(w,dt){const s=w.s;w.time=(w.time||0)+dt;
+  for(const m of w.M){if(m.joined>0){m.joined-=dt;if(m.joined<=0)m.dead=true;continue}
+    m.x+=m.vx*dt;m.y+=m.vy*dt;m.ang+=m.w*dt;
+    if(m.x<m.R){m.x=m.R;m.vx=Math.abs(m.vx)}if(m.x>w.W-m.R){m.x=w.W-m.R;m.vx=-Math.abs(m.vx)}
+    if(m.y<m.R+20){m.y=m.R+20;m.vy=Math.abs(m.vy)}if(m.y>w.H-m.R){m.y=w.H-m.R;m.vy=-Math.abs(m.vy)}}
+  // replace finished products with fresh reactants
+  const dead=w.M.filter(m=>m.dead);if(dead.length){w.M=w.M.filter(m=>!m.dead);dead.forEach(d=>w.M.push(spawn(w,d.type)))}
+  const L=w.M.map(m=>m.joined>0?null:atomsW(m,s));
+  for(let i=0;i<w.M.length;i++)for(let j=i+1;j<w.M.length;j++){const a=w.M[i],b=w.M[j];if(!L[i]||!L[j])continue;
+    if(Math.hypot(a.x-b.x,a.y-b.y)>a.R+b.R)continue;
+    let best=null;for(const p of L[i])for(const q of L[j]){const d=Math.hypot(q.x-p.x,q.y-p.y),ov=p.r+q.r-d;if(ov>0&&(!best||ov>best.ov))best={p,q,d,ov}}
+    if(!best)continue;const{p,q}=best;let nx=(q.x-p.x)/(best.d||1),ny=(q.y-p.y)/(best.d||1);
+    // push apart
+    a.x-=nx*best.ov/2;a.y-=ny*best.ov/2;b.x+=nx*best.ov/2;b.y+=ny*best.ov/2;
+    const pr=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;if(pr<=0)continue;
+    const cx=(p.x+q.x)/2,cy=(p.y+q.y)/2,ab=a.type!==b.type;
+    const key=b.id,now=w.time||0;const fresh=!(a.cool[key]>now);a.cool[key]=now+.45;
+    if(ab&&fresh){w.hits++;
+      if(p.re&&q.re){w.rx++;a.joined=b.joined=1.3;const vx=(a.vx+b.vx)/2,vy=(a.vy+b.vy)/2;a.vx=b.vx=vx;a.vy=b.vy=vy;
+        w.stamps.push({x:cx,y:cy,txt:'✓ react!',c:'#d4ff3a',t:0,big:1,ring:1});continue}
+      w.stamps.push({x:cx,y:cy,txt:'✗',c:'rgba(255,160,170,.95)',t:0})}
+    if(ab&&!fresh&&p.re&&q.re){}
+    a.vx-=pr*nx;a.vy-=pr*ny;b.vx+=pr*nx;b.vy+=pr*ny;
+    const sp=(Math.random()-.5)*(w.big?1.4:2.6);a.w+=sp;b.w-=sp;a.w=Math.max(-3,Math.min(3,a.w));b.w=Math.max(-3,Math.min(3,b.w))}
+  // keep the speed steady (no slow drift)
+  for(const m of w.M){const v=Math.hypot(m.vx,m.vy),want=(w.big?62:70)*Math.sqrt(s/10);if(v>0){const k=1+(want/v-1)*Math.min(1,dt*.8);m.vx*=k;m.vy*=k}}}
+
+const COL={body:['#ffffff','#9fb4cc'],A:['#eafff1','#3fcf74'],B:['#fff1e2','#ff9a3c']};
+function face(g,r,m,happy){const bl=(m.blink%4)<.12;g.fillStyle='#1b2340';g.strokeStyle='#1b2340';g.lineCap='round';
+  if(happy){g.lineWidth=r*.12;g.beginPath();g.arc(-r*.3,r*.02,r*.15,Math.PI*1.1,Math.PI*1.9);g.stroke();g.beginPath();g.arc(r*.3,r*.02,r*.15,Math.PI*1.1,Math.PI*1.9);g.stroke();g.beginPath();g.arc(0,r*.18,r*.22,.1,Math.PI-.1);g.fill()}
+  else if(bl){g.lineWidth=r*.1;g.beginPath();g.moveTo(-r*.4,0);g.lineTo(-r*.18,0);g.moveTo(r*.18,0);g.lineTo(r*.4,0);g.stroke()}
+  else{g.beginPath();g.ellipse(-r*.3,-r*.02,r*.1,r*.14,0,0,7);g.ellipse(r*.3,-r*.02,r*.1,r*.14,0,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(-r*.27,-r*.08,r*.04,0,7);g.arc(r*.33,-r*.08,r*.04,0,7);g.fill();
+    g.lineWidth=r*.09;g.beginPath();g.arc(0,r*.18,r*.13,.3,Math.PI-.3);g.stroke()}
+  g.fillStyle='rgba(255,111,150,.5)';g.beginPath();g.ellipse(-r*.55,r*.22,r*.14,r*.08,0,0,7);g.ellipse(r*.55,r*.22,r*.14,r*.08,0,0,7);g.fill()}
+function drawW(w){const g=w.g,s=w.s;g.clearRect(0,0,w.W,w.H);
+  for(const m of w.M){const at=atomsW(m,s);m.blink+=.016;
+    // bonds
+    g.strokeStyle='rgba(200,215,235,.75)';g.lineWidth=s*.28;g.lineCap='round';g.beginPath();
+    const chain=w.big?7:2;for(let k=1;k<chain;k++){g.moveTo(at[k-1].x,at[k-1].y);g.lineTo(at[k].x,at[k].y)}
+    if(w.big){g.moveTo(at[1].x,at[1].y);g.lineTo(at[7].x,at[7].y);g.moveTo(at[4].x,at[4].y);g.lineTo(at[8].x,at[8].y)}g.stroke();
+    if(m.joined>0){g.shadowColor='#d4ff3a';g.shadowBlur=18}
+    for(const a of at){const col=a.re?COL[m.type]:COL.body;const q=g.createRadialGradient(a.x-a.r*.35,a.y-a.r*.4,a.r*.1,a.x,a.y,a.r);q.addColorStop(0,'#fff');q.addColorStop(.35,col[0]);q.addColorStop(1,col[1]);
+      g.fillStyle=q;g.beginPath();g.arc(a.x,a.y,a.r,0,7);g.fill();
+      if(a.re){g.strokeStyle=m.type==='A'?'#1f8f4c':'#c9661a';g.lineWidth=1.5;g.stroke()}}
+    g.shadowBlur=0;const f=at.find(a=>a.face);g.save();g.translate(f.x,f.y);face(g,f.r,m,m.joined>0);g.restore()}
+  // join line for products
+  w.stamps=w.stamps.filter(t=>{t.t+=1/60;const life=t.big?1.2:.6,k=t.t/life;if(k>=1)return false;g.globalAlpha=1-k;
+    if(t.ring){g.strokeStyle='#d4ff3a';g.lineWidth=3;g.beginPath();g.arc(t.x,t.y,8+k*40,0,7);g.stroke()}
+    g.fillStyle=t.c;g.font=`800 ${t.big?16:14}px "League Spartan",sans-serif`;g.textAlign='center';g.fillText(t.txt,t.x,t.y-8-k*16);g.globalAlpha=1;return true});
+  if(w.stamps.length>30)w.stamps.splice(0,w.stamps.length-30)}
+function upd(){for(const w of WORLDS){$(w.hEl).textContent=w.hits;$(w.rEl).textContent=w.rx}
+  const pS=WS.hits?Math.round(100*WS.rx/WS.hits):0,pB=WB.hits?Math.round(100*WB.rx/WB.hits):0;
+  $('pS').textContent=pS+'%';$('pB').textContent=pB+'%';$('tS').style.width=Math.min(100,pS*1.6)+'%';$('tB').style.width=Math.min(100,pB*1.6)+'%'}
+let last=performance.now(),acc=0;
+function loop(now){let dt=Math.min(.04,(now-last)/1000);last=now;if(slow)dt*=.3;
+  for(const w of WORLDS){const n=3;for(let k=0;k<n;k++)step(w,dt/n);drawW(w)}
+  drawZoom(now/1000);acc+=dt;if(acc>.25){acc=0;upd()}
+  requestAnimationFrame(loop)}
+/* close-up: right way vs wrong way */
+const Z={c:$('cZ')};Z.g=Z.c.getContext('2d');Z.fit=()=>{const r=Z.c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);Z.c.width=Math.max(1,r.width*d);Z.c.height=Math.max(1,r.height*d);Z.W=r.width;Z.H=r.height;Z.g.setTransform(d,0,0,d,0,0)};
+new ResizeObserver(Z.fit).observe(Z.c.parentElement);Z.fit();
+function drawMolAt(g,type,x,y,ang,s,happy){const m={type,A:shape(true,type),x,y,ang,blink:1,joined:happy?1:0};const at=atomsW(m,s);
+  g.strokeStyle='rgba(200,215,235,.75)';g.lineWidth=s*.28;g.lineCap='round';g.beginPath();for(let k=1;k<7;k++){g.moveTo(at[k-1].x,at[k-1].y);g.lineTo(at[k].x,at[k].y)}g.moveTo(at[1].x,at[1].y);g.lineTo(at[7].x,at[7].y);g.moveTo(at[4].x,at[4].y);g.lineTo(at[8].x,at[8].y);g.stroke();
+  if(happy){g.shadowColor='#d4ff3a';g.shadowBlur=14}
+  for(const a of at){const col=a.re?COL[type]:COL.body;const q=g.createRadialGradient(a.x-a.r*.35,a.y-a.r*.4,a.r*.1,a.x,a.y,a.r);q.addColorStop(0,'#fff');q.addColorStop(.35,col[0]);q.addColorStop(1,col[1]);g.fillStyle=q;g.beginPath();g.arc(a.x,a.y,a.r,0,7);g.fill()}
+  g.shadowBlur=0;const f=at.find(a=>a.face);g.save();g.translate(f.x,f.y);face(g,f.r,m,happy);g.restore()}
+function drawZoom(t){const g=Z.g,W=Z.W,H=Z.H;g.clearRect(0,0,W,H);const s=Math.max(3.5,Math.min(12,W/34,H/20));
+  const k=(Math.sin(t*1.6)+1)/2,meet=k>.93;
+  const rows=[[H*.42,'✓ right way: the two groups touch → react','#d4ff3a',true],[H*.78,'✗ wrong way: green hits the middle → bounce','#ffa0aa',false]];
+  rows.forEach(([y,lab,c,ok])=>{const gap=(1-k)*W*.16,cx=W*.5;
+    if(ok){drawMolAt(g,'A',cx-s*3.3-gap,y,0,s,meet);drawMolAt(g,'B',cx+s*3.3+gap,y,Math.PI,s,meet)}
+    else{drawMolAt(g,'A',cx-s*3.9-gap,y,0,s,false);drawMolAt(g,'B',cx+s*.05+gap,y+s*.3,Math.PI/2,s,false);if(meet){g.fillStyle='#ffa0aa';g.font='800 18px sans-serif';g.textAlign='center';g.fillText('✗',cx-s*.8,y-s*1.4)}}
+    g.fillStyle=c;g.font='800 12.5px "League Spartan",sans-serif';g.textAlign='left';g.globalAlpha=meet?1:.75;g.fillText(lab,10,ok?y-s*2.2:y-s*3.3);g.globalAlpha=1})}
+reset();requestAnimationFrame(loop);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
