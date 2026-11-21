@@ -17,14 +17,16 @@ button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
 .bar p{margin:0;color:var(--muted);font-size:14px}
 .pill{flex:none;border-radius:999px;padding:4px 10px;font:700 12px 'League Spartan',sans-serif;color:#13240a;background:var(--lime)}
 .view{position:relative;border-radius:22px;border:2px solid rgba(45,212,191,.4);background:#040d1c;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;min-height:0}
-#mol{position:absolute;inset:0}
+#mol{position:absolute;top:0;bottom:0;right:0;left:36%}
+.lane{position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(90deg,rgba(15,59,76,.35),rgba(4,13,28,0));pointer-events:none}
+#wire{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
 .loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font:700 16px 'League Spartan',sans-serif;z-index:4}
 .hud{position:absolute;left:12px;top:10px;z-index:5;pointer-events:none;font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
 .score{position:absolute;right:12px;top:10px;z-index:5;pointer-events:none;border-radius:14px;padding:6px 12px;background:rgba(6,15,31,.78);border:1px solid rgba(212,255,58,.5);text-align:right;opacity:0;transition:opacity .4s}
 .score span{display:block;font-size:11.5px;color:var(--muted)}.score b{font:800 24px 'League Spartan',sans-serif;color:var(--lime)}
 .score.on{opacity:1}
 /* speech bubble */
-#bub{position:absolute;z-index:6;max-width:min(380px,58%);border-radius:18px;padding:10px 14px 12px;background:#fffdf5;color:#14213d;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:16.5px;line-height:1.38;pointer-events:none;opacity:0;transition:opacity .35s}
+#bub{position:absolute;z-index:6;width:calc(36% - 24px);left:12px;border-radius:18px;padding:10px 14px 12px;background:#fffdf5;color:#14213d;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:16.5px;line-height:1.38;pointer-events:none;opacity:0;transition:opacity .35s}
 #bub.on{opacity:1}
 #bub.pop{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
@@ -32,9 +34,6 @@ button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
 #bub .who img{width:24px;height:24px;border-radius:50%;object-fit:cover}
 #bub .who i{font-style:normal;font-size:18px}
 #bub b{color:#b5530d}
-#bub:after{content:"";position:absolute;width:18px;height:18px;background:#fffdf5;transform:rotate(45deg);left:var(--tx,24px)}
-#bub.down:after{bottom:-8px}#bub.up:after{top:-8px}
-#bub.center:after{display:none}
 #dot{position:absolute;z-index:6;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(212,255,58,.7);animation:pulse 1.4s infinite;pointer-events:none;opacity:0}
 #dot.on{opacity:1}
 @keyframes pulse{70%{box-shadow:0 0 0 14px rgba(212,255,58,0)}100%{box-shadow:0 0 0 0 rgba(212,255,58,0)}}
@@ -47,14 +46,15 @@ button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
 .prog i u{position:absolute;inset:0;width:0;background:var(--lime)}
 .cap{font:700 12.5px 'League Spartan',sans-serif;color:var(--muted);white-space:nowrap}
 @media (max-height:540px) and (min-width:700px){#app{padding:8px;gap:6px}.bar h1{font-size:18px}.bar p{display:none}.pill{font-size:10.5px}#bub{font-size:13.5px;padding:7px 11px 9px}.ctl button{padding:6px 10px;font-size:13px}.score b{font-size:18px}}
-@media (max-width:700px){.bar{flex-direction:column;align-items:flex-start}#bub{font-size:14px;max-width:72%}.cap{display:none}}
+@media (max-width:700px){.bar{flex-direction:column;align-items:flex-start}.cap{display:none}#app{grid-template-rows:auto minmax(560px,1fr) auto}html,body{overflow:auto;height:auto}
+  #mol{left:0;bottom:42%}.lane{width:100%;top:58%;background:linear-gradient(0deg,rgba(15,59,76,.35),rgba(4,13,28,0))}#bub{width:auto;left:10px;right:10px;font-size:14.5px}}
 </style>
 </head>
 <body>
 <div id="app">
   <div class="bar"><div><h1>Docking tour: <span>imatinib</span> meets its enzyme 🎬</h1><p>Sit back and watch. Real enzyme (PDB 1IEP), real AutoDock Vina docking results.</p></div><span class="pill">Computational chemistry</span></div>
   <div class="view">
-    <div id="mol"></div><div class="loading" id="loading">Loading the enzyme… 🧬</div>
+    <div class="lane"></div><div id="mol"></div><svg id="wire"><path id="wpath" fill="none" stroke="#d4ff3a" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/></svg><div class="loading" id="loading">Loading the enzyme… 🧬</div>
     <div class="hud">Abl kinase · PDB 1IEP</div>
     <div class="score" id="score"><span id="scoreLab"></span><b id="scoreVal"></b></div>
     <div id="dot"></div>
@@ -111,25 +111,29 @@ const BEATS=[
   go(){hbonds(false);score();rec.setStyle({},{cartoon:{color:'spectrum'}});lig.setStyle({},{sphere:{colorscheme:'orangeCarbon'}});home();V.spin('y',.5)}}];
 /* ---------- progress UI ---------- */
 function buildProg(){$('prog').innerHTML=BEATS.map((_,i)=>`<i data-i="${i}"><u></u></i>`).join('');[...$('prog').children].forEach(el=>el.onclick=()=>jump(+el.dataset.i))}
-function jump(i){tw=[];if(i>=7)showBox(false);// replay the setup of earlier beats so the scene is right
-  let last=0;for(let k=0;k<=i;k++)if(BEATS[k].go)last=k;
-  if(i>=3&&i<=6){BEATS[2].go()}else if(BEATS[last].go&&last!==i){BEATS[last].go()}
-  if(i>=4&&i<=6)setLig(PS[[3,2,1][i-4]]);
+function jump(i){tw=[];
+  if(i<=1)BEATS[0].go();
+  else if(i<=9){BEATS[2].go();if(i>=4&&i<=6)setLig(PS[[3,2,1][i-4]]);if(i>=7){showBox(false);setLig(PS[0])}if(i===9)BEATS[8].go()}
+  if(i===1||i===2||i===3||i>=7)lig.setStyle({},i<=2?{}:LIG);
   beat=i-1;next()}
 function next(){beat=(beat+1)%BEATS.length;beatT0=T;tw=tw.filter(t=>T-t.t0<t.dur);const b=BEATS[beat];if(b.go)b.go();say(b);V.render();
   [...$('prog').children].forEach((el,i)=>el.firstChild.style.width=i<beat?'100%':'0');$('cap').textContent=(beat+1)+' / '+BEATS.length}
 function say(b){const bub=$('bub'),w=WHO[b.who];
   $('who').innerHTML=(w[0]==='img'?'<img src="../../img/drnam-48.png" alt="">':'<i>'+w[0]+'</i>')+`<span style="color:${w[2]}">${w[1]}</span>`;
-  $('say').innerHTML=b.say;anchor=b.at;bub.classList.remove('pop');void bub.offsetWidth;bub.classList.add('on','pop')}
-function placeBubble(){const bub=$('bub'),dot=$('dot'),vw=$('mol').clientWidth,vh=$('mol').clientHeight,bw=bub.offsetWidth,bh=bub.offsetHeight;
-  if(!anchor){bub.className='on center';bub.style.left=(vw-bw)/2+'px';bub.style.top=(vh-bh-14)+'px';dot.classList.remove('on');return}
-  const p=V.modelToScreen(anchor());let ax=p.x,ay=p.y;ax=Math.max(20,Math.min(vw-20,ax));ay=Math.max(20,Math.min(vh-20,ay));
+  $('say').innerHTML=b.say;anchor=b.at;bub.classList.remove('pop');void bub.offsetWidth;bub.classList.add('on','pop');bubY=null}
+let bubY=null;
+function placeBubble(){const bub=$('bub'),dot=$('dot'),view=bub.parentElement,m=$('mol'),VW=view.clientWidth,VH=view.clientHeight,bh=bub.offsetHeight,bw=bub.offsetWidth;
+  const ox=m.offsetLeft,oy=m.offsetTop,mw=m.clientWidth,mh=m.clientHeight,phone=ox<5;
+  let ax=null,ay=null;if(anchor){const p=V.modelToScreen(anchor()),vr=view.getBoundingClientRect();ax=Math.max(ox+16,Math.min(ox+mw-16,p.x-vr.left-view.clientLeft));ay=Math.max(oy+16,Math.min(oy+mh-16,p.y-vr.top-view.clientTop))}
+  let top;
+  if(phone){top=oy+mh+10}
+  else{const want=ay==null?(VH-bh)/2:ay-bh/2;top=Math.max(34,Math.min(VH-bh-12,want))}
+  bubY=bubY==null?top:bubY+(top-bubY)*.15;bub.style.top=bubY+'px';
+  if(ax==null){dot.classList.remove('on');$('wpath').setAttribute('d','');return}
   dot.style.left=ax+'px';dot.style.top=ay+'px';dot.classList.add('on');
-  let left=ax-30,top=ay-bh-22,cls='down',tx=22;
-  if(left+bw>vw-10){left=ax-bw+30;tx=bw-40}if(left<10){left=10;tx=Math.max(14,ax-10-9)}
-  if(top<10){top=ay+22;cls='up'}
-  if(top+bh>vh-10)top=vh-bh-10;
-  bub.classList.remove('down','up','center');bub.classList.add(cls);bub.style.left=left+'px';bub.style.top=top+'px';bub.style.setProperty('--tx',tx+'px')}
+  const bx=phone?bub.offsetLeft+bw/2:bub.offsetLeft+bw,by=phone?bubY:bubY+Math.min(bh-16,Math.max(16,ay-bubY));
+  const mx=phone?bx:(bx+ax)/2,my=phone?(by+ay)/2:by;
+  $('wpath').setAttribute('d',phone?`M${bx},${by} C${bx},${my} ${ax},${my} ${ax},${ay}`:`M${bx},${by} C${mx},${by} ${mx},${ay} ${ax},${ay}`)}
 /* ---------- main loop ---------- */
 let lastNow=performance.now();
 function loop(now){const dt=Math.min(100,now-lastNow);lastNow=now;
