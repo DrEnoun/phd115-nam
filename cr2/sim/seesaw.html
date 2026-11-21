@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Châtelier on a see-saw · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--blue:#8fd3ff;--org:#ffa24c}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,.42fr);grid-template-rows:auto minmax(0,1fr) auto;gap:9px;padding:10px}
+.bar{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.bar h1{margin:0;font:800 21px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14px}
+.eqn{font:800 19px 'League Spartan',sans-serif;white-space:nowrap}.eqn .a{color:var(--blue)}.eqn .b{color:var(--org)}.eqn .h{color:#ff8a5c}
+.card{position:relative;border-radius:20px;border:2px solid rgba(45,212,191,.35);background:linear-gradient(170deg,rgba(22,70,92,.45),rgba(9,28,52,.92));box-shadow:0 10px 26px rgba(0,0,0,.4);overflow:hidden;min-height:0}
+.card canvas{position:absolute;inset:0;width:100%;height:100%}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0}
+.qk{border-radius:16px;padding:8px 12px;background:rgba(6,15,31,.6);border:1px solid rgba(126,196,255,.25);text-align:center}
+.qk .row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.qk .lab{font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.08em;color:var(--muted)}
+.qk .val{font:800 26px 'League Spartan',sans-serif}.qk .q .val{color:var(--gold)}.qk .k .val{color:var(--lime)}
+.qk .sg{font:900 30px 'League Spartan',sans-serif;min-width:40px}
+.qk .v{margin-top:4px;border-radius:10px;padding:4px 6px;font:800 14px 'League Spartan',sans-serif;background:rgba(212,255,58,.15);color:var(--lime)}
+.qk .v.f{background:rgba(255,162,76,.18);color:#ffc08a}.qk .v.b{background:rgba(143,211,255,.18);color:#bfe3ff}
+.step{flex:1;min-height:0;overflow:auto;border-radius:16px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);font-size:15.5px;line-height:1.4}
+.step b{color:var(--gold);font-weight:400}
+.btns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.btns button{border-radius:12px;padding:8px 11px;font-weight:800;font-size:14px;border:1px solid rgba(126,196,255,.3);background:rgba(255,255,255,.07);color:var(--ink)}
+.btns button.a{background:linear-gradient(180deg,#d6efff,#7cc3f5);color:#06223f;border:0}
+.btns button.b{background:linear-gradient(180deg,#ffe0c2,#ffa24c);color:#3a1600;border:0}
+.btns button.h{background:linear-gradient(180deg,#ffe27a,#ff8a3c);color:#3a1600;border:0}
+.btns button.c{background:linear-gradient(180deg,#e3f4ff,#8fc8ff);color:#06223f;border:0}
+.btns button.on{outline:3px solid var(--lime)}
+@media (max-height:540px) and (min-width:700px){#app{padding:7px;gap:6px}.bar h1{font-size:17px}.bar p{display:none}.eqn{font-size:15px}.qk{padding:5px 10px}.qk .val{font-size:20px}.qk .sg{font-size:22px}.qk .v{font-size:12px}.step{font-size:12.5px;padding:6px 10px}.btns button{padding:5px 8px;font-size:12px}}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr}.card{height:330px}.step{min-height:150px}.bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><div><h1>Le Châtelier on a <span>see-saw</span> ⚖️</h1><p>Level see-saw = equilibrium. A push tips it. The particles move across until it is level again.</p></div>
+    <div class="eqn"><span class="a">A</span> ⇌ <span class="b">B</span> + <span class="h">heat</span> &nbsp;<small style="font-weight:600;color:#a9c2d4">(forward is exothermic)</small></div></div>
+  <div class="card"><canvas id="cv"></canvas></div>
+  <div class="side">
+    <div class="qk"><div class="row"><div class="q"><div class="lab">Q = [B] / [A]</div><div class="val" id="qv"></div></div><div class="sg" id="sg"></div><div class="k"><div class="lab">K (this temp)</div><div class="val" id="kv"></div></div></div><div class="v" id="vd"></div></div>
+    <div class="step" id="st"></div>
+  </div>
+  <div class="btns">
+    <button class="a" id="bA">+ Add A</button><button class="a" id="bRA">− Remove A</button><button class="b" id="bB">+ Add B</button><button class="b" id="bRB">− Remove B</button>
+    <button class="h" id="bH">🔥 Heat</button><button class="c" id="bC">❄️ Cool</button><button id="bP">🫸 Squeeze (pressure ↑)</button><button id="bK">⚡ Catalyst: off</button><button id="bR">↺ Reset</button>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const cv=$('cv'),g=cv.getContext('2d');let W=1,H=1;
+function fit(){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);cv.width=r.width*d;cv.height=r.height*d;W=r.width;H=r.height;g.setTransform(d,0,0,d,0,0)}
+new ResizeObserver(fit).observe(cv.parentElement);fit();
+/* K = dA/dB: the arm lengths. Level when nA*dA = nB*dB, i.e. nB/nA = K (Q = K). */
+const TEMPS=[{n:'Cold',K:2},{n:'Room',K:1},{n:'Hot',K:.5}];
+let ti=1,nA=6,nB=6,ang=0,pivotU=1.5,fly=[],cat=false,cool=0,flash=[],squeeze=0;
+function K(){return TEMPS[ti].K}
+function arms(){const k=K();return{dA:3*k/(1+k),dB:3/(1+k)}} // total beam = 3 units
+function diff(){const a=arms();return nA*a.dA-nB*a.dB} // >0: left (A) heavier
+function stepSize(){const a=arms();return a.dA+a.dB}
+function say(h){$('st').innerHTML=h}
+function reset(){ti=1;nA=6;nB=6;fly=[];cat=false;$('bK').textContent='⚡ Catalyst: off';$('bK').classList.remove('on');
+  say('The see-saw is <b>level</b>: the system is at <b>equilibrium</b> (Q = K). A and B still change into each other all the time, at the same rate, so it stays level.')}
+$('bR').onclick=reset;
+$('bA').onclick=()=>{nA+=4;say('You added <b>A</b> (a reactant). The A side is heavier, so it <b>tips</b>. Q &lt; K. To level it again, some A turns into B: the equilibrium <b>shifts right ➜</b>.')};
+$('bRA').onclick=()=>{nA=Math.max(1,nA-3);say('You removed <b>A</b>. The B side is now heavier: Q &gt; K. Some B turns back into A: the equilibrium <b>shifts left ⬅</b> to replace what you took.')};
+$('bB').onclick=()=>{nB+=4;say('You added <b>B</b> (a product). The B side is heavier: Q &gt; K. Some B turns back into A: the equilibrium <b>shifts left ⬅</b>.')};
+$('bRB').onclick=()=>{nB=Math.max(1,nB-3);say('You removed <b>B</b> (a product). The A side is heavier: Q &lt; K. More A turns into B: the equilibrium <b>shifts right ➜</b>. Removing product is how factories get more of it.')};
+$('bH').onclick=()=>{if(ti===2){say('It is already hot here. Try <b>Cool</b>.');return}ti++;say('Heating <b>changes K</b>, so the <b>pivot moves</b>. Heat is like a product here (A ⇌ B + heat). Now the B side is heavier: the equilibrium <b>shifts left ⬅</b> to use up the extra heat. K gets smaller.')};
+$('bC').onclick=()=>{if(ti===0){say('It is already cold here. Try <b>Heat</b>.');return}ti--;say('Cooling also <b>changes K</b>: the pivot moves the other way. Now the A side is heavier: the equilibrium <b>shifts right ➜</b> to make more heat. K gets bigger.')};
+$('bP').onclick=()=>{squeeze=1.2;say('Squeezing raises the pressure. But here 1 mol of gas ⇌ 1 mol of gas: the same number of gas molecules on each side. So the see-saw <b>does not tip</b>. Pressure only matters when the two sides have different numbers of gas molecules.')};
+$('bK').onclick=()=>{cat=!cat;$('bK').textContent=cat?'⚡ Catalyst: on':'⚡ Catalyst: off';$('bK').classList.toggle('on',cat);
+  say(cat?'A catalyst makes the particles move across <b>faster</b>, in both directions. It gets back to level sooner, but the <b>level point stays the same</b>: K does not change.':'Catalyst off: the particles move across more slowly again.')};
+/* geometry */
+let pivA=1.5;function geo(){const cy=H*.62,L=Math.min(W*.84,H*1.7);const u=L/3;const a=arms();const cx=W*.5+(pivA-1.5)*u;return{cx,cy,u,dA:pivA,dB:3-pivA}}
+function beamPt(G,s,lift){// s in units along beam from pivot (negative = left), lift px above the beam
+  const c=Math.cos(ang),sn=Math.sin(ang);const x=s*G.u,y=-lift;return{x:G.cx+x*c-y*sn,y:G.cy-14+x*sn+y*c}}
+function slot(i){const per=[5,4,3,2,1];let row=0,k=i;while(row<per.length&&k>=per[row]){k-=per[row];row++}const n=per[Math.min(row,4)];return{dx:(k-(n-1)/2)*20,dy:12+row*17}}
+function ball(x,y,r,c1,c2,glow){if(glow){g.shadowColor=c2;g.shadowBlur=14*glow}const q=g.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);q.addColorStop(0,'#fff');q.addColorStop(.4,c1);q.addColorStop(1,c2);g.fillStyle=q;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.shadowBlur=0;
+  g.fillStyle='#1b2340';g.beginPath();g.ellipse(x-r*.3,y-r*.05,r*.1,r*.14,0,0,7);g.ellipse(x+r*.3,y-r*.05,r*.1,r*.14,0,0,7);g.fill();g.strokeStyle='#1b2340';g.lineWidth=1.3;g.beginPath();g.arc(x,y+r*.15,r*.16,.3,Math.PI-.3);g.stroke()}
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;g.clearRect(0,0,W,H);
+  pivA+=(arms().dA-pivA)*Math.min(1,dt*2.5);const G=geo();
+  // tilt
+  const d=diff(),st=stepSize(),inFlight=fly.length;const target=Math.abs(d)<=st/2?0:Math.max(-.32,Math.min(.32,d*.035));ang+=(target-ang)*Math.min(1,dt*3);
+  // move particles across to level it
+  cool-=dt;const gap=cat?.28:.75;
+  if(cool<=0&&!inFlight&&Math.abs(d)>st/2){cool=gap;if(d>0&&nA>0){nA--;fly.push({dir:1,t:0})}else if(d<0&&nB>0){nB--;fly.push({dir:-1,t:0})}}
+  // background floor
+  g.fillStyle='rgba(255,255,255,.05)';g.fillRect(0,G.cy+70,W,H);
+  // pivot (moves with K)
+  g.fillStyle='#ffd27a';g.beginPath();g.moveTo(G.cx,G.cy-12);g.lineTo(G.cx-34,G.cy+70);g.lineTo(G.cx+34,G.cy+70);g.closePath();g.fill();
+  g.fillStyle='#3a1600';g.font='800 15px "League Spartan",sans-serif';g.textAlign='center';g.fillText('K = '+K(),G.cx,G.cy+52);
+  g.fillStyle='#a9c2d4';g.font='700 12px "League Spartan",sans-serif';g.fillText(TEMPS[ti].n==='Room'?'room temperature':(TEMPS[ti].n==='Hot'?'🔥 hot':'❄️ cold'),G.cx,G.cy+90);
+  // beam
+  const L=beamPt(G,-G.dA,0),R=beamPt(G,G.dB,0);g.strokeStyle='#e6edf6';g.lineWidth=12;g.lineCap='round';g.beginPath();g.moveTo(L.x,L.y);g.lineTo(R.x,R.y);g.stroke();
+  g.strokeStyle='rgba(27,35,64,.5)';g.lineWidth=2;g.setLineDash([4,5]);g.beginPath();g.moveTo(L.x,L.y);g.lineTo(R.x,R.y);g.stroke();g.setLineDash([]);
+  // arm labels
+  const mL=beamPt(G,-G.dA/2,-22),mR=beamPt(G,G.dB/2,-22);g.font='700 11.5px "League Spartan",sans-serif';g.fillStyle='#bfe3ff';g.fillText('arm '+G.dA.toFixed(1),mL.x,mL.y);g.fillStyle='#ffc08a';g.fillText('arm '+G.dB.toFixed(1),mR.x,mR.y);
+  // trays + particles
+  const squeezeK=squeeze>0?Math.sin(squeeze*20)*2:0;squeeze=Math.max(0,squeeze-dt);
+  for(const [side,n,c1,c2,lab] of [[-1,nA,'#d6efff','#4aa3e8','A (reactant)'],[1,nB,'#ffe0c2','#ff8a3c','B (product)']]){
+    const s=side<0?-G.dA+.25:G.dB-.25;
+    const tp=beamPt(G,s,6);g.fillStyle=side<0?'rgba(143,211,255,.35)':'rgba(255,162,76,.35)';g.save();g.translate(tp.x,tp.y);g.rotate(ang);g.fillRect(-58,-4,116,6);g.restore();
+    for(let i=0;i<n;i++){const sl=slot(i);const p=beamPt(G,s+sl.dx/G.u,6+sl.dy);ball(p.x+squeezeK,p.y,8.5,c1,c2,0)}
+    const rows=n>14?5:n>12?4:n>9?3:n>5?2:1;const lp=beamPt(G,s,6+12+rows*17+10);g.font='800 13px "League Spartan",sans-serif';g.fillStyle=side<0?'#bfe3ff':'#ffc08a';g.fillText(lab+' × '+n,lp.x,Math.max(18,lp.y))}
+  // flying particles
+  fly=fly.filter(f=>{f.t+=dt/(cat?.35:.8);const k=Math.min(1,f.t);const from=f.dir>0?beamPt(G,-G.dA+.25,30):beamPt(G,G.dB-.25,30),to=f.dir>0?beamPt(G,G.dB-.25,30):beamPt(G,-G.dA+.25,30);
+    const top={x:G.cx,y:Math.min(from.y,to.y)-H*.28};const x=(1-k)*(1-k)*from.x+2*(1-k)*k*top.x+k*k*to.x,y=(1-k)*(1-k)*from.y+2*(1-k)*k*top.y+k*k*to.y;
+    const isB=f.dir>0?k>.5:k<.5;ball(x,y,9,isB?'#ffe0c2':'#d6efff',isB?'#ff8a3c':'#4aa3e8',1);
+    if(k>.5&&!f.fl){f.fl=1;flash.push({x,y,t:0,txt:f.dir>0?'A → B':'B → A',c:f.dir>0?'#ffc08a':'#bfe3ff'})}
+    if(k>=1){if(f.dir>0)nB++;else nA++;return false}return true});
+  flash=flash.filter(f=>{f.t+=dt;const a=1-f.t/.8;if(a<=0)return false;g.globalAlpha=a;g.fillStyle=f.c;g.font='800 14px "League Spartan",sans-serif';g.fillText(f.txt,f.x,f.y-16-f.t*14);g.globalAlpha=1;return true});
+  if(flash.length>6)flash.splice(0,flash.length-6);
+  // level / tipped banner
+  const level=Math.abs(diff())<=st/2&&!fly.length;g.font='800 16px "League Spartan",sans-serif';g.fillStyle=level?'#d4ff3a':'#ffd27a';
+  g.fillText(level?'Level: equilibrium ⚖️':(diff()>0?'Tipped to A: shifting right ➜':'Tipped to B: shifting left ⬅'),W/2,26);
+  // Q vs K panel
+  const q=nB/Math.max(1,nA),k=K();$('qv').textContent=q.toFixed(2);$('kv').textContent=k;
+  const near=Math.abs(diff())<=st/2&&!fly.length;$('sg').textContent=near?'≈':(q<k?'<':'>');const v=$('vd');
+  if(near){v.className='v';v.textContent='Q ≈ K: equilibrium'}else if(q<k){v.className='v f';v.textContent='Q < K: shifts right ➜'}else{v.className='v b';v.textContent='Q > K: shifts left ⬅'}
+  requestAnimationFrame(loop)}
+reset();requestAnimationFrame(loop);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reversible vs irreversible reactions · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--blue:#8fd3ff;--org:#ffa24c;--red:#ff7a8a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+sub{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto minmax(0,1fr) auto;gap:8px;padding:10px}
+.bar{grid-column:1/-1}.bar h1{margin:0;font:800 21px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.tabs{grid-column:1/-1;display:flex;gap:6px}
+.tabs button{border-radius:12px;padding:7px 14px;font-weight:800;font-size:14px;border:1px solid rgba(126,196,255,.3);background:rgba(255,255,255,.06);color:var(--ink)}
+.tabs button.on{background:var(--lime);color:#13240a;border-color:var(--lime)}
+.card{position:relative;border-radius:18px;border:2px solid rgba(45,212,191,.35);background:linear-gradient(160deg,rgba(22,70,92,.5),rgba(9,28,52,.9));box-shadow:0 10px 26px rgba(0,0,0,.4);overflow:hidden;min-height:0}
+.card canvas{position:absolute;inset:0;width:100%;height:100%}
+.hd{position:absolute;left:12px;right:12px;top:8px;z-index:2;pointer-events:none}
+.hd b{display:block;font:800 16px 'League Spartan',sans-serif}.hd span{font-size:13px;color:var(--muted)}
+.hd .arr{font-size:20px;color:var(--lime);margin-left:6px}
+.bot{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+.step{border-radius:14px;padding:7px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);font-size:15px;line-height:1.38;min-height:54px}
+.step b{color:var(--gold);font-weight:400}
+.btns{display:flex;flex-wrap:wrap;gap:6px;align-content:center;justify-content:flex-end;max-width:360px}
+.btns button{border-radius:12px;padding:8px 11px;font-weight:800;font-size:13.5px;border:0;background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600}
+.btns button.g{background:rgba(255,255,255,.07);border:1px solid rgba(45,212,191,.35);color:var(--ink)}
+.btns button:disabled{opacity:.4;cursor:default}
+@media (max-height:540px) and (min-width:700px){#app{padding:7px;gap:6px}.bar h1{font-size:17px}.tabs button{padding:4px 10px;font-size:12px}.hd b{font-size:13.5px}.hd span{font-size:11px}.step{font-size:12.5px;min-height:44px;padding:5px 10px}.btns button{padding:5px 8px;font-size:11.5px}}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr}.card{height:300px}.bot{grid-template-columns:1fr}.btns{max-width:none;justify-content:flex-start}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><h1>One-way or two-way? <span>Irreversible</span> vs <span>reversible</span> reactions</h1></div>
+  <div class="tabs"><button id="t1" class="on">1 · The basic idea</button><button id="t2">2 · Pharmacy: aspirin vs ibuprofen 💊</button></div>
+  <div class="card"><div class="hd"><b id="h1"></b><span id="s1"></span></div><canvas id="c1"></canvas></div>
+  <div class="card"><div class="hd"><b id="h2"></b><span id="s2"></span></div><canvas id="c2"></canvas></div>
+  <div class="bot"><div class="step" id="st"></div><div class="btns" id="btns"></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function mk(id){const c=$(id),g=c.getContext('2d'),o={c,g,W:1,H:1};o.fit=()=>{const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);o.W=r.width;o.H=r.height;g.setTransform(d,0,0,d,0,0)};new ResizeObserver(()=>o.fit()).observe(c.parentElement);o.fit();return o}
+const C1=mk('c1'),C2=mk('c2');let mode=1,T=0;
+function face(g,r,happy,sad){g.fillStyle='#1b2340';g.strokeStyle='#1b2340';g.lineCap='round';
+  if(sad){g.lineWidth=r*.12;g.beginPath();g.moveTo(-r*.42,-r*.1);g.lineTo(-r*.18,-r*.02);g.moveTo(r*.42,-r*.1);g.lineTo(r*.18,-r*.02);g.stroke();g.beginPath();g.arc(0,r*.42,r*.18,Math.PI*1.15,Math.PI*1.85);g.stroke();return}
+  g.beginPath();g.ellipse(-r*.3,-r*.02,r*.1,r*.14,0,0,7);g.ellipse(r*.3,-r*.02,r*.1,r*.14,0,0,7);g.fill();
+  g.lineWidth=r*.1;g.beginPath();g.arc(0,r*.16,r*(happy?.2:.13),.25,Math.PI-.25);g.stroke();
+  g.fillStyle='rgba(255,111,150,.5)';g.beginPath();g.ellipse(-r*.55,r*.22,r*.14,r*.08,0,0,7);g.ellipse(r*.55,r*.22,r*.14,r*.08,0,0,7);g.fill()}
+function ball(g,x,y,r,c1,c2,glow){if(glow){g.shadowColor=c2;g.shadowBlur=16*glow}const q=g.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);q.addColorStop(0,'#fff');q.addColorStop(.4,c1);q.addColorStop(1,c2);g.fillStyle=q;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.shadowBlur=0}
+/* ============ MODE 1: one-way vs two-way ============ */
+let W1,W2;
+function world(o,rev){const N=24,P=[];for(let i=0;i<N;i++){const a=Math.random()*6.28;P.push({x:30+Math.random()*(o.W-60),y:70+Math.random()*(o.H-150),vx:Math.cos(a)*45,vy:Math.sin(a)*45,b:false,glow:0})}return{o,rev,P,fx:[],done:false,hist:[]}}
+function stepW(w,dt){const o=w.o,kf=.18,kb=rev=>rev?.12:0;
+  w.P.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.glow=Math.max(0,p.glow-dt*1.3);const top=62,bot=o.H-78;if(p.x<14){p.x=14;p.vx=Math.abs(p.vx)}if(p.x>o.W-14){p.x=o.W-14;p.vx=-Math.abs(p.vx)}if(p.y<top){p.y=top;p.vy=Math.abs(p.vy)}if(p.y>bot){p.y=bot;p.vy=-Math.abs(p.vy)}
+    if(!p.b&&Math.random()<kf*dt){p.b=true;p.glow=1;w.fx.push({x:p.x,y:p.y,t:0,c:'#ffa24c',txt:'→'})}
+    else if(p.b&&Math.random()<kb(w.rev)*dt){p.b=false;p.glow=1;w.fx.push({x:p.x,y:p.y,t:0,c:'#8fd3ff',txt:'←'})}})}
+function drawW(w,dt){const o=w.o,g=o.g,W=o.W,H=o.H;g.clearRect(0,0,W,H);
+  w.P.forEach(p=>{const r=12;ball(g,p.x,p.y,r,p.b?'#ffd6b0':'#cfeaff',p.b?'#ff8a3c':'#4aa3e8',p.glow);g.save();g.translate(p.x,p.y);face(g,r*.9,p.glow>.2,false);g.restore()});
+  w.fx=w.fx.filter(f=>{f.t+=dt;const a=1-f.t/.7;if(a<=0)return false;g.globalAlpha=a;g.fillStyle=f.c;g.font='800 18px "League Spartan",sans-serif';g.textAlign='center';g.fillText(f.txt,f.x,f.y-16-f.t*20);g.globalAlpha=1;return true});
+  // bars
+  const nB=w.P.filter(p=>p.b).length,n=w.P.length,y=H-52,x0=14,bw=W-28;
+  g.fillStyle='rgba(255,255,255,.08)';g.fillRect(x0,y,bw,16);g.fillStyle='#4aa3e8';g.fillRect(x0,y,bw*(n-nB)/n,16);g.fillStyle='#ff8a3c';g.fillRect(x0+bw*(n-nB)/n,y,bw*nB/n,16);
+  g.font='700 12px "League Spartan",sans-serif';g.textAlign='left';g.fillStyle='#bfe3ff';g.fillText(`Reactant ${Math.round(100*(n-nB)/n)}%`,x0,y+32);g.textAlign='right';g.fillStyle='#ffc08a';g.fillText(`Product ${Math.round(100*nB/n)}%`,x0+bw,y+32);
+  if(!w.rev&&nB===n){g.textAlign='center';g.fillStyle='#d4ff3a';g.font='800 15px "League Spartan",sans-serif';g.fillText('Finished: all reactant used up ✓',W/2,y-10)}
+  if(w.rev&&T>9){g.textAlign='center';g.fillStyle='#d4ff3a';g.font='800 15px "League Spartan",sans-serif';g.fillText('Equilibrium: both stay ⚖️',W/2,y-10)}}
+function mode1(){mode=1;T=0;W1=world(C1,false);W2=world(C2,true);
+  $('h1').innerHTML='Irreversible: one way only <span class="arr">→</span>';$('s1').innerHTML='e.g. burning: fuel + O<sub>2</sub> → CO<sub>2</sub> + H<sub>2</sub>O. You cannot "un-burn" it.';
+  $('h2').innerHTML='Reversible: both ways <span class="arr">⇌</span>';$('s2').innerHTML='e.g. N<sub>2</sub>O<sub>4</sub> ⇌ 2NO<sub>2</sub>, or CO<sub>2</sub> + H<sub>2</sub>O ⇌ H<sub>2</sub>CO<sub>3</sub> in fizzy drinks and blood.';
+  btns([['↺ Replay',mode1]]);msg1()}
+function msg1(){$('st').innerHTML=T<6?'Both start with only <b>reactant</b> (blue). Watch the arrows: <b>→</b> means reactant turns into product, <b>←</b> means product turns back.'
+  :'<b>Left (irreversible):</b> only → happens, so it goes to <b>completion</b> (100% product). <b>Right (reversible):</b> → and ← both happen, so it stops at a <b>mix</b> of both: <b>equilibrium</b>.'}
+/* ============ MODE 2: pharmacy ============ */
+let E=[],D=[],phase='none',days=0;
+function mode2(){mode=2;T=0;phase='none';days=0;E=[];D=[];
+  $('h1').innerHTML='Ibuprofen: <span style="color:#8fd3ff">reversible</span> blocker <span class="arr">⇌</span>';$('s1').innerHTML='It sits in the COX active site, then leaves again.';
+  $('h2').innerHTML='Aspirin: <span style="color:#ff7a8a">irreversible</span> blocker <span class="arr">→</span>';$('s2').innerHTML='It sticks an acetyl group onto COX for good (in platelets).';
+  for(const side of[0,1])for(let i=0;i<3;i++)E.push({side,i,state:'free',t:0,lockT:0,fade:1,sp:0});
+  btns([['💊 Give the drug',give],['🚿 Drug leaves the body',wash],['📅 7–10 days later',later],['↺',mode2]]);
+  $('st').innerHTML='COX enzymes make <b>prostaglandins</b> (the red sparks) that cause pain, fever and swelling, and help platelets stick together. Tap <b>💊 Give the drug</b>.';setBtn()}
+function setBtn(){const b=[...$('btns').children];if(mode!==2)return;b[0].disabled=phase!=='none';b[1].disabled=phase!=='drug';b[2].disabled=phase!=='washed'}
+function give(){phase='drug';for(const side of[0,1])for(let i=0;i<7;i++){const o=side?C2:C1;D.push({side,x:-20-Math.random()*80,y:70+Math.random()*(o.H-160),vx:40+Math.random()*30,vy:(Math.random()-.5)*30,bound:null,leaving:false})}
+  $('st').innerHTML='Both drugs reach the COX enzymes and block the active site. <b>Ibuprofen</b> sits in and pops out again (⇌). <b>Aspirin</b> moves an acetyl group onto COX: a <b>new covalent bond</b> that does not come off (→).';setBtn()}
+function wash(){phase='washed';D.forEach(d=>{d.leaving=true;if(d.bound){d.bound.state=d.side?'locked':'free';d.bound=null}});
+  $('st').innerHTML='The drug leaves the body after some hours. <b>Ibuprofen side:</b> the enzymes are free and working again. Pain relief wears off, so we take another dose. <b>Aspirin side:</b> COX in platelets <b>stays blocked</b>. Platelets have no nucleus, so they cannot make new COX.';setBtn()}
+function later(){phase='later';E.filter(e=>e.side===1&&e.state==='locked').forEach(e=>{e.state='renew';e.t=0});
+  $('st').innerHTML='Only <b>new platelets</b> (made over about 7–10 days) have working COX again. So one low dose of aspirin can stop platelets clumping for days. That is why aspirin is used to <b>prevent heart attacks and strokes</b>, and why patients are asked about aspirin <b>before surgery</b>.';setBtn()}
+function enzPos(o,i){return{x:o.W*(.22+.28*i),y:o.H*.52}}
+function drawEnzyme(g,x,y,r,e,dt){const blocked=e.state==='bound'||e.state==='locked';
+  if(e.state==='renew'){e.t+=dt}
+  const old=e.state==='renew'?Math.max(0,1-e.t/1.5):1;
+  for(const [k,alpha] of (e.state==='renew'?[[0,old],[1,1-old]]:[[0,1]])){
+    g.save();g.globalAlpha=alpha;const lockedLook=k===0&&(e.state==='locked'||e.state==='renew');
+    g.translate(x,y);const mouth=.55;g.beginPath();g.moveTo(0,0);g.arc(0,0,r,mouth/2-Math.PI/2+Math.PI,3*Math.PI/2-mouth/2+Math.PI,false);g.closePath();
+    // pac-man opening upwards
+    g.beginPath();g.moveTo(0,-r*.15);g.arc(0,0,r,-Math.PI/2+mouth,-Math.PI/2-mouth+2*Math.PI);g.closePath();
+    const q=g.createRadialGradient(-r*.3,-r*.3,r*.1,0,0,r);q.addColorStop(0,'#fff');q.addColorStop(.35,lockedLook?'#c9ced6':'#bff3dc');q.addColorStop(1,lockedLook?'#6b7380':'#2fbf8a');g.fillStyle=q;g.fill();
+    g.translate(0,r*.25);face(g,r*.45,!blocked&&!lockedLook,lockedLook);g.restore();
+    if(lockedLook){g.save();g.globalAlpha=alpha;g.font=`${r*.5}px sans-serif`;g.textAlign='center';g.fillText('🔒',x,y-r*.55);g.fillStyle='#ff9aa6';g.font='800 11px "League Spartan",sans-serif';g.fillText('acetyl stuck on',x,y+r+14);g.restore()}}
+  if(e.state==='renew'&&e.t>1.5)e.state='free';
+  // working enzymes make prostaglandin sparks
+  if(e.state==='free'){e.sp+=dt;if(e.sp>.35){e.sp=0;(e.side?S2:S1).push({x,y:y-r*.6,vx:(Math.random()-.5)*40,vy:-50-Math.random()*30,t:0})}}
+  g.font='700 11.5px "League Spartan",sans-serif';g.textAlign='center';g.fillStyle=blocked||e.state==='locked'?'#ff9aa6':'#9ff3c8';if(!(e.state==='locked'))g.fillText(blocked?'blocked':(e.state==='renew'?'new platelet ✨':'COX working'),x,y+r+14)}
+let S1=[],S2=[];
+function drawDrug(g,d){const x=d.x,y=d.y;g.save();g.translate(x,y);
+  if(d.side===0){ball(g,-7,0,7,'#d9f0ff','#4aa3e8');ball(g,7,0,7,'#d9f0ff','#4aa3e8');g.fillStyle='#fff';g.font='800 9px "League Spartan",sans-serif';g.textAlign='center';g.fillText('IBU',0,-11)}
+  else{ball(g,-6,0,7,'#ffe0e4','#e8506a');if(!d.used)ball(g,8,-3,5,'#fff6c8','#e0b020');g.fillStyle='#fff';g.font='800 9px "League Spartan",sans-serif';g.textAlign='center';g.fillText('ASA',0,-11)}
+  g.restore()}
+function stepPharm(dt){for(const o of[C1,C2]){const side=o===C2?1:0,g=o.g;g.clearRect(0,0,o.W,o.H);const r=Math.min(o.W*.1,o.H*.14);
+    E.filter(e=>e.side===side).forEach(e=>{const p=enzPos(o,e.i);drawEnzyme(g,p.x,p.y,r,e,dt)});
+    const SP=side?S2:S1;for(let k=SP.length-1;k>=0;k--){const s=SP[k];s.t+=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;const a=1-s.t/1.2;if(a<=0){SP.splice(k,1);continue}g.fillStyle=`rgba(255,90,110,${a})`;g.beginPath();g.arc(s.x,s.y,3.2,0,7);g.fill()}
+    D.filter(d=>d.side===side).forEach(d=>{
+      if(d.bound){const p=enzPos(o,d.bound.i);d.x+=(p.x-d.x)*Math.min(1,dt*6);d.y+=(p.y-r*.45-d.y)*Math.min(1,dt*6);d.bt+=dt;
+        if(side===0&&d.bt>1.6+Math.random()*1.5){d.bound.state='free';d.bound=null;d.vy=-40;d.vx=(Math.random()-.5)*80}
+        else if(side===1&&d.bt>1.2){d.bound.state='locked';d.used=true;d.bound=null;d.vy=-50;d.vx=(Math.random()-.5)*80}}
+      else{d.x+=d.vx*dt;d.y+=d.vy*dt;if(!d.leaving){if(d.x>o.W-14)d.vx=-Math.abs(d.vx);if(d.x<14&&d.vx<0)d.vx=Math.abs(d.vx);if(d.y<64)d.vy=Math.abs(d.vy);if(d.y>o.H-30)d.vy=-Math.abs(d.vy);
+          // drift towards the nearest free enzyme mouth, then bind
+          if(!(side===1&&d.used)){let best=null,bd=1e9;E.filter(e=>e.side===side&&e.state==='free').forEach(e=>{const p=enzPos(o,e.i),dd=Math.hypot(p.x-d.x,p.y-r*.45-d.y);if(dd<bd){bd=dd;best=e}});
+            if(best){const p=enzPos(o,best.i),tx=p.x-d.x,ty=p.y-r*.45-d.y,L=Math.hypot(tx,ty)||1;d.vx+=(tx/L*70-d.vx)*Math.min(1,dt*1.2);d.vy+=(ty/L*70-d.vy)*Math.min(1,dt*1.2);
+              if(bd<r*.45){d.bound=best;best.state='bound';d.bt=0}}}}
+        else{d.vx+=dt*60;}}
+      drawDrug(g,d)});
+    D=D.filter(d=>!(d.leaving&&d.x>o.W+40&&d.side===side)||d.side!==side);
+    const work=E.filter(e=>e.side===side&&e.state==='free').length;g.font='800 13px "League Spartan",sans-serif';g.textAlign='left';g.fillStyle='#eaf4fb';g.fillText(`COX working: ${work} / 3`,12,o.H-12)}}
+/* ============ shared ============ */
+function btns(list){$('btns').innerHTML='';list.forEach(([t,f],i)=>{const b=document.createElement('button');b.textContent=t;if(t.startsWith('↺'))b.className='g';b.onclick=f;$('btns').appendChild(b)})}
+$('t1').onclick=()=>{$('t1').classList.add('on');$('t2').classList.remove('on');mode1()};
+$('t2').onclick=()=>{$('t2').classList.add('on');$('t1').classList.remove('on');mode2()};
+let last=performance.now(),said=0;
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
+  if(mode===1){stepW(W1,dt);stepW(W2,dt);drawW(W1,dt);drawW(W2,dt);if(T>6&&said!==2){said=2;msg1()}if(T<6&&said!==1){said=1;msg1()}}
+  else stepPharm(dt);
+  requestAnimationFrame(loop)}
+mode1();requestAnimationFrame(loop);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
