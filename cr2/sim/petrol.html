@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why no sparks at the petrol station? · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--hot:#ff9b5c}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+sub,sup{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(240px,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;padding:10px}
+.bar{grid-column:1/-1}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14.5px}
+.card{position:relative;border-radius:22px;border:2px solid rgba(45,212,191,.35);box-shadow:0 12px 30px rgba(0,0,0,.4);overflow:hidden;min-height:0}
+.scene{background:linear-gradient(180deg,#0d2346 0%,#163a5e 70%,#1d4467 100%)}
+.card canvas{position:absolute;inset:0;width:100%;height:100%}
+.card.shake{animation:shake .5s}
+@keyframes shake{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-5px,3px)}80%{transform:translate(3px,-2px)}}
+.flash{position:absolute;inset:0;background:radial-gradient(circle at 35% 70%,#fff6c8 0%,#ffb35c 40%,transparent 75%);opacity:0;pointer-events:none}
+.boom{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.5);font:800 50px 'League Spartan',sans-serif;color:#fff;text-shadow:0 0 30px #ff9b5c,0 0 10px #ffd27a;opacity:0;pointer-events:none;white-space:nowrap}
+.boom.go{animation:boom 1.8s ease-out forwards}
+@keyframes boom{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.tag{position:absolute;left:12px;top:9px;margin:0;font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#7fe6d8;z-index:2;pointer-events:none}
+.side{display:grid;grid-template-rows:minmax(0,1fr) auto auto auto;gap:8px;min-height:0}
+.hill{background:radial-gradient(circle at 40% 35%,#173c66,#0a1a33 75%)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{border-radius:14px;padding:6px 10px;background:rgba(6,15,31,.55);border:1px solid rgba(126,196,255,.2)}
+.stat span{display:block;font-size:12.5px;color:var(--muted)}
+.stat b{font:800 22px 'League Spartan',sans-serif;color:var(--gold)}
+.stat.r b{color:var(--lime)}
+.step{border-radius:16px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);box-shadow:0 0 18px rgba(212,255,58,.12);font-size:15.5px;line-height:1.35;min-height:84px}
+.step .n{font:800 12.5px 'League Spartan',sans-serif;color:var(--lime);letter-spacing:.06em;text-transform:uppercase}
+.step b{color:var(--gold);font-weight:400}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr .8fr;gap:6px}
+.btns button{border-radius:14px;padding:9px 4px;font-weight:800;font-size:15px;border:0;line-height:1.1;background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600;box-shadow:0 6px 18px rgba(255,180,60,.35)}
+.btns button small{display:block;font-size:11px;font-weight:600;opacity:.8}
+.btns button:disabled{opacity:.45;cursor:default}
+#bReset{background:rgba(255,255,255,.06);border:1px solid rgba(45,212,191,.35);color:var(--ink);box-shadow:none}
+@media (max-height:540px) and (min-width:700px){
+  #app{padding:8px;gap:8px}.bar h1{font-size:19px}.bar p{display:none}
+  .stat{padding:4px 8px}.stat b{font-size:17px}.step{font-size:12.5px;padding:6px 10px;min-height:66px}.step .n{font-size:11px}
+  .btns button{padding:6px 2px;font-size:13px}.btns button small{font-size:10px}.boom{font-size:38px}
+}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr}.scene{height:340px}.side{grid-template-rows:220px auto auto auto}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><h1>Why no <span>phones or smoking</span> at the petrol station? ⛽</h1><p>Petrol vapour + O<sub>2</sub> → CO<sub>2</sub> + H<sub>2</sub>O + lots of heat. Pick a spark source and watch the E<sub>a</sub> hill.</p></div>
+  <div class="card scene" id="scene"><p class="tag">At the petrol pump</p><canvas id="cs"></canvas><div class="flash" id="flash"></div><div class="boom" id="boom">🔥 FIRE!</div></div>
+  <div class="side">
+    <div class="card hill"><p class="tag">Energy diagram</p><canvas id="ch"></canvas></div>
+    <div class="stats"><div class="stat"><span>Hits so far</span><b id="hits">0</b></div><div class="stat r"><span>Reactions</span><b id="rx">0</b></div></div>
+    <div class="step"><div class="n" id="sn"></div><div id="st"></div></div>
+    <div class="btns">
+      <button id="bPhone">📱 Phone<small>tiny spark</small></button>
+      <button id="bSmoke">🚬 Smoke<small>flame + hot tip</small></button>
+      <button id="bStatic">⚡ Static<small>touch the car</small></button>
+      <button id="bReset">↺ Reset</button>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function mk(id){const c=$(id),g=c.getContext('2d'),o={c,g,W:1,H:1};
+  o.fit=()=>{const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);o.W=r.width;o.H=r.height;g.setTransform(d,0,0,d,0,0)};
+  new ResizeObserver(()=>o.fit()).observe(c.parentElement);o.fit();return o}
+const S=mk('cs'),E=mk('ch');
+
+/* ---------- text for each stage ---------- */
+const TXT={
+ start:['Step 1 · The hidden danger','Petrol <b>evaporates</b> very easily. The vapour spreads around the pump and stays low (it is heavier than air). You cannot see it! Petrol + O<sub>2</sub> stores lots of <b>potential energy</b>, but a small <b>E<sub>a</sub> hill</b> holds it back. The molecules hit all the time, yet <b>0 reactions</b>. 😴'],
+ phone:['Step 2 · 📱 A phone','A phone can make a <b>tiny spark</b> (battery, switch, a dropped phone). It is a small risk, but petrol vapour needs only a <b>tiny push</b> to get over its E<sub>a</sub> hill. So the rule is: no phones at the pump.'],
+ smoke:['Step 2 · 🚬 Smoking','A lighter flame and a glowing cigarette tip (about 400–900 °C) give <b>far more energy than E<sub>a</sub></b>. The vapour catches fire at once.'],
+ static:['Step 2 · ⚡ Static','Slide out of the car seat, then touch the metal car: a <b>static spark</b> jumps from your finger. This is a real cause of petrol station fires! Touch the car <b>before</b> you hold the nozzle.'],
+ chain:['Step 3 · Chain reaction','Each reaction gives out <b>much more heat than E<sub>a</sub></b> (a big negative ΔH). This heat pushes the neighbours over the hill too. One reaction starts the next: 🔥'],
+ end:['Step 4 · Remember','Petrol + air = lots of stored potential energy, held back only by a <b>small E<sub>a</sub> hill</b>. Any spark or flame can push it over. Same rule in the lab and the pharmacy store: <b>no flames or sparks near flammable liquids</b> like ethanol, acetone and ether.']};
+function say(k){$('sn').textContent=TXT[k][0];$('st').innerHTML=TXT[k][1]}
+
+/* ---------- scene layout ---------- */
+let L={};
+function layout(){const W=S.W,H=S.H;const gy=H*.86;
+  L={gy,pumpX:W*.07,pumpW:Math.max(46,W*.11),pumpH:H*.5,carX:W*.47,carW:W*.48,carH:H*.17,
+     cap:{x:W*.5,y:gy-H*.12},person:{x:W*.33,y:gy},cloud:{x:W*.42,y:gy-H*.13,rx:W*.3,ry:H*.13}};
+  L.src={phone:{x:W*.33+H*.07,y:gy-H*.27},smoke:{x:W*.33+H*.05,y:gy-H*.39},static:{x:W*.33+H*.11,y:gy-H*.17}}}
+
+/* ---------- molecules ---------- */
+const R=9;let M=[],rings=[],flames=[],bonks=[],hits=0,rx=0,src=null,srcT=0,lit=false,fire=false,scale=1,chainSaid=false;
+function inCloud(px,py){const c=L.cloud;return ((px-c.x)/c.rx)**2+((py-c.y)/c.ry)**2<=1}
+function mol(type){let px,py;const c=L.cloud;
+  if(type==='P'){do{px=c.x+(Math.random()*2-1)*c.rx;py=c.y+(Math.random()*2-1)*c.ry}while(!inCloud(px,py))}
+  else{px=20+Math.random()*(S.W-40);py=40+Math.random()*(L.gy-60)}
+  const a=Math.random()*6.283,sp=(type==='P'?22:38)+Math.random()*20;
+  return{type,x:px,y:py,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:Math.random()*6.283,vr:(Math.random()-.5)*1.6,hot:0,blink:Math.random()*4}}
+function reset(){S.fit();E.fit();layout();M=[];rings=[];flames=[];bonks=[];hits=0;rx=0;src=null;srcT=0;lit=false;fire=false;chainSaid=false;
+  scale=Math.max(.75,Math.min(1.25,Math.sqrt(S.W*S.H)/560));
+  const nP=Math.round(16*scale*scale),nO=Math.round(22*scale*scale);
+  for(let i=0;i<nP;i++)M.push(mol('P'));for(let i=0;i<nO;i++)M.push(mol('O2'));
+  ball={s:.04,mode:'rest',t:0,give:0};heat=[];
+  ['bPhone','bSmoke','bStatic'].forEach(b=>$(b).disabled=false);
+  $('rx').textContent=0;$('hits').textContent=0;say('start')}
+new ResizeObserver(()=>{layout()}).observe($('scene'));
+
+/* ---------- drawing helpers ---------- */
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function face(g,r,m,hot){const bl=(m.blink%4)<.12;g.fillStyle='#1b2340';g.strokeStyle='#1b2340';g.lineCap='round';
+  if(hot){g.lineWidth=r*.12;g.beginPath();g.moveTo(-r*.42,-r*.15);g.lineTo(-r*.2,-r*.02);g.lineTo(-r*.42,r*.1);g.moveTo(r*.42,-r*.15);g.lineTo(r*.2,-r*.02);g.lineTo(r*.42,r*.1);g.stroke();
+    g.beginPath();g.ellipse(0,r*.3,r*.12,r*.15,0,0,7);g.fill()}
+  else if(bl){g.lineWidth=r*.1;g.beginPath();g.moveTo(-r*.4,0);g.lineTo(-r*.18,0);g.moveTo(r*.18,0);g.lineTo(r*.4,0);g.stroke()}
+  else{g.beginPath();g.ellipse(-r*.3,-r*.02,r*.1,r*.14,0,0,7);g.ellipse(r*.3,-r*.02,r*.1,r*.14,0,0,7);g.fill();
+    g.fillStyle='#fff';g.beginPath();g.arc(-r*.27,-r*.08,r*.04,0,7);g.arc(r*.33,-r*.08,r*.04,0,7);g.fill();
+    g.lineWidth=r*.09;g.beginPath();g.arc(0,r*.18,r*.13,.3,Math.PI-.3);g.stroke()}
+  g.fillStyle='rgba(255,111,150,.5)';g.beginPath();g.ellipse(-r*.55,r*.22,r*.14,r*.08,0,0,7);g.ellipse(r*.55,r*.22,r*.14,r*.08,0,0,7);g.fill()}
+const COL={P:['#fff3c4','#e9b13c'],O2:['#ffe6ec','#ff8fa8'],CO2:['#eef1f5','#9aa6b6'],H2O:['#e3f4ff','#7cc3f5']};
+function drawMol(m){const g=S.g,s=R*scale;g.save();g.translate(m.x,m.y);g.rotate(m.rot);
+  if(m.hot>0){g.shadowColor='#ffb35c';g.shadowBlur=16*m.hot}
+  const A=m.type==='P'?[[-s*1.2,s*.2,s*.72],[0,-s*.15,s*.9],[s*1.2,s*.2,s*.72]]:m.type==='O2'?[[-s*.62,0,s*.8],[s*.62,0,s*.8]]:m.type==='CO2'?[[0,0,s*.75],[-s*1.05,0,s*.6],[s*1.05,0,s*.6]]:[[0,-s*.2,s*.8],[-s*.75,s*.45,s*.5],[s*.75,s*.45,s*.5]];
+  const c=COL[m.type];
+  A.forEach(([ax,ay,r])=>{const q=g.createRadialGradient(ax-r*.35,ay-r*.4,r*.1,ax,ay,r);q.addColorStop(0,'#fff');q.addColorStop(.35,m.hot>.3?'#ffd9a8':c[0]);q.addColorStop(1,m.hot>.3?'#ff9b5c':c[1]);g.fillStyle=q;g.beginPath();g.arc(ax,ay,r,0,7);g.fill()});
+  g.shadowBlur=0;const k=m.type==='P'?1:0;g.translate(A[k][0],A[k][1]);g.rotate(-m.rot);m.blink+=.016;face(g,A[k][2],m,m.hot>.3);g.restore()}
+
+function drawScene(t){const g=S.g,W=S.W,H=S.H,gy=L.gy;
+  // ground + forecourt
+  g.fillStyle='#22344a';g.fillRect(0,gy,W,H-gy);g.strokeStyle='rgba(255,210,122,.35)';g.setLineDash([14,12]);g.lineWidth=3;g.beginPath();g.moveTo(0,gy+(H-gy)*.55);g.lineTo(W,gy+(H-gy)*.55);g.stroke();g.setLineDash([]);
+  // canopy
+  g.fillStyle='#2a5a86';rr(g,W*.02,H*.05,W*.96,H*.06,8);g.fill();g.fillStyle='#d4ff3a';g.font=`800 ${Math.max(11,H*.035)}px "League Spartan",sans-serif`;g.textAlign='center';g.fillText('⛽ PETROL',W*.5,H*.095);
+  // pump
+  const px=L.pumpX,pw=L.pumpW,ph=L.pumpH,pt=gy-ph;
+  g.fillStyle='#e9eef5';rr(g,px,pt,pw,ph,10);g.fill();g.fillStyle='#d63b4f';rr(g,px,pt,pw,ph*.16,10);g.fill();
+  g.fillStyle='#0b1a33';rr(g,px+pw*.15,pt+ph*.24,pw*.7,ph*.2,5);g.fill();g.fillStyle='#d4ff3a';g.font=`700 ${Math.max(9,pw*.17)}px "League Spartan",sans-serif`;g.fillText('RM 2.05',px+pw/2,pt+ph*.37);
+  // no-phone / no-smoking signs on pump
+  [[px+pw*.3,pt+ph*.6,'📵'],[px+pw*.72,pt+ph*.6,'🚭']].forEach(([sx,sy,e])=>{g.font=`${Math.max(12,pw*.26)}px sans-serif`;g.fillText(e,sx,sy+pw*.09)});
+  // hose to the car
+  g.strokeStyle='#1b2340';g.lineWidth=5;g.beginPath();g.moveTo(px+pw,pt+ph*.5);g.bezierCurveTo(px+pw*1.6,gy-4,L.cap.x-W*.08,gy-4,L.cap.x-8,L.cap.y);g.stroke();
+  g.fillStyle='#1b2340';rr(g,L.cap.x-16,L.cap.y-7,18,12,3);g.fill();
+  // car
+  const cx=L.carX,cw=L.carW,ch=L.carH,cy=gy-ch-H*.04;
+  g.fillStyle='#4fb6a8';rr(g,cx+cw*.2,cy-ch*.75,cw*.55,ch*.9,ch*.3);g.fill();
+  g.fillStyle='#bfe8ff';rr(g,cx+cw*.26,cy-ch*.6,cw*.2,ch*.5,6);g.fill();rr(g,cx+cw*.5,cy-ch*.6,cw*.2,ch*.5,6);g.fill();
+  g.fillStyle='#5fd0bf';rr(g,cx,cy,cw,ch,ch*.35);g.fill();
+  g.fillStyle='#1b2340';[cx+cw*.22,cx+cw*.78].forEach(wx=>{g.beginPath();g.arc(wx,gy-H*.04,ch*.38,0,7);g.fill()});
+  g.fillStyle='#c8d3e0';[cx+cw*.22,cx+cw*.78].forEach(wx=>{g.beginPath();g.arc(wx,gy-H*.04,ch*.16,0,7);g.fill()});
+  g.fillStyle='#fff3a6';g.beginPath();g.ellipse(cx+cw*.97,cy+ch*.35,ch*.12,ch*.16,0,0,7);g.fill();
+  // car face (kawaii)
+  g.save();g.translate(cx+cw*.86,cy+ch*.5);face(g,ch*.32,{blink:t*.5%4},fire);g.restore();
+  // vapour cloud (faint, "invisible")
+  const c=L.cloud;const q=g.createRadialGradient(c.x,c.y,10,c.x,c.y,c.rx);q.addColorStop(0,'rgba(255,214,120,.16)');q.addColorStop(1,'rgba(255,214,120,0)');
+  g.fillStyle=q;g.beginPath();g.ellipse(c.x,c.y,c.rx,c.ry*1.2,0,0,7);g.fill();
+  g.fillStyle='rgba(255,226,150,.7)';g.font=`600 ${Math.max(10,H*.03)}px "League Spartan",sans-serif`;g.fillText('petrol vapour (you cannot see it)',c.x,gy+(H-gy)*.35);
+  // person
+  drawPerson(t)}
+function drawPerson(t){const g=S.g,H=S.H,p=L.person,h=H*.42,x0=p.x;
+  const head=h*.13,bodyTop=p.y-h+head*2;
+  g.strokeStyle='#ffd9b8';g.lineCap='round';
+  g.fillStyle='#7d5cff';rr(g,x0-h*.09,bodyTop,h*.18,h*.36,h*.06);g.fill();
+  g.strokeStyle='#2f3b5c';g.lineWidth=h*.06;g.beginPath();g.moveTo(x0-h*.05,bodyTop+h*.35);g.lineTo(x0-h*.06,p.y);g.moveTo(x0+h*.05,bodyTop+h*.35);g.lineTo(x0+h*.06,p.y);g.stroke();
+  g.fillStyle='#ffd9b8';g.beginPath();g.arc(x0,bodyTop-head*.9,head,0,7);g.fill();g.fillStyle='#2b1c14';g.beginPath();g.arc(x0,bodyTop-head*1.15,head*1.02,Math.PI,0);g.fill();
+  g.save();g.translate(x0+head*.25,bodyTop-head*.85);face(g,head*.8,{blink:t*.4%4},false);g.restore();
+  // arm toward the source
+  const s=src?L.src[src]:{x:x0+h*.2,y:bodyTop+h*.25};
+  g.strokeStyle='#ffd9b8';g.lineWidth=h*.05;g.beginPath();g.moveTo(x0+h*.07,bodyTop+h*.05);g.lineTo(src==='smoke'?x0+h*.15:s.x-4,src==='smoke'?bodyTop-head*.4:s.y);g.stroke();
+  if(src==='phone'){g.fillStyle='#1b2340';rr(g,s.x-7,s.y-12,14,24,3);g.fill();g.fillStyle=srcT<1.2&&Math.sin(srcT*30)>0?'#8fd3ff':'#2a5a86';rr(g,s.x-5,s.y-9,10,16,2);g.fill();
+    if(srcT<1.4){g.font='12px sans-serif';g.fillText('🎵',s.x+14,s.y-14-srcT*8)}}
+  if(src==='smoke'){g.strokeStyle='#f3efe6';g.lineWidth=4;g.beginPath();g.moveTo(x0+head*.6,bodyTop-head*.4);g.lineTo(s.x,s.y);g.stroke();
+    g.fillStyle='#ff7a2f';g.shadowColor='#ffb35c';g.shadowBlur=14;g.beginPath();g.arc(s.x,s.y,3.5,0,7);g.fill();g.shadowBlur=0;
+    if(srcT<1.4){const fl=g.createRadialGradient(s.x+6,s.y+6,1,s.x+6,s.y+6,12);fl.addColorStop(0,'#fff6c8');fl.addColorStop(.5,'#ffb35c');fl.addColorStop(1,'rgba(255,120,40,0)');g.fillStyle=fl;g.beginPath();g.ellipse(s.x+6,s.y+2,6,12,0,0,7);g.fill()}
+    for(let k=0;k<3;k++){const a=(t*.6+k/3)%1;g.fillStyle=`rgba(220,230,240,${.35*(1-a)})`;g.beginPath();g.arc(s.x+Math.sin(t*2+k)*6,s.y-a*40,4+a*8,0,7);g.fill()}}
+  if(src==='static'&&srcT<.5){g.strokeStyle='#fff';g.lineWidth=2.5;g.beginPath();let qx=s.x,qy=s.y;g.moveTo(qx,qy);for(let k=0;k<5;k++){qx+=7;qy+=(Math.random()-.5)*10;g.lineTo(qx,qy)}g.stroke();
+    g.fillStyle='rgba(255,240,140,.55)';g.beginPath();g.arc(qx,qy,12,0,7);g.fill()}}
+
+/* ---------- energy diagram ---------- */
+let ball={s:.04,mode:'rest',t:0,give:0},heat=[];
+const GIVE={room:.4,phone:1.25,static:1.7,smoke:2.6};
+function hy(u,D){// u in [0,1] along reaction progress -> y
+  const{yR,yT,yP}=D;if(u<.3)return yR;if(u<.45){const k=(u-.3)/.15;return yR+(yT-yR)*(1-Math.cos(k*Math.PI))/2}
+  if(u<.68){const k=(u-.45)/.23;return yT+(yP-yT)*(1-Math.cos(k*Math.PI))/2}return yP}
+function drawHill(dt,t){const g=E.g,W=E.W,H=E.H;g.clearRect(0,0,W,H);
+  const x0=W*.1,x1=W*.95,yR=H*.5,yT=H*.3,yP=H*.86,D={yR,yT,yP},X=u=>x0+(x1-x0)*u;
+  g.strokeStyle='#a9c2d4';g.lineWidth=1.5;g.beginPath();g.moveTo(x0-8,H*.12);g.lineTo(x0-8,H*.95);g.lineTo(x1,H*.95);g.stroke();
+  g.save();g.translate(x0-16,H*.6);g.rotate(-Math.PI/2);g.fillStyle='#a9c2d4';g.font='600 11px "League Spartan",sans-serif';g.textAlign='center';g.fillText('potential energy',0,0);g.restore();
+  g.strokeStyle='#7ec4ff';g.lineWidth=4;g.beginPath();for(let u=0;u<=1.001;u+=.01){const px=X(u),py=hy(u,D);u?g.lineTo(px,py):g.moveTo(px,py)}g.stroke();
+  // Ea arrow: from reactant level straight up to the top of the hill
+  const xa=X(.45);g.setLineDash([4,4]);g.strokeStyle='rgba(169,194,212,.6)';g.lineWidth=1;g.beginPath();g.moveTo(X(.3),yR);g.lineTo(X(.8),yR);g.stroke();g.setLineDash([]);
+  arrow(g,xa,yR,xa,yT+4,'#d4ff3a');g.fillStyle='#d4ff3a';g.font='800 13px "League Spartan",sans-serif';g.textAlign='right';g.fillText('Eₐ',xa-6,(yR+yT)/2+4);g.setLineDash([3,4]);g.strokeStyle='rgba(212,255,58,.6)';g.lineWidth=1;g.beginPath();g.moveTo(X(.01),yT);g.lineTo(xa,yT);g.stroke();g.setLineDash([]);g.textAlign='left';g.font='700 11px "League Spartan",sans-serif';g.fillText('Eₐ needed (small!)',X(.07),yT-5);
+  arrow(g,X(.9),yR,X(.9),yP-3,'#ffb35c');g.fillStyle='#ffb35c';g.textAlign='left';g.fillText('ΔH',X(.9)+5,(yR+yP)/2-2);g.font='600 11px "League Spartan",sans-serif';g.textAlign='right';g.fillText('big heat out',X(.9)-6,(yR+yP)/2+14);
+  g.fillStyle='#eaf4fb';g.font='700 11.5px "League Spartan",sans-serif';g.textAlign='center';g.fillText('petrol + O₂',X(.2),yR-10);g.fillText('CO₂ + H₂O',X(.8),yP+14>H*.94?yP-28:yP+14);
+  // energy given bar (beside the reactants)
+  const bx=X(.03),need=yR-yT;ball.give+=((ball.mode==='rest'?GIVE.room*(.6+.4*Math.sin(t*3)):GIVE[src]||0)-ball.give)*Math.min(1,dt*4);
+  const bh=Math.min(need*ball.give,yR-H*.12);g.fillStyle=ball.give>=1?'rgba(255,155,92,.85)':'rgba(126,196,255,.55)';rr(g,bx-7,yR-bh,14,bh,4);g.fill();
+  g.fillStyle=ball.give>=1?'#ffb35c':'#a9c2d4';g.font='600 10.5px "League Spartan",sans-serif';g.textAlign='left';g.fillText(ball.mode==='rest'?'room heat':'energy given',bx-7,yR+14);g.textAlign='center';
+  // ball (one petrol molecule)
+  if(ball.mode==='rest'){ball.s=.3+.06*Math.max(0,Math.sin(t*3))}
+  else if(ball.mode==='climb'){ball.t+=dt;ball.s=Math.min(.45,.3+ball.t*.2);if(ball.s>=.45){ball.mode='over';ball.t=0}}
+  else if(ball.mode==='over'){ball.t+=dt;ball.s=Math.min(.84,.45+ball.t*.28);if(Math.random()<dt*8)heat.push({x:X(ball.s),y:hy(ball.s,D),t:0});if(ball.s>=.84)ball.mode='done'}
+  const bxp=X(ball.s),byp=hy(ball.s,D)-10;g.save();g.translate(bxp,byp);
+  const q=g.createRadialGradient(-3,-4,1,0,0,10);const hot=ball.mode!=='rest';q.addColorStop(0,'#fff');q.addColorStop(.4,hot?'#ffd9a8':'#fff3c4');q.addColorStop(1,hot?'#ff9b5c':'#e9b13c');
+  if(hot){g.shadowColor='#ffb35c';g.shadowBlur=14}g.fillStyle=q;g.beginPath();g.arc(0,0,10,0,7);g.fill();g.shadowBlur=0;face(g,10,{blink:t%4},hot&&ball.mode!=='done');g.restore();
+  heat=heat.filter(h=>{h.t+=dt;const a=1-h.t/1;if(a<=0)return false;g.fillStyle=`rgba(255,155,92,${a})`;g.font='700 12px sans-serif';g.fillText('♨',h.x+10+h.t*20,h.y-h.t*30);return true});
+  g.fillStyle=ball.mode==='rest'?'#a9c2d4':'#d4ff3a';g.font='700 12px "League Spartan",sans-serif';g.textAlign='right';
+  g.fillText(ball.mode==='rest'?'Not enough energy to get over the hill':ball.mode==='done'?'Over the hill: heat out → more reactions':'Energy ≥ Eₐ: over the hill!',W-12,Math.max(36,H*.11))}
+function arrow(g,x1,y1,x2,y2,c){g.strokeStyle=c;g.fillStyle=c;g.lineWidth=2;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);[[x2,y2,a],[x1,y1,a+Math.PI]].forEach(([px,py,an])=>{g.beginPath();g.moveTo(px,py);g.lineTo(px-8*Math.cos(an-.45),py-8*Math.sin(an-.45));g.lineTo(px-8*Math.cos(an+.45),py-8*Math.sin(an+.45));g.closePath();g.fill()})}
+
+/* ---------- ignite ---------- */
+function ignite(k){if(src)return;src=k;srcT=0;['bPhone','bSmoke','bStatic'].forEach(b=>$(b).disabled=true);say(k);
+  setTimeout(()=>{if(src!==k)return;lit=true;const s=L.src[k];rings.push({x:s.x+(k==='static'?30:6),y:s.y+6,r:0,max:90*scale,c:'#ffe27a',t:0});ball.mode='climb';ball.t=0},k==='phone'?1100:600)}
+$('bPhone').onclick=()=>ignite('phone');$('bSmoke').onclick=()=>ignite('smoke');$('bStatic').onclick=()=>ignite('static');$('bReset').onclick=reset;
+
+function react(p,o){const cx=(p.x+o.x)/2,cy=(p.y+o.y)/2;M=M.filter(m=>m!==p&&m!==o);
+  ['CO2','H2O'].forEach((ty,i)=>{const w=mol(ty);w.x=cx+(i?10:-10);w.y=cy;w.vx*=2.2;w.vy=-Math.abs(w.vy)*2;w.hot=1;M.push(w)});
+  rings.push({x:cx,y:cy,r:0,max:110*scale,c:'#ffb35c',t:0});for(let k=0;k<6;k++)flames.push(flame(cx,cy));
+  rx++;$('rx').textContent=rx;
+  if(rx===2&&!chainSaid){chainSaid=true;setTimeout(()=>{if(!fire)say('chain')},1400)}
+  if(!fire&&rx>=Math.max(5,M.filter(m=>m.type==='P').length*.6)){fire=true;$('flash').animate([{opacity:0},{opacity:.9},{opacity:0}],{duration:900});
+    const sc=$('scene');sc.classList.remove('shake');void sc.offsetWidth;sc.classList.add('shake');const b=$('boom');b.classList.remove('go');void b.offsetWidth;b.classList.add('go');
+    setTimeout(()=>{if(fire)say('end')},2600)}}
+function flame(x0,y0){return{x:x0+(Math.random()-.5)*20,y:y0,vy:-40-Math.random()*60,vx:(Math.random()-.5)*20,t:0,life:.7+Math.random()*.8,r:6+Math.random()*10}}
+
+let last=performance.now();
+function loop(now){const dt=Math.min(.04,(now-last)/1000),t=now/1000;last=now;const g=S.g;
+  if(!L.gy)layout();g.clearRect(0,0,S.W,S.H);if(src)srcT+=dt;
+  drawScene(t);
+  const sp=fire?1.6:1,c=L.cloud;
+  M.forEach(m=>{const f=1+m.hot*1.5;m.x+=m.vx*dt*f*sp;m.y+=m.vy*dt*f*sp;m.rot+=m.vr*dt;m.hot=Math.max(0,m.hot-dt*(m.type==='P'||m.type==='O2'?.22:.6));
+    const r=R*scale*1.4;
+    if(m.type==='P'){const dx=(m.x-c.x)/c.rx,dy=(m.y-c.y)/c.ry;if(dx*dx+dy*dy>1){m.vx=-Math.sign(dx)*Math.abs(m.vx);m.vy=-Math.sign(dy)*Math.abs(m.vy)}}
+    if(m.x<r){m.x=r;m.vx=Math.abs(m.vx)}if(m.x>S.W-r){m.x=S.W-r;m.vx=-Math.abs(m.vx)}if(m.y<S.H*.14){m.y=S.H*.14;m.vy=Math.abs(m.vy)}if(m.y>L.gy-r){m.y=L.gy-r;m.vy=-Math.abs(m.vy)}});
+  // collisions: bounce, count hits; hot petrol + O2 reacts
+  const rr2=(R*scale*2.6)**2;
+  outer:for(let i=0;i<M.length;i++)for(let j=i+1;j<M.length;j++){const a=M[i],b=M[j],dx=b.x-a.x,dy=b.y-a.y,d=dx*dx+dy*dy;
+    if(d<rr2&&d>0){const dd=Math.sqrt(d),nx=dx/dd,ny=dy/dd,p=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;if(p>0){a.vx-=p*nx;a.vy-=p*ny;b.vx+=p*nx;b.vy+=p*ny;hits++;
+      const pair=(a.type==='P'&&b.type==='O2')||(a.type==='O2'&&b.type==='P');
+      if(pair&&(a.hot>.3||b.hot>.3)){react(a.type==='P'?a:b,a.type==='P'?b:a);break outer}
+      bonks.push({x:(a.x+b.x)/2,y:(a.y+b.y)/2,t:0})}}}
+  // energised petrol grabs a nearby O2 (the heat spreads the chain)
+  let n=0;for(const m of M){if(n>=2)break;if(m.hot<.35||m.type!=='P')continue;let best=null,bd=(R*scale*10)**2;
+    for(const q of M){if(q.type!=='O2')continue;const d=(q.x-m.x)**2+(q.y-m.y)**2;if(d<bd){bd=d;best=q}}
+    if(best&&Math.random()<dt*5){react(m,best);n++}}
+  $('hits').textContent=hits.toLocaleString('en-US');
+  // heat rings energise neighbours
+  rings=rings.filter(q=>{q.t+=dt;q.r=Math.min(q.max,q.r+dt*240);const a=1-q.r/q.max;
+    M.forEach(m=>{if((m.type==='P'||m.type==='O2')&&Math.hypot(m.x-q.x,m.y-q.y)<q.r)m.hot=Math.max(m.hot,1)});
+    g.strokeStyle=q.c;g.globalAlpha=Math.max(0,a);g.lineWidth=3;g.beginPath();g.arc(q.x,q.y,q.r,0,7);g.stroke();g.globalAlpha=1;return q.r<q.max});
+  bonks=bonks.filter(b=>{b.t+=dt;const a=1-b.t/.3;if(a<=0)return false;g.strokeStyle=`rgba(169,194,212,${a*.5})`;g.lineWidth=1.2;g.beginPath();g.arc(b.x,b.y,4+b.t*30,0,7);g.stroke();return true});
+  if(bonks.length>40)bonks.splice(0,bonks.length-40);
+  M.forEach(drawMol);
+  // flames
+  if(fire&&Math.random()<dt*70){const f=flame(c.x+(Math.random()-.5)*c.rx*1.7,L.gy-4);f.r*=2;f.vy*=1.5;f.life*=1.3;flames.push(f)}
+  flames=flames.filter(f=>{f.t+=dt;if(f.t>f.life)return false;f.x+=f.vx*dt;f.y+=f.vy*dt;const k=f.t/f.life;
+    const q=g.createRadialGradient(f.x,f.y,1,f.x,f.y,f.r*(1-k*.5));q.addColorStop(0,`rgba(255,246,200,${.9*(1-k)})`);q.addColorStop(.5,`rgba(255,155,60,${.7*(1-k)})`);q.addColorStop(1,'rgba(255,80,40,0)');
+    g.fillStyle=q;g.beginPath();g.arc(f.x,f.y,f.r*(1-k*.5),0,7);g.fill();return true});
+  if(flames.length>260)flames.splice(0,flames.length-260);
+  if(!lit){g.fillStyle='rgba(234,244,251,.9)';g.font='600 14px "League Spartan",sans-serif';g.textAlign='center';g.fillText('Lots of hits… but no reactions 😴',S.W/2,S.H*.17)}
+  drawHill(dt,t);
+  requestAnimationFrame(loop)}
+reset();requestAnimationFrame(loop);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
