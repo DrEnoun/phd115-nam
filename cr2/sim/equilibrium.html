@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Equilibrium, K and Q · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--brown:#c8642a;--pale:#cfe3ff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;
+  background:radial-gradient(70% 60% at 0% 0%,#0f3b4c 0%,transparent 60%),radial-gradient(70% 70% at 100% 100%,#3a1f3c 0%,transparent 60%),var(--bg)}
+sub,sup{font-size:.68em;line-height:0}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto minmax(0,1fr) auto;gap:9px;padding:10px}
+.bar{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.bar h1{margin:0;font:800 21px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14px}
+.eqn{font:700 17px 'League Spartan',sans-serif;white-space:nowrap}.eqn .a{color:var(--pale)}.eqn .b{color:#ff9a5c}
+.card{position:relative;border-radius:18px;border:2px solid rgba(45,212,191,.35);background:linear-gradient(160deg,rgba(22,70,92,.5),rgba(9,28,52,.9));box-shadow:0 10px 26px rgba(0,0,0,.4);overflow:hidden;min-height:0}
+.card canvas{position:absolute;inset:0;width:100%;height:100%}
+.tag{position:absolute;left:12px;top:8px;margin:0;font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7fe6d8;z-index:2;pointer-events:none}
+.temp{position:absolute;right:10px;top:7px;z-index:2;font:800 13px 'League Spartan',sans-serif;border-radius:10px;padding:3px 9px;background:rgba(6,15,31,.7)}
+.right{display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:8px;min-height:0}
+.qk{border-radius:16px;padding:8px 12px;background:rgba(6,15,31,.6);border:1px solid rgba(126,196,255,.25);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+.qk .lab{font:800 12px 'League Spartan',sans-serif;letter-spacing:.08em;color:var(--muted)}
+.qk .val{font:800 26px 'League Spartan',sans-serif}
+.qk .q .val{color:var(--gold)}.qk .k .val{color:var(--lime)}
+.qk .sign{font:900 34px 'League Spartan',sans-serif;color:#fff;min-width:44px}
+.qk .calc{grid-column:1/-1;font-size:13px;color:var(--muted);margin-top:-2px}
+.verdict{grid-column:1/-1;border-radius:12px;padding:5px 8px;font:800 15px 'League Spartan',sans-serif;background:rgba(255,255,255,.06)}
+.verdict.f{background:rgba(255,154,92,.18);color:#ffb98a}.verdict.b{background:rgba(143,211,255,.18);color:#bfe3ff}.verdict.e{background:rgba(212,255,58,.16);color:var(--lime)}
+.rates{border-radius:14px;padding:6px 12px;background:rgba(6,15,31,.5);border:1px solid rgba(126,196,255,.2)}
+.rr{display:grid;grid-template-columns:118px 1fr;gap:8px;align-items:center;font:700 12.5px 'League Spartan',sans-serif;margin:3px 0}
+.tr{height:10px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}.tr i{display:block;height:100%;width:0;border-radius:9px}
+#rf{background:linear-gradient(90deg,#ff9a5c,#ffd27a)}#rb{background:linear-gradient(90deg,#8fd3ff,#cfe3ff)}
+.bot{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:stretch}
+.step{border-radius:14px;padding:7px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,255,58,.55);font-size:15px;line-height:1.35;min-height:52px}
+.step b{color:var(--gold);font-weight:400}
+.btns{display:grid;grid-template-columns:repeat(4,auto);gap:5px;align-content:center}
+.btns button{border-radius:11px;padding:6px 9px;font-weight:800;font-size:13px;border:0;line-height:1.1;background:rgba(255,255,255,.08);color:var(--ink);border:1px solid rgba(126,196,255,.3)}
+.btns button.hot{background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600;border:0}
+.btns button.cold{background:linear-gradient(180deg,#bfe3ff,#6fb6ff);color:#06223f;border:0}
+@media (max-height:560px) and (min-width:700px){#app{padding:7px;gap:6px}.bar h1{font-size:17px}.bar p{display:none}.eqn{font-size:14px}
+  .qk{padding:5px 10px}.qk .val{font-size:20px}.qk .sign{font-size:26px}.qk .calc{font-size:11.5px}.verdict{font-size:12.5px;padding:3px 6px}
+  .rr{font-size:11px;grid-template-columns:100px 1fr;margin:1px 0}.tr{height:8px}.rates{padding:4px 10px}.step{font-size:12.5px;min-height:40px;padding:5px 10px}.btns button{font-size:11.5px;padding:4px 7px}}
+@media (max-width:700px){html,body{overflow:auto;height:auto}#app{height:auto;grid-template-columns:1fr}.box{height:280px}.graph{height:200px}.bot{grid-template-columns:1fr}.bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><div><h1>Equilibrium, <span>K</span> and <span>Q</span> ⚖️</h1><p>Colourless N<sub>2</sub>O<sub>4</sub> ⇌ brown NO<sub>2</sub>. Watch the colour, the graph and Q vs K.</p></div>
+    <div class="eqn"><span class="a">N<sub>2</sub>O<sub>4</sub>(g)</span> ⇌ <span class="b">2NO<sub>2</sub>(g)</span> &nbsp;ΔH = +57 kJ</div></div>
+  <div class="card box"><p class="tag">Inside the flask</p><div class="temp" id="temp"></div><canvas id="cb"></canvas></div>
+  <div class="right">
+    <div class="qk">
+      <div class="q"><div class="lab">Q (right now)</div><div class="val" id="qv">0</div></div><div class="sign" id="sg">&lt;</div><div class="k"><div class="lab">K (at this temp)</div><div class="val" id="kv"></div></div>
+      <div class="calc" id="calc"></div>
+      <div class="verdict" id="vd"></div>
+    </div>
+    <div class="rates"><div class="rr"><span>Forward rate ➜</span><div class="tr"><i id="rf"></i></div></div><div class="rr"><span>Backward rate ⬅</span><div class="tr"><i id="rb"></i></div></div></div>
+    <div class="card graph"><p class="tag">Concentration (mol/L) vs time</p><canvas id="cg"></canvas></div>
+  </div>
+  <div class="bot">
+    <div class="step" id="st"></div>
+    <div class="btns">
+      <button id="bA">Start: N<sub>2</sub>O<sub>4</sub> only</button><button id="bB">Start: NO<sub>2</sub> only</button><button id="bAddA">+ N<sub>2</sub>O<sub>4</sub></button><button id="bAddB">+ NO<sub>2</sub></button>
+      <button id="bRemB">− NO<sub>2</sub></button><button id="bT" class="hot">🔥 Heat to 100 °C</button><button id="bP">⏸ Pause</button><button id="bS">🐢 Slow</button>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+/* real values: Kc = [NO2]^2/[N2O4] = 4.64e-3 at 25 C, 0.212 at 100 C */
+const KT={25:4.64e-3,100:0.212},KF={25:.045,100:.16},U=0.001; // 1 drawn particle = 0.001 mol/L
+let T=25,cA=0.040,cB=0,hist=[],t=0,playing=true,slow=false,msg='',lastMsgKey='',eqSaid=false;
+function K(){return KT[T]}
+function Q(){return cA<=1e-9?Infinity:cB*cB/cA}
+function fmt(x){if(!isFinite(x))return '∞';if(x===0)return '0';if(x<0.01)return x.toExponential(2).replace('e-','×10⁻').replace(/⁻(\d)/,(m,d)=>'⁻'+'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);return x<1?x.toFixed(3):x.toFixed(2)}
+function fc(x){return x.toFixed(3)}
+/* canvas helpers */
+function mk(id){const c=$(id),g=c.getContext('2d'),o={c,g,W:1,H:1};o.fit=()=>{const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);o.W=r.width;o.H=r.height;g.setTransform(d,0,0,d,0,0)};new ResizeObserver(()=>o.fit()).observe(c.parentElement);o.fit();return o}
+const B=mk('cb'),G=mk('cg');
+/* particles */
+let P=[],fx=[];
+function rnd(){return{x:20+Math.random()*(B.W-40),y:34+Math.random()*(B.H-54)}}
+function mol(type,x,y){const a=Math.random()*6.28,sp=40+Math.random()*30;const p=x==null?rnd():{x,y};return{type,x:p.x,y:p.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:Math.random()*6.28,vr:(Math.random()-.5)*3,glow:0}}
+function count(tp){return P.filter(p=>p.type===tp).length}
+function split(){const A=P.filter(p=>p.type==='A');if(!A.length)return false;const a=A[Math.floor(Math.random()*A.length)];P.splice(P.indexOf(a),1);
+  for(const s of[-1,1]){const m=mol('B',a.x+s*8,a.y);m.vx+=s*40;m.glow=1;P.push(m)}fx.push({x:a.x,y:a.y,t:0,c:'#ffb35c'});return true}
+function join(){const Bs=P.filter(p=>p.type==='B');if(Bs.length<2)return false;const a=Bs[Math.floor(Math.random()*Bs.length)];let b=null,d=1e9;Bs.forEach(q=>{if(q!==a){const e=(q.x-a.x)**2+(q.y-a.y)**2;if(e<d){d=e;b=q}}});
+  P=P.filter(p=>p!==a&&p!==b);const m=mol('A',(a.x+b.x)/2,(a.y+b.y)/2);m.glow=1;P.push(m);fx.push({x:m.x,y:m.y,t:0,c:'#8fd3ff'});return true}
+function sync(){let n=0;while(count('A')>Math.round(cA/U)&&n<6){if(!split())break;n++}while(count('B')>Math.round(cB/U)+1&&n<12){if(!join())break;n++}
+  while(count('A')<Math.round(cA/U)){P.push(mol('A'))}while(count('B')<Math.round(cB/U)){P.push(mol('B'))}}
+/* messages */
+function say(key,h){if(key===lastMsgKey)return;lastMsgKey=key;$('st').innerHTML=h}
+function start(which){cA=which==='A'?0.040:0;cB=which==='A'?0:0.080;hist=[];t=0;P=[];fx=[];eqSaid=false;lastMsgKey='';sync();
+  say('start'+which,which==='A'?'At the start there is only colourless N<sub>2</sub>O<sub>4</sub>. <b>Q = 0</b>, so <b>Q &lt; K</b>: the reaction goes <b>forward ➜</b> and brown NO<sub>2</sub> forms.'
+    :'At the start there is only brown NO<sub>2</sub>. Q is <b>very large</b>, so <b>Q &gt; K</b>: the reaction goes <b>backward ⬅</b> and N<sub>2</sub>O<sub>4</sub> forms.')}
+$('bA').onclick=()=>start('A');$('bB').onclick=()=>start('B');
+$('bAddA').onclick=()=>{cA+=0.015;eqSaid=false;say('addA'+Math.random(),'You added N<sub>2</sub>O<sub>4</sub> (a reactant). Now <b>Q &lt; K</b>, so the reaction goes <b>forward ➜</b> until Q = K again. Le Châtelier: it uses up what you added.')};
+$('bAddB').onclick=()=>{cB+=0.025;eqSaid=false;say('addB'+Math.random(),'You added NO<sub>2</sub> (a product). Now <b>Q &gt; K</b>, so the reaction goes <b>backward ⬅</b> until Q = K again.')};
+$('bRemB').onclick=()=>{cB=Math.max(0,cB-0.02);eqSaid=false;say('remB'+Math.random(),'You removed NO<sub>2</sub>. Now <b>Q &lt; K</b>, so the reaction goes <b>forward ➜</b> to make more NO<sub>2</sub>.')};
+$('bT').onclick=()=>{T=T===25?100:25;eqSaid=false;const b=$('bT');b.className=T===25?'hot':'cold';b.textContent=T===25?'🔥 Heat to 100 °C':'❄️ Cool to 25 °C';
+  say('T'+T,T===100?'Heating changes <b>K itself</b>. The forward reaction is endothermic, so K gets bigger (0.00464 → 0.212). Now <b>Q &lt; K</b>: more NO<sub>2</sub> forms and the gas turns <b>browner</b>.'
+    :'Cooling makes K smaller again (0.212 → 0.00464). Now <b>Q &gt; K</b>: NO<sub>2</sub> joins up into N<sub>2</sub>O<sub>4</sub> and the colour gets <b>paler</b>.')};
+$('bP').onclick=()=>{playing=!playing;$('bP').textContent=playing?'⏸ Pause':'▶ Play'};
+$('bS').onclick=()=>{slow=!slow;$('bS').textContent=slow?'⏩ Normal':'🐢 Slow'};
+/* kinetics: rate_f = kf[A], rate_b = kb[B]^2 with kb = kf/K */
+function stepChem(dt){const kf=KF[T],kb=kf/K();const rf=kf*cA,rb=kb*cB*cB;let d=(rf-rb)*dt;d=Math.max(-cB/2,Math.min(cA,d));cA-=d;cB+=2*d;
+  // show that reactions keep happening both ways (dynamic): swap events at the real rate
+  const ev=Math.min(rf,rb)/U*dt*.5;if(Math.random()<ev){if(split()){if(!join())P.push(mol('A'))}}
+  return[rf,rb]}
+let last=performance.now(),acc=0;
+function loop(now){let dt=Math.min(.05,(now-last)/1000);last=now;if(slow)dt*=.35;
+  let rf=KF[T]*cA,rb=KF[T]/K()*cB*cB;
+  if(playing){t+=dt;[rf,rb]=stepChem(dt);sync();acc+=dt;if(acc>.1){acc=0;hist.push([t,cA,cB]);if(hist.length>600)hist.shift()}}
+  const q=Q(),k=K(),r=isFinite(q)?q/k:99;
+  // ---- flask ----
+  const g=B.g,W=B.W,H=B.H;g.clearRect(0,0,W,H);
+  const brown=Math.min(.55,cB/0.08*.55);g.fillStyle=`rgba(200,100,42,${brown})`;g.fillRect(0,0,W,H);
+  P.forEach(p=>{if(playing){const f=1+(T===100?.5:0);p.x+=p.vx*dt*f;p.y+=p.vy*dt*f;p.rot+=p.vr*dt;p.glow=Math.max(0,p.glow-dt*1.2)}
+    if(p.x<12){p.x=12;p.vx=Math.abs(p.vx)}if(p.x>W-12){p.x=W-12;p.vx=-Math.abs(p.vx)}if(p.y<30){p.y=30;p.vy=Math.abs(p.vy)}if(p.y>H-12){p.y=H-12;p.vy=-Math.abs(p.vy)}
+    g.save();g.translate(p.x,p.y);g.rotate(p.rot);if(p.glow>0){g.shadowColor=p.type==='A'?'#8fd3ff':'#ffb35c';g.shadowBlur=14*p.glow}
+    const at=p.type==='A'?[[-6,0,'N'],[6,0,'N'],[-11,-6,'O'],[-11,6,'O'],[11,-6,'O'],[11,6,'O']]:[[0,0,'N'],[-6,-5,'O'],[6,-5,'O']];
+    g.strokeStyle='rgba(230,240,255,.7)';g.lineWidth=2;g.beginPath();if(p.type==='A'){g.moveTo(-6,0);g.lineTo(6,0);[[-11,-6],[-11,6]].forEach(([x,y])=>{g.moveTo(-6,0);g.lineTo(x,y)});[[11,-6],[11,6]].forEach(([x,y])=>{g.moveTo(6,0);g.lineTo(x,y)})}else{g.moveTo(0,0);g.lineTo(-6,-5);g.moveTo(0,0);g.lineTo(6,-5)}g.stroke();
+    at.forEach(([x,y,e])=>{const rr=e==='N'?4.6:4;const c=e==='N'?(p.type==='B'?['#ffd2b0','#e0602a']:['#dbe8ff','#5d86e8']):['#ffe0dc','#e8392b'];const q2=g.createRadialGradient(x-1.5,y-1.5,.5,x,y,rr);q2.addColorStop(0,c[0]);q2.addColorStop(1,c[1]);g.fillStyle=q2;g.beginPath();g.arc(x,y,rr,0,7);g.fill()});
+    g.restore()});
+  fx=fx.filter(f=>{f.t+=dt;const a=1-f.t/.6;if(a<=0)return false;g.strokeStyle=f.c;g.globalAlpha=a;g.lineWidth=2;g.beginPath();g.arc(f.x,f.y,6+f.t*40,0,7);g.stroke();g.globalAlpha=1;return true});
+  g.font='700 12px "League Spartan",sans-serif';g.textAlign='right';g.fillStyle='#cfe3ff';g.fillText('● N₂O₄ (colourless)',W-10,H-26);g.fillStyle='#ffb98a';g.fillText('● NO₂ (brown)',W-10,H-10);
+  $('temp').textContent=T===25?'❄️ 25 °C':'🔥 100 °C';$('temp').style.color=T===25?'#bfe3ff':'#ffb98a';
+  // ---- Q vs K ----
+  $('qv').textContent=fmt(q);$('kv').textContent=fmt(k);
+  const near=Math.abs(Math.log(Math.max(1e-9,r)))<.06;
+  $('sg').textContent=near?'=':(r<1?'<':'>');
+  $('calc').innerHTML=`Q = [NO<sub>2</sub>]<sup>2</sup> / [N<sub>2</sub>O<sub>4</sub>] = (${fc(cB)})<sup>2</sup> / ${fc(cA)}`;
+  const vd=$('vd');if(near){vd.className='verdict e';vd.textContent='Q = K: at equilibrium ⚖️ (no overall change)'}else if(r<1){vd.className='verdict f';vd.textContent='Q < K: goes forward ➜ (more NO₂)'}else{vd.className='verdict b';vd.textContent='Q > K: goes backward ⬅ (more N₂O₄)'}
+  if(near&&!eqSaid&&t>1){eqSaid=true;say('eq'+Math.random(),'<b>Equilibrium!</b> Forward rate = backward rate, and <b>Q = K</b>. The colour stops changing, but molecules still split and join (look for the flashes). It is <b>dynamic</b>.')}
+  // ---- rates ----
+  const mx=Math.max(rf,rb,1e-6)*1.15;$('rf').style.width=(100*rf/mx)+'%';$('rb').style.width=(100*rb/mx)+'%';
+  // ---- graph ----
+  drawGraph();
+  requestAnimationFrame(loop)}
+function drawGraph(){const g=G.g,W=G.W,H=G.H;g.clearRect(0,0,W,H);const x0=40,x1=W-12,y0=H-22,y1=28;
+  g.strokeStyle='rgba(169,194,212,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x0,y1);g.lineTo(x0,y0);g.lineTo(x1,y0);g.stroke();
+  const ymax=Math.max(.06,...hist.map(h=>Math.max(h[1],h[2])))*1.1;
+  g.fillStyle='#a9c2d4';g.font='600 10.5px "League Spartan",sans-serif';g.textAlign='right';[0,ymax/2,ymax].forEach(v=>{const y=y0-(y0-y1)*v/ymax;g.fillText(v.toFixed(2),x0-4,y+3)});
+  g.textAlign='center';g.fillText('time →',(x0+x1)/2,H-6);
+  if(hist.length<2)return;const tA=hist[0][0],tB=Math.max(hist[hist.length-1][0],tA+20);const X=tt=>x0+(x1-x0)*(tt-tA)/(tB-tA),Y=v=>y0-(y0-y1)*v/ymax;
+  [[1,'#cfe3ff','N₂O₄'],[2,'#ff9a5c','NO₂']].forEach(([i,c,l])=>{g.strokeStyle=c;g.lineWidth=2.5;g.beginPath();hist.forEach((h,k)=>k?g.lineTo(X(h[0]),Y(h[i])):g.moveTo(X(h[0]),Y(h[i])));g.stroke();
+    const h=hist[hist.length-1];g.fillStyle=c;g.textAlign='left';g.font='700 11.5px "League Spartan",sans-serif';g.fillText(l,Math.min(X(h[0])+4,x1-34),Y(h[i])-5)})}
+start('A');requestAnimationFrame(loop);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}});
+</script>
+</body>
+</html>
