@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docking tour: imatinib meets its enzyme · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800&family=Questrial&display=swap" rel="stylesheet">
+<script src="../../js/3Dmol-min.js"></script>
+<style>
+:root{--bg:#061427;--ink:#eaf4fb;--muted:#a9c2d4;--lime:#d4ff3a;--gold:#ffd27a;--org:#ffa24c;--teal:#7fe6d8}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:Questrial,system-ui,sans-serif;overflow:hidden;background:var(--bg)}
+button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
+#app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;padding:10px}
+.bar{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.bar h1{margin:0;font:800 22px 'League Spartan',sans-serif}.bar h1 span{color:var(--lime);text-shadow:0 0 16px rgba(212,255,58,.45)}
+.bar p{margin:0;color:var(--muted);font-size:14px}
+.pill{flex:none;border-radius:999px;padding:4px 10px;font:700 12px 'League Spartan',sans-serif;color:#13240a;background:var(--lime)}
+.view{position:relative;border-radius:22px;border:2px solid rgba(45,212,191,.4);background:#040d1c;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;min-height:0}
+#mol{position:absolute;inset:0}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font:700 16px 'League Spartan',sans-serif;z-index:4}
+.hud{position:absolute;left:12px;top:10px;z-index:5;pointer-events:none;font:800 11.5px 'League Spartan',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.score{position:absolute;right:12px;top:10px;z-index:5;pointer-events:none;border-radius:14px;padding:6px 12px;background:rgba(6,15,31,.78);border:1px solid rgba(212,255,58,.5);text-align:right;opacity:0;transition:opacity .4s}
+.score span{display:block;font-size:11.5px;color:var(--muted)}.score b{font:800 24px 'League Spartan',sans-serif;color:var(--lime)}
+.score.on{opacity:1}
+/* speech bubble */
+#bub{position:absolute;z-index:6;max-width:min(380px,58%);border-radius:18px;padding:10px 14px 12px;background:#fffdf5;color:#14213d;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:16.5px;line-height:1.38;pointer-events:none;opacity:0;transition:opacity .35s}
+#bub.on{opacity:1}
+#bub.pop{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+#bub .who{display:flex;align-items:center;gap:6px;margin-bottom:3px;font:800 12.5px 'League Spartan',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+#bub .who img{width:24px;height:24px;border-radius:50%;object-fit:cover}
+#bub .who i{font-style:normal;font-size:18px}
+#bub b{color:#b5530d}
+#bub:after{content:"";position:absolute;width:18px;height:18px;background:#fffdf5;transform:rotate(45deg);left:var(--tx,24px)}
+#bub.down:after{bottom:-8px}#bub.up:after{top:-8px}
+#bub.center:after{display:none}
+#dot{position:absolute;z-index:6;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(212,255,58,.7);animation:pulse 1.4s infinite;pointer-events:none;opacity:0}
+#dot.on{opacity:1}
+@keyframes pulse{70%{box-shadow:0 0 0 14px rgba(212,255,58,0)}100%{box-shadow:0 0 0 0 rgba(212,255,58,0)}}
+.ctl{display:flex;align-items:center;gap:10px}
+.ctl button{border-radius:14px;padding:9px 14px;font-weight:800;font-size:15px;border:0}
+#bPlay{background:linear-gradient(180deg,#ffe27a,#ffab3a);color:#3a1600;min-width:110px}
+#bAgain{background:rgba(255,255,255,.06);border:1px solid rgba(45,212,191,.35);color:var(--ink)}
+.prog{flex:1;display:flex;gap:4px}
+.prog i{flex:1;height:8px;border-radius:9px;background:rgba(255,255,255,.14);overflow:hidden;cursor:pointer;position:relative}
+.prog i u{position:absolute;inset:0;width:0;background:var(--lime)}
+.cap{font:700 12.5px 'League Spartan',sans-serif;color:var(--muted);white-space:nowrap}
+@media (max-height:540px) and (min-width:700px){#app{padding:8px;gap:6px}.bar h1{font-size:18px}.bar p{display:none}.pill{font-size:10.5px}#bub{font-size:13.5px;padding:7px 11px 9px}.ctl button{padding:6px 10px;font-size:13px}.score b{font-size:18px}}
+@media (max-width:700px){.bar{flex-direction:column;align-items:flex-start}#bub{font-size:14px;max-width:72%}.cap{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar"><div><h1>Docking tour: <span>imatinib</span> meets its enzyme 🎬</h1><p>Sit back and watch. Real enzyme (PDB 1IEP), real AutoDock Vina docking results.</p></div><span class="pill">Computational chemistry</span></div>
+  <div class="view">
+    <div id="mol"></div><div class="loading" id="loading">Loading the enzyme… 🧬</div>
+    <div class="hud">Abl kinase · PDB 1IEP</div>
+    <div class="score" id="score"><span id="scoreLab"></span><b id="scoreVal"></b></div>
+    <div id="dot"></div>
+    <div id="bub"><div class="who" id="who"></div><div id="say"></div></div>
+  </div>
+  <div class="ctl"><button id="bPlay">⏸ Pause</button><button id="bAgain">↺ Replay</button><div class="prog" id="prog"></div><span class="cap" id="cap">1 / 11</span></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const WHO={enzyme:['🧬','Abl kinase (the enzyme)','#0f7c6c'],drug:['💊','Imatinib (the drug)','#b5530d'],nam:['img','Dr. NAM','#5b3fd1']};
+let initView=null,D,V,rec,lig,xray=null,gridM=null,PS,playing=true,T=0,beat=-1,beatT0=0,tw=[],anchor=null;
+/* ---------- helpers ---------- */
+function coords(sdf){const L=sdf.split('\n'),n=parseInt(L[3].slice(0,3));const P=[];for(let i=0;i<n;i++){const l=L[4+i];P.push([+l.slice(0,10),+l.slice(10,20),+l.slice(20,30)])}return P}
+const LIG={stick:{radius:.22,colorscheme:'orangeCarbon'},sphere:{scale:.22,colorscheme:'orangeCarbon'}};
+function setLig(P){lig.selectedAtoms({}).forEach((a,i)=>{a.x=P[i][0];a.y=P[i][1];a.z=P[i][2]});lig.setStyle({},LIG)}
+function ligCenter(){const A=lig.selectedAtoms({});let x=0,y=0,z=0;A.forEach(a=>{x+=a.x;y+=a.y;z+=a.z});return{x:x/A.length,y:y/A.length,z:z/A.length}}
+function tween(dur,fn,done){tw.push({t0:T,dur,fn,done})}
+function ease(k){return k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2}
+function morph(A,B,dur,arc){tween(dur,k=>{const e=ease(k),l=arc?Math.sin(Math.PI*e)*arc:0;setLig(A.map((p,i)=>[p[0]+(B[i][0]-p[0])*e,p[1]+(B[i][1]-p[1])*e+l,p[2]+(B[i][2]-p[2])*e]))})}
+function score(lab,val){if(!lab){$('score').classList.remove('on');return}$('scoreLab').textContent=lab;$('scoreVal').textContent=val;$('score').classList.add('on')}
+function pocket(){return{chain:'A',resi:D.pocket.map(p=>p.num)}}
+function showBox(on){V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}if(!on)return;
+  const b=D.box,c=b.center,h=b.size.map(v=>v/2),C=[];for(const sx of[-1,1])for(const sy of[-1,1])for(const sz of[-1,1])C.push([c[0]+sx*h[0],c[1]+sy*h[1],c[2]+sz*h[2]]);
+  [[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]].forEach(([i,j])=>V.addCylinder({start:{x:C[i][0],y:C[i][1],z:C[i][2]},end:{x:C[j][0],y:C[j][1],z:C[j][2]},radius:.09,color:'#7fe6d8',fromCap:1,toCap:1}));
+  let xyz=[];for(let i=0;i<=5;i++)for(let j=0;j<=5;j++)for(let k=0;k<=5;k++)xyz.push(`He ${(c[0]-h[0]+i*4).toFixed(2)} ${(c[1]-h[1]+j*4).toFixed(2)} ${(c[2]-h[2]+k*4).toFixed(2)}`);
+  gridM=V.addModel(xyz.length+'\ngrid\n'+xyz.join('\n'),'xyz');gridM.setStyle({},{sphere:{radius:.17,color:'#9ff3e8'}})}
+function boxCorner(){const b=D.box,c=b.center,h=b.size.map(v=>v/2);return{x:c[0]+h[0],y:c[1]+h[1],z:c[2]-h[2]}}
+function hbonds(on){V.removeAllShapes();V.removeAllLabels();if(!on)return;
+  D.hbonds.forEach(h=>{V.addCylinder({start:{x:h.l[0],y:h.l[1],z:h.l[2]},end:{x:h.p[0],y:h.p[1],z:h.p[2]},radius:.1,dashed:true,dashLength:.25,gapLength:.2,color:'#ffe066',fromCap:1,toCap:1});
+    V.addLabel(h.res,{position:{x:h.p[0],y:h.p[1],z:h.p[2]},backgroundColor:'#0b1a33',backgroundOpacity:.8,fontColor:'#ffe066',fontSize:11,inFront:true})})}
+function setXray(on){if(xray){V.removeModel(xray);xray=null}if(on){xray=V.addModel(D.xray,'sdf');xray.setStyle({},{stick:{radius:.12,colorscheme:'greenCarbon'}})}}
+function home(){if(initView)V.setView(initView);else{V.zoomTo();V.zoom(.95);initView=V.getView()}}
+function ligTop(){const A=lig.selectedAtoms({});let t=A[0];A.forEach(a=>{if(a.y>t.y)t=a});return{x:t.x,y:t.y+5,z:t.z}}
+function protCenter(){const c=D.center;return{x:c[0]-4,y:c[1]+14,z:c[2]}}
+/* ---------- the story (each beat: seconds, who, text, anchor, action) ---------- */
+const BEATS=[
+ {s:7,who:'enzyme',at:()=>protCenter(),say:'Hi! I am <b>Abl kinase</b>, a real enzyme. This is my real 3D shape, found by X-ray crystallography. 🧬',
+  go(){score();setXray(false);hbonds(false);showBox(false);lig.setStyle({},{});rec.setStyle({},{cartoon:{color:'spectrum'}});home();V.spin('y',.5)}},
+ {s:7.5,who:'enzyme',at:()=>protCenter(),say:'I am a <b>catalyst</b>. I move a phosphate group from ATP onto other proteins. In one blood cancer (CML), I am stuck <b>ON</b>. 😵'},
+ {s:8,who:'nam',at:()=>boxCorner(),say:'This cyan cube is the <b>grid box</b> 📦 (20 × 20 × 20 Å). It is the search area around the <b>active site</b>. The computer only looks for poses inside it.',
+  go(){V.spin(false);rec.setStyle({},{cartoon:{color:'spectrum',opacity:.55}});rec.setStyle(pocket(),{cartoon:{color:'spectrum',opacity:.55},stick:{radius:.09,colorscheme:'whiteCarbon'}});
+   V.zoomTo(pocket());V.rotate(28,'y');V.rotate(-18,'x');V.zoom(.7);showBox(true);score('Grid box','20 × 20 × 20 Å')}},
+ {s:5.5,who:'drug',at:()=>ligCenter(),say:'Here I come! Let me try a pose… 🤔 <b>Pose 4: −11.1 kcal/mol</b>.',
+  go(){const st=PS[3].map(p=>[p[0]+22,p[1]+16,p[2]-10]);setLig(st);morph(st,PS[3],2200,0);score('Pose 4 score','−11.1 kcal/mol')}},
+ {s:4.2,who:'drug',at:()=>ligCenter(),say:'Twist and move… <b>Pose 3: −11.3</b>. Not my best yet.',go(){morph(PS[3],PS[2],1500,4);score('Pose 3 score','−11.3 kcal/mol')}},
+ {s:4.2,who:'drug',at:()=>ligCenter(),say:'<b>Pose 2: −11.3</b>. Getting closer… 😊',go(){morph(PS[2],PS[1],1500,4);score('Pose 2 score','−11.3 kcal/mol')}},
+ {s:6,who:'drug',at:()=>ligCenter(),say:'<b>Pose 1: −13.2 kcal/mol</b>. My best fit! 🎉 A more negative score means a better fit.',go(){morph(PS[1],PS[0],1500,2);score('Best pose','−13.2 kcal/mol')}},
+ {s:8,who:'nam',at:()=>ligCenter(),say:'The <b style="color:#1f8f4c">thin green</b> sticks show where the real drug sits in the X-ray structure. The best pose is only <b>0.38 Å</b> away: smaller than one atom! ✅',
+  go(){setLig(PS[0]);showBox(false);setXray(true);score('Best pose vs X-ray','0.38 Å')}},
+ {s:8.5,who:'drug',at:()=>ligTop(),say:'I <b>hold hands</b> with the pocket in 6 places 🤝 These yellow dashes are <b>hydrogen bonds</b>. They keep me tightly in place.',
+  go(){setXray(false);hbonds(true);score('Hydrogen bonds','6')}},
+ {s:8,who:'enzyme',at:()=>ligTop(),say:'Oh no! ATP cannot get into my active site now. I am <b>blocked</b> 🚫 Imatinib is an <b>enzyme inhibitor</b>. 💊',go(){score('Active site','Blocked ✓')}},
+ {s:8,who:'nam',at:null,say:'That is real <b>computational chemistry</b> 🔬 Scientists dock drugs on a computer before making them in the lab. One day, this could be <b>your</b> job!',
+  go(){hbonds(false);score();rec.setStyle({},{cartoon:{color:'spectrum'}});lig.setStyle({},{sphere:{colorscheme:'orangeCarbon'}});home();V.spin('y',.5)}}];
+/* ---------- progress UI ---------- */
+function buildProg(){$('prog').innerHTML=BEATS.map((_,i)=>`<i data-i="${i}"><u></u></i>`).join('');[...$('prog').children].forEach(el=>el.onclick=()=>jump(+el.dataset.i))}
+function jump(i){tw=[];if(i>=7)showBox(false);// replay the setup of earlier beats so the scene is right
+  let last=0;for(let k=0;k<=i;k++)if(BEATS[k].go)last=k;
+  if(i>=3&&i<=6){BEATS[2].go()}else if(BEATS[last].go&&last!==i){BEATS[last].go()}
+  if(i>=4&&i<=6)setLig(PS[[3,2,1][i-4]]);
+  beat=i-1;next()}
+function next(){beat=(beat+1)%BEATS.length;beatT0=T;tw=tw.filter(t=>T-t.t0<t.dur);const b=BEATS[beat];if(b.go)b.go();say(b);V.render();
+  [...$('prog').children].forEach((el,i)=>el.firstChild.style.width=i<beat?'100%':'0');$('cap').textContent=(beat+1)+' / '+BEATS.length}
+function say(b){const bub=$('bub'),w=WHO[b.who];
+  $('who').innerHTML=(w[0]==='img'?'<img src="../../img/drnam-48.png" alt="">':'<i>'+w[0]+'</i>')+`<span style="color:${w[2]}">${w[1]}</span>`;
+  $('say').innerHTML=b.say;anchor=b.at;bub.classList.remove('pop');void bub.offsetWidth;bub.classList.add('on','pop')}
+function placeBubble(){const bub=$('bub'),dot=$('dot'),vw=$('mol').clientWidth,vh=$('mol').clientHeight,bw=bub.offsetWidth,bh=bub.offsetHeight;
+  if(!anchor){bub.className='on center';bub.style.left=(vw-bw)/2+'px';bub.style.top=(vh-bh-14)+'px';dot.classList.remove('on');return}
+  const p=V.modelToScreen(anchor());let ax=p.x,ay=p.y;ax=Math.max(20,Math.min(vw-20,ax));ay=Math.max(20,Math.min(vh-20,ay));
+  dot.style.left=ax+'px';dot.style.top=ay+'px';dot.classList.add('on');
+  let left=ax-30,top=ay-bh-22,cls='down',tx=22;
+  if(left+bw>vw-10){left=ax-bw+30;tx=bw-40}if(left<10){left=10;tx=Math.max(14,ax-10-9)}
+  if(top<10){top=ay+22;cls='up'}
+  if(top+bh>vh-10)top=vh-bh-10;
+  bub.classList.remove('down','up','center');bub.classList.add(cls);bub.style.left=left+'px';bub.style.top=top+'px';bub.style.setProperty('--tx',tx+'px')}
+/* ---------- main loop ---------- */
+let lastNow=performance.now();
+function loop(now){const dt=Math.min(100,now-lastNow);lastNow=now;
+  if(D){if(playing){T+=dt;
+      tw=tw.filter(t=>{const k=Math.min(1,(T-t.t0)/t.dur);t.fn(k);if(k>=1){t.done&&t.done();return false}return true});
+      const b=BEATS[beat],k=Math.min(1,(T-beatT0)/(b.s*1000));$('prog').children[beat].firstChild.style.width=(k*100)+'%';
+      if(k>=1)next()}
+    V.render();placeBubble()}
+  requestAnimationFrame(loop)}
+$('bPlay').onclick=()=>{playing=!playing;$('bPlay').textContent=playing?'⏸ Pause':'▶ Play';if(!playing)V.spin(false);else if(beat<=1||beat===BEATS.length-1)V.spin('y',.5)};
+$('bAgain').onclick=()=>{playing=true;$('bPlay').textContent='⏸ Pause';beat=-1;tw=[];next()};
+fetch('data/dock_1iep.json').then(r=>r.json()).then(d=>{D=d;PS=D.poses.map(p=>coords(p.sdf));
+  V=$3Dmol.createViewer($('mol'),{backgroundColor:'#040d1c',antialias:true});rec=V.addModel(D.receptor,'pdb');lig=V.addModel(D.poses[0].sdf,'sdf');
+  $('loading').remove();new ResizeObserver(()=>{V.resize();V.render()}).observe($('mol'));buildProg();
+  requestAnimationFrame(()=>{V.resize();V.zoomTo();V.zoom(.95);initView=V.getView();next();requestAnimationFrame(loop)})}).catch(()=>{$('loading').textContent='Oops! Please try again.'});
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}
+  if(e.key===' '){e.preventDefault();$('bPlay').click()}});
+</script>
+</body>
+</html>
