@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How does a drug find its target? · Dr. NAM</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;800;900&family=Questrial&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#eaf4fb;--muted:#9fb6cc;--gold:#ffd23f;--cyan:#38c6ff;--green:#3ee07a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;color:var(--ink);font-family:Questrial,system-ui,sans-serif;background:#061230}
+#cv{position:fixed;inset:0;width:100%;height:100%}
+.txt{position:absolute;left:5%;top:12%;width:44%;z-index:2;pointer-events:none}
+.chip{display:inline-flex;gap:10px;align-items:center;font:800 13px 'League Spartan',sans-serif;letter-spacing:.06em;opacity:0;transition:opacity .6s}
+.chip b{background:var(--gold);color:#1b1400;border-radius:999px;padding:4px 10px}
+.chip span{color:#cfe0f0}
+.h{margin:0;font:800 clamp(26px,5.4vw,60px)/1.06 'League Spartan',sans-serif}
+.h span{display:block;opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+.h span.on{opacity:1;transform:none}
+.y{color:var(--gold);font-weight:900;text-shadow:0 0 18px rgba(255,210,63,.75),0 0 40px rgba(255,180,0,.35)}
+.c{color:var(--cyan);font-weight:900;text-shadow:0 0 18px rgba(56,198,255,.8),0 0 42px rgba(56,150,255,.4)}
+.g{color:var(--green);font-weight:900;text-shadow:0 0 18px rgba(62,224,122,.7)}
+.sub{margin-top:14px;font-size:clamp(14px,1.6vw,19px);color:var(--muted);line-height:1.4;min-height:3em;opacity:0;transition:opacity .5s}
+.sub.on{opacity:1}.sub b{color:#fff;font-weight:400}
+.aff{position:absolute;z-index:2;text-align:center;pointer-events:none;transform:translateX(-50%)}
+.aff .l{font:800 12px 'League Spartan',sans-serif;letter-spacing:.14em;color:#cfe0f0}
+.aff .v{font:900 clamp(30px,4.6vw,54px) 'League Spartan',sans-serif;color:#fff;transition:color .4s,text-shadow .4s}
+.aff .v small{font:600 14px Questrial,sans-serif;color:var(--muted);margin-left:8px}
+.aff .t{font:800 12px 'League Spartan',sans-serif;letter-spacing:.12em;height:16px}
+.ctl{position:absolute;right:12px;bottom:10px;z-index:3;display:flex;gap:6px}
+.ctl button{border-radius:10px;padding:5px 10px;border:1px solid rgba(160,200,255,.35);background:rgba(6,18,48,.7);color:var(--ink);font:700 13px 'League Spartan',sans-serif;cursor:pointer}
+.note{position:absolute;left:12px;right:90px;bottom:10px;z-index:3;font-size:11.5px;color:rgba(159,182,204,.7)}
+@media (max-aspect-ratio:1/1){.txt{left:6%;right:6%;width:auto;top:5%}.h{font-size:clamp(26px,8vw,46px)}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="txt">
+  <div class="chip" id="chip"><b>CR2 · PART 5</b><span>ENZYMES &amp; DRUGS</span></div>
+  <h1 class="h" id="h1"><span>How does a</span><span class="y">DRUG</span><span>find its</span><span class="c">TARGET?</span></h1>
+  <h1 class="h" id="h2" style="display:none"><span>Pose search</span><span>+ scoring</span><span class="y" style="font-size:.62em">= binding strength</span></h1>
+  <div class="sub" id="sub"></div>
+</div>
+<div class="aff" id="aff"><div class="l">BINDING AFFINITY</div><div class="v" id="val">−0.0<small>kcal/mol</small></div><div class="t" id="tag"></div></div>
+<div class="note">Example values. Real docking scores for imatinib are on the next slides.</div>
+<div class="ctl"><button id="bP">⏸</button><button id="bR">↺</button></div>
+<script>
+const $=id=>document.getElementById(id);const cv=$('cv'),g=cv.getContext('2d');let W,H,dpr;
+function fit(){dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);layout()}
+let CX,CY,R,portrait;
+function layout(){portrait=W<=H;if(portrait){CX=W*.5;CY=H*.6;R=Math.min(W*.3,H*.2)}else{CX=W*.72;CY=H*.47;R=Math.min(W*.17,H*.27)}
+  const a=$('aff');a.style.left=CX+'px';a.style.top=(CY+R*1.32)+'px'}
+addEventListener('resize',fit);
+/* stars */
+const ST=Array.from({length:140},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.3+.3,p:Math.random()*6.28}));
+const SP=Array.from({length:40},()=>({a:Math.random()*6.28,d:Math.random()*.8,r:Math.random()*1.4+.4}));
+/* protein blob with a pocket notch on top */
+function rad(th,t){let r=1+.07*Math.sin(3*th+.6+t*.5)+.05*Math.sin(5*th-1.1)+.03*Math.sin(7*th+t*.7);
+  let d=Math.atan2(Math.sin(th+Math.PI/2),Math.cos(th+Math.PI/2));r-=.3*Math.exp(-(d*d)/(2*.16*.16));return r}
+function blob(t,jig){g.save();g.translate(CX,CY);const pts=[];for(let i=0;i<=180;i++){const th=i/180*Math.PI*2,r=R*rad(th,t)*(1+jig*Math.sin(t*40)*.01);pts.push([Math.cos(th)*r,Math.sin(th)*r])}
+  g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();
+  const q=g.createRadialGradient(-R*.2,-R*.2,R*.1,0,0,R*1.2);q.addColorStop(0,'#2aa6d8');q.addColorStop(.6,'#1678b0');q.addColorStop(1,'#0c4a86');
+  g.shadowColor='rgba(80,200,255,.55)';g.shadowBlur=30;g.fillStyle=q;g.fill();g.shadowBlur=0;
+  g.lineWidth=2.5;g.strokeStyle='rgba(170,235,255,.9)';g.stroke();
+  g.save();g.clip();SP.forEach(s=>{const x=Math.cos(s.a)*s.d*R,y=Math.sin(s.a)*s.d*R;g.fillStyle=`rgba(200,240,255,${.25+.25*Math.sin(t*2+s.a*3)})`;g.beginPath();g.arc(x,y,s.r,0,7);g.fill()});g.restore();
+  g.restore()}
+function pocketGlow(k){const x=CX,y=CY-R*.78;const q=g.createRadialGradient(x,y,2,x,y,R*.5);q.addColorStop(0,`rgba(255,215,60,${.55*k})`);q.addColorStop(1,'rgba(255,200,40,0)');g.fillStyle=q;g.beginPath();g.arc(x,y,R*.5,0,7);g.fill()}
+/* the drug: small ball-and-stick molecule along the x axis */
+const LA=(()=>{const A=[],B=[];const ring=(cx,cy,r)=>{const s=A.length;for(let i=0;i<6;i++){const a=i*Math.PI/3+Math.PI/6;A.push([cx+r*Math.cos(a),cy+r*Math.sin(a),'C'])}for(let i=0;i<6;i++)B.push([s+i,s+(i+1)%6])};
+  ring(-.55,0,.26);A.push([-.12,.12,'N']);B.push([0,6]);A.push([.15,.02,'C']);B.push([6,7]);A.push([.17,-.28,'O']);B.push([7,8]);
+  ring(.62,.05,.26);B.push([7,11]);A.push([1.03,.22,'O']);B.push([9,15]);A.push([-1.02,-.2,'N']);B.push([3,16]);return{A,B}})();
+function drug(x,y,rot,glow,s){g.save();g.translate(x,y);if(glow>0){const q=g.createRadialGradient(0,0,2,0,0,s*1.5);q.addColorStop(0,`rgba(255,220,70,${.55*glow})`);q.addColorStop(1,'rgba(255,200,40,0)');g.fillStyle=q;g.beginPath();g.arc(0,0,s*1.5,0,7);g.fill()}
+  g.rotate(rot);g.strokeStyle='#e9eef5';g.lineWidth=Math.max(1.5,s*.045);LA.B.forEach(([i,j])=>{g.beginPath();g.moveTo(LA.A[i][0]*s,LA.A[i][1]*s);g.lineTo(LA.A[j][0]*s,LA.A[j][1]*s);g.stroke()});
+  LA.A.forEach(([ax,ay,e])=>{const c={C:['#ffffff','#b8c2cf'],O:['#ffb3a8','#e8392b'],N:['#bcd2ff','#3f6fe8']}[e];const r=s*(e==='C'?.075:.09);const q=g.createRadialGradient(ax*s-r*.3,ay*s-r*.3,r*.1,ax*s,ay*s,r);q.addColorStop(0,c[0]);q.addColorStop(1,c[1]);g.fillStyle=q;g.beginPath();g.arc(ax*s,ay*s,r,0,7);g.fill()});
+  g.restore()}
+/* timeline: key frames for the drug (u,v in units of R from the blob centre) */
+const KF=[[0,1.65,-1.3,.3],[1.8,1.75,-.25,1.1],[3.5,1.95,.05,1.55],[5,1.36,.05,1.57],[6.2,1.3,.05,1.45],[7.2,1.42,.12,1.62],[8,1.75,.95,2.4],
+ [10,-.95,1.2,3.3],[11.1,-.92,1.17,3.2],[11.8,-1.35,1.5,3.6],[13.1,-1.45,-.55,4.4],[14.1,0,-1.62,Math.PI/2+2*Math.PI],[15.5,0,-.86,Math.PI/2+2*Math.PI],[24,0,-.86,Math.PI/2+2*Math.PI]];
+const LOOP=24;
+function ease(k){return k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2}
+function pose(t){let i=0;while(i<KF.length-2&&t>KF[i+1][0])i++;const a=KF[i],b=KF[i+1],k=ease(Math.max(0,Math.min(1,(t-a[0])/(b[0]-a[0]))));
+  const docked=t>=15.5;const wob=docked?0:.03;return{u:a[1]+(b[1]-a[1])*k+Math.sin(t*2.1)*wob,v:a[2]+(b[2]-a[2])*k+Math.cos(t*1.7)*wob,r:a[3]+(b[3]-a[3])*k+(docked?0:Math.sin(t*1.3)*.08)}}
+/* events */
+const EV=[
+ {t:0,go:()=>{reset()}},
+ {t:.2,go:()=>show('h1',0)},{t:.9,go:()=>show('h1',1)},{t:1.6,go:()=>show('h1',2)},{t:2.3,go:()=>show('h1',3)},
+ {t:3,go:()=>sub('A drug molecule floats around the protein. Where does it fit?')},
+ {t:5,go:()=>{sub('<b>Try a pose</b> → give it a score…');score(-3.2,'#ffb020','WEAK FIT');bump=1}},
+ {t:8,go:()=>sub('Not good. <b>Try another pose</b>…')},
+ {t:10,go:()=>{sub('<b>Score it:</b> a bit better, but not the best.');score(-5.8,'#ffd23f','BETTER, NOT BEST');bump=1}},
+ {t:11.9,go:()=>sub('Look! The <b>pocket</b> (active site) has the right shape…')},
+ {t:15.5,go:()=>{sub('<b>Best pose:</b> it fits like a key in a lock. 🔑');score(-9.5,'#3ee07a','STRONG PREDICTED BINDING');rings=[0,.35,.7]}},
+ {t:18.3,go:()=>{$('h1').style.display='none';const h=$('h2');h.style.display='block';[...h.children].forEach(s=>s.classList.remove('on'));[0,1,2].forEach(i=>setTimeout(()=>h.children[i]&&h.children[i].classList.add('on'),i*450));
+   sub('<b>More negative</b> score = <b>stronger</b> binding. This is <b>molecular docking</b>.')}}];
+let T=0,ei=0,playing=true,bump=0,rings=[],shown=-1,cur=0,target=0,col='#fff';
+function show(id,i){$(id).children[i].classList.add('on')}
+function sub(h){const s=$('sub');s.classList.remove('on');setTimeout(()=>{s.innerHTML=h;s.classList.add('on')},180)}
+function score(v,c,tag){target=v;col=c;$('tag').textContent=tag;$('tag').style.color=c}
+function reset(){$('chip').style.opacity=1;const h1=$('h1'),h2=$('h2');h1.style.display='block';h2.style.display='none';[...h1.children].forEach(s=>s.classList.remove('on'));$('sub').classList.remove('on');target=0;cur=0;col='#fff';$('tag').textContent='';rings=[]}
+let last=performance.now();
+function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;if(playing)T+=dt;
+  if(T>=LOOP){T=0;ei=0}while(ei<EV.length&&T>=EV[ei].t){EV[ei].go();ei++}
+  g.clearRect(0,0,W,H);
+  const bg=g.createRadialGradient(W*.5,H*.4,10,W*.5,H*.5,Math.max(W,H)*.8);bg.addColorStop(0,'#0d2a5c');bg.addColorStop(1,'#040b1f');g.fillStyle=bg;g.fillRect(0,0,W,H);
+  ST.forEach(s=>{g.fillStyle=`rgba(220,235,255,${.35+.35*Math.sin(now/700+s.p)})`;g.beginPath();g.arc(s.x*W,s.y*H,s.r,0,7);g.fill()});
+  const docked=T>=15.5;pocketGlow(Math.min(1,.35+Math.max(0,(T-11.9)/2)*.65));
+  bump=Math.max(0,bump-dt*1.5);blob(now/1000,bump*3);
+  // rings when docked
+  rings=rings.map(r=>r+dt*.45).filter(r=>r<1.6);if(docked&&T<18&&rings.length<3&&Math.random()<dt*1.5)rings.push(0);
+  rings.forEach(r=>{g.strokeStyle=`rgba(255,210,63,${Math.max(0,.8-r*.5)})`;g.lineWidth=2;g.beginPath();g.arc(CX,CY-R*.8,R*(.25+r*.38),0,7);g.stroke()});
+  const p=pose(T),s=R*.42;drug(CX+p.u*R,CY+p.v*R,p.r,docked?1:.6,s);
+  if(docked){for(let k=0;k<4;k++){const a=now/900+k*1.57,d=R*(.55+.1*Math.sin(now/400+k));g.fillStyle='rgba(255,255,255,.8)';g.font=`${Math.max(12,R*.12)}px sans-serif`;g.textAlign='center';g.fillText('+',CX+Math.cos(a)*d,CY-R*.8+Math.sin(a)*d*.6)}}
+  // counter
+  cur+=(target-cur)*Math.min(1,dt*3.5);if(Math.abs(target-cur)<.06)cur=target;const v=$('val');v.firstChild.nodeValue=(cur<-.05?'−':'−')+Math.abs(cur).toFixed(1);v.style.color=col;v.style.textShadow=target<-9?'0 0 20px rgba(62,224,122,.7)':'none';
+  requestAnimationFrame(frame)}
+$('bP').onclick=()=>{playing=!playing;$('bP').textContent=playing?'⏸':'▶'};
+$('bR').onclick=()=>{T=0;ei=0;playing=true;$('bP').textContent='⏸'};
+fit();requestAnimationFrame(frame);
+addEventListener('keydown',e=>{const map={ArrowRight:'next',PageDown:'next',ArrowLeft:'prev',PageUp:'prev'};
+  if(map[e.key]&&parent!==window){e.preventDefault();parent.postMessage({simkey:map[e.key]},'*')}if(e.key===' '){e.preventDefault();$('bP').click()}});
+</script>
+</body>
+</html>
