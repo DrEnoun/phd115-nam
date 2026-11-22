@@ -96,16 +96,16 @@ function showBox(on){V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=nu
   gridM=V.addModel(xyz.length+'\ngrid\n'+xyz.join('\n'),'xyz');gridM.setStyle({},{sphere:{radius:.17,color:'#9ff3e8'}})}
 function boxCorner(){const b=D.box,c=b.center,h=b.size.map(v=>v/2);return{x:c[0]+h[0],y:c[1]+h[1],z:c[2]-h[2]}}
 function hbonds(on){V.removeAllShapes();V.removeAllLabels();if(!on)return;
-  D.hbonds.forEach(h=>{V.addCylinder({start:{x:h.l[0],y:h.l[1],z:h.l[2]},end:{x:h.p[0],y:h.p[1],z:h.p[2]},radius:.1,dashed:true,dashLength:.25,gapLength:.2,color:'#ffe066',fromCap:1,toCap:1});
-    V.addLabel(h.res,{position:{x:h.p[0],y:h.p[1],z:h.p[2]},backgroundColor:'#0b1a33',backgroundOpacity:.8,fontColor:'#ffe066',fontSize:11,inFront:true})})}
-function setXray(on){if(xray){V.removeModel(xray);xray=null}if(on){xray=V.addModel(D.xray,'sdf');xray.setStyle({},{stick:{radius:.12,colorscheme:'greenCarbon'}})}}
+  D.hbonds.forEach(h=>{V.addCylinder({start:{x:h.l[0],y:h.l[1],z:h.l[2]},end:{x:h.p[0],y:h.p[1],z:h.p[2]},radius:SURF?.16:.1,dashed:true,dashLength:.25,gapLength:.2,color:'#ffe066',fromCap:1,toCap:1});
+    if(!SURF)V.addLabel(h.res,{position:{x:h.p[0],y:h.p[1],z:h.p[2]},backgroundColor:'#0b1a33',backgroundOpacity:.8,fontColor:'#ffe066',fontSize:11,inFront:true})})}
+function setXray(on){if(xray){V.removeModel(xray);xray=null}if(on){xray=V.addModel(D.xray,'sdf');xray.setStyle({},SURF?{stick:{radius:.3,color:'#3dff7a'},sphere:{scale:.3,color:'#3dff7a'}}:{stick:{radius:.12,colorscheme:'greenCarbon'}})}}
 function home(){if(initView)V.setView(initView);else{V.zoomTo();V.zoom(.95);initView=V.getView()}}
 function ligTop(){const A=lig.selectedAtoms({});let t=A[0];A.forEach(a=>{if(a.y>t.y)t=a});return{x:t.x,y:t.y+5,z:t.z}}
 function protCenter(){const c=D.center;return{x:c[0]-4,y:c[1]+14,z:c[2]}}
 /* ---------- surface view ---------- */
 const SURF=new URLSearchParams(location.search).get('view')==='surface';if(SURF)document.body.classList.add('surface');
 let sBody=null,sPock=null,sState='';const SC={idle:['#a8d4ff','#ffd24a'],active:['#a8d4ff','#5dff8f'],blocked:['#a8d4ff','#ff4d5e'],off:['#7c8594','#9b2f3b']};
-let sOp=1;function surfGlass(on){const o=on?.5:1;if(!SURF||sBody==null||o===sOp)return;sOp=o;V.setSurfaceMaterialStyle(sBody,{color:on?'#e6f3ff':SC[sState||'idle'][0],opacity:o});V.setSurfaceMaterialStyle(sPock,{color:on?'#ffe48a':SC[sState||'idle'][1],opacity:o})}
+let sOp=1;function surfGlass(on){const o=on?(on===2?.28:.5):1;if(!SURF||sBody==null||o===sOp)return;sOp=o;V.setSurfaceMaterialStyle(sBody,{color:on?'#e6f3ff':SC[sState||'idle'][0],opacity:o});V.setSurfaceMaterialStyle(sPock,{color:on?'#ffe48a':SC[sState||'idle'][1],opacity:o})}
 function surfState(st){if(!SURF||sState===st)return;sState=st;if(sBody!=null){V.setSurfaceMaterialStyle(sBody,{color:SC[st][0],opacity:sOp});V.setSurfaceMaterialStyle(sPock,{color:SC[st][1],opacity:sOp})}
   $('glow').className=st==='active'?'active':st==='blocked'?'blocked':''}
 function surfHit(){const m=$('mol');m.classList.remove('shake');void m.offsetWidth;m.classList.add('shake');const f=$('flash');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');
@@ -139,8 +139,8 @@ const BEATS=[
   go(){const st=PS[3].map(p=>[p[0]+22,p[1]+16,p[2]-10]);setLig(st);morph(st,PS[3],2200,0);score('Pose 4 score','−11.1 kcal/mol')}},
  {s:4.2,who:'drug',at:()=>ligCenter(),say:'Twist and move… <b>Pose 3: −11.3</b>. Not my best yet.',go(){morph(PS[3],PS[2],1500,4);score('Pose 3 score','−11.3 kcal/mol')}},
  {s:4.2,who:'drug',at:()=>ligCenter(),say:'<b>Pose 2: −11.3</b>. Getting closer… 😊',go(){morph(PS[2],PS[1],1500,4);score('Pose 2 score','−11.3 kcal/mol')}},
- {s:6,who:'drug',at:()=>ligCenter(),say:'<b>Pose 1: −13.2 kcal/mol</b>. My best fit! 🎉 A more negative score means a better fit.',go(){surfGlass(true);tween(1500,()=>{},()=>{surfState('blocked');surfGlass(false)});morph(PS[1],PS[0],1500,2);score('Best pose','−13.2 kcal/mol')}},
- {s:8,who:'nam',at:()=>ligCenter(),say:'The <b style="color:#1f8f4c">thin green</b> sticks show where the real drug sits in the X-ray structure. The best pose is only <b>0.38 Å</b> away: smaller than one atom! ✅',go(){score('Best pose vs X-ray','0.38 Å')}},
+ {s:6,who:'drug',at:()=>ligCenter(),say:'<b>Pose 1: −13.2 kcal/mol</b>. My best fit! 🎉 A more negative score means a better fit.',go(){surfGlass(true);tween(1500,()=>{},()=>{surfState('blocked')});morph(PS[1],PS[0],1500,2);score('Best pose','−13.2 kcal/mol')}},
+ {s:8,who:'nam',at:()=>ligCenter(),say:'The <b style="color:#1f8f4c">green</b> sticks show where the real drug sits in the X-ray structure. The orange best pose lies right on top of them: only <b>0.38 Å</b> away, smaller than one atom! ✅',go(){score('Best pose vs X-ray','0.38 Å')}},
  {s:8.5,who:'drug',at:()=>ligTop(),say:'I <b>hold hands</b> with the pocket in 6 places 🤝 These yellow dashes are <b>hydrogen bonds</b>. They keep me tightly in place.',go(){score('Hydrogen bonds','6')}},
  {s:12,who:'atp',at:()=>atpCenter(),say:'Let me in! I need the active site… ✗ <b>Blocked!</b> The drug is sitting in <b>my place</b>. I try again and again, but I just <b>bounce off</b>. 😢',
   go(){let n=0;const hit=j=>()=>{n++;lab3d('✗ Blocked!',atpCenter());score('ATP blocked','× '+n);if(SURF)surfHit()};
@@ -152,14 +152,14 @@ const BEATS=[
 /* set the whole scene for beat i, so any beat can be shown at any time */
 function scene(i){V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}setXray(false);score();
   const whole=i<=1||i===BEATS.length-1;
-  if(SURF){rec.setStyle({},{});if(whole){V.zoomTo();facePocket(1.15)}else{V.zoomTo(pocket());facePocket(.7)}
-    surfState(i<=6?'idle':i===11||i===12?'off':'blocked');surfGlass(i>=3&&i<=6);if(i===9)rec.setStyle(pocket(),{})}
+  if(SURF){rec.setStyle({},{});if(whole){V.zoomTo();facePocket(1.15)}else if(i===8||i===9){V.zoomTo({model:lig});facePocket(.85)}else{V.zoomTo(pocket());facePocket(.7)}
+    surfState(i<=6?'idle':i===11||i===12?'off':'blocked');surfGlass(i===8||i===9?2:i>=3&&i<=7);if(i===9)rec.setStyle(pocket(),{})}
   else if(whole){rec.setStyle({},{cartoon:{color:'spectrum'}});home()}
   else{rec.setStyle({},{cartoon:{color:'spectrum',opacity:.55}});rec.setStyle(pocket(),{cartoon:{color:'spectrum',opacity:.55},stick:{radius:.09,colorscheme:'whiteCarbon'}});
     if(!pocketView){const m=$('mol');V.zoomTo(pocket());V.rotate(28,'y');V.rotate(-18,'x');V.zoom(m.clientWidth<m.clientHeight*.9?.5:.7);pocketView=V.getView()}else V.setView(pocketView)}
   if(i>=3&&i<=7)showBox(true);
   if(i<=3)lig.setStyle({},{});else if(i===4)lig.setStyle({},{});else if(i<=7)setLig(PS[[3,2,1][i-5]]);else{setLig(PS[0]);if(i===BEATS.length-1&&!SURF)lig.setStyle({},{sphere:{colorscheme:'orangeCarbon'}})}
-  if(i===8)setXray(true);
+  if(i===8){setXray(true);if(SURF)lig.setStyle({},{stick:{radius:.13,colorscheme:'orangeCarbon'}})}
   if(i===9)hbonds(true);
   if(i===2||i===10||i===11)atpPlace(20);else atpHide()}
 /* ---------- progress UI ---------- */
