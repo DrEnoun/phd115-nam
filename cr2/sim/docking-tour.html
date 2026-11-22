@@ -105,14 +105,15 @@ function protCenter(){const c=D.center;return{x:c[0]-4,y:c[1]+14,z:c[2]}}
 /* ---------- surface view ---------- */
 const SURF=new URLSearchParams(location.search).get('view')==='surface';if(SURF)document.body.classList.add('surface');
 let sBody=null,sPock=null,sState='';const SC={idle:['#a8d4ff','#ffd24a'],active:['#a8d4ff','#5dff8f'],blocked:['#a8d4ff','#ff4d5e'],off:['#7c8594','#9b2f3b']};
-function surfState(st){if(!SURF||sState===st)return;sState=st;if(sBody!=null){V.setSurfaceMaterialStyle(sBody,{color:SC[st][0]});V.setSurfaceMaterialStyle(sPock,{color:SC[st][1]})}
+let sOp=1;function surfGlass(on){const o=on?.5:1;if(!SURF||sBody==null||o===sOp)return;sOp=o;V.setSurfaceMaterialStyle(sBody,{color:on?'#e6f3ff':SC[sState||'idle'][0],opacity:o});V.setSurfaceMaterialStyle(sPock,{color:on?'#ffe48a':SC[sState||'idle'][1],opacity:o})}
+function surfState(st){if(!SURF||sState===st)return;sState=st;if(sBody!=null){V.setSurfaceMaterialStyle(sBody,{color:SC[st][0],opacity:sOp});V.setSurfaceMaterialStyle(sPock,{color:SC[st][1],opacity:sOp})}
   $('glow').className=st==='active'?'active':st==='blocked'?'blocked':''}
 function surfHit(){const m=$('mol');m.classList.remove('shake');void m.offsetWidth;m.classList.add('shake');const f=$('flash');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');
   const g=$('glow');g.className='hit';setTimeout(()=>{if(sState==='blocked')g.className='blocked'},350)}
 function buildSurf(){// cut a window over the pocket so the drug and ATP inside can be seen
-  const out=D.atp.out,L=PS[0].concat(ATP0),cut=[];
-  rec.selectedAtoms({}).forEach(a=>{for(const l of L){const d=[a.x-l[0],a.y-l[1],a.z-l[2]],dep=d[0]*out[0]+d[1]*out[1]+d[2]*out[2];if(dep<1)continue;
-    const lat=Math.hypot(d[0]-dep*out[0],d[1]-dep*out[1],d[2]-dep*out[2]);if(lat<4.2){cut.push(a.serial);break}}});
+  const out=D.atp.out,L=[].concat(...PS,ATP0),cut=[];
+  rec.selectedAtoms({}).forEach(a=>{for(const l of L){const d=[a.x-l[0],a.y-l[1],a.z-l[2]],dep=d[0]*out[0]+d[1]*out[1]+d[2]*out[2];if(dep<0)continue;
+    const lat=Math.hypot(d[0]-dep*out[0],d[1]-dep*out[1],d[2]-dep*out[2]);if(lat<5.5){cut.push(a.serial);break}}});
   const keep={not:{serial:cut}},pk=D.pocket.map(p=>p.num);
   return Promise.all([V.addSurface($3Dmol.SurfaceType.MS,{color:SC.idle[0]},{and:[keep,{not:{resi:pk}}]},keep),V.addSurface($3Dmol.SurfaceType.MS,{color:SC.idle[1]},{and:[keep,{resi:pk}]},keep)])
    .then(ids=>{sBody=ids[0];sPock=ids[1];sState='';surfState('idle')})}
@@ -138,7 +139,7 @@ const BEATS=[
   go(){const st=PS[3].map(p=>[p[0]+22,p[1]+16,p[2]-10]);setLig(st);morph(st,PS[3],2200,0);score('Pose 4 score','−11.1 kcal/mol')}},
  {s:4.2,who:'drug',at:()=>ligCenter(),say:'Twist and move… <b>Pose 3: −11.3</b>. Not my best yet.',go(){morph(PS[3],PS[2],1500,4);score('Pose 3 score','−11.3 kcal/mol')}},
  {s:4.2,who:'drug',at:()=>ligCenter(),say:'<b>Pose 2: −11.3</b>. Getting closer… 😊',go(){morph(PS[2],PS[1],1500,4);score('Pose 2 score','−11.3 kcal/mol')}},
- {s:6,who:'drug',at:()=>ligCenter(),say:'<b>Pose 1: −13.2 kcal/mol</b>. My best fit! 🎉 A more negative score means a better fit.',go(){tween(1500,()=>{},()=>surfState('blocked'));morph(PS[1],PS[0],1500,2);score('Best pose','−13.2 kcal/mol')}},
+ {s:6,who:'drug',at:()=>ligCenter(),say:'<b>Pose 1: −13.2 kcal/mol</b>. My best fit! 🎉 A more negative score means a better fit.',go(){surfGlass(true);tween(1500,()=>{},()=>{surfState('blocked');surfGlass(false)});morph(PS[1],PS[0],1500,2);score('Best pose','−13.2 kcal/mol')}},
  {s:8,who:'nam',at:()=>ligCenter(),say:'The <b style="color:#1f8f4c">thin green</b> sticks show where the real drug sits in the X-ray structure. The best pose is only <b>0.38 Å</b> away: smaller than one atom! ✅',go(){score('Best pose vs X-ray','0.38 Å')}},
  {s:8.5,who:'drug',at:()=>ligTop(),say:'I <b>hold hands</b> with the pocket in 6 places 🤝 These yellow dashes are <b>hydrogen bonds</b>. They keep me tightly in place.',go(){score('Hydrogen bonds','6')}},
  {s:12,who:'atp',at:()=>atpCenter(),say:'Let me in! I need the active site… ✗ <b>Blocked!</b> The drug is sitting in <b>my place</b>. I try again and again, but I just <b>bounce off</b>. 😢',
@@ -152,7 +153,7 @@ const BEATS=[
 function scene(i){V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}setXray(false);score();
   const whole=i<=1||i===BEATS.length-1;
   if(SURF){rec.setStyle({},{});if(whole){V.zoomTo();facePocket(1.15)}else{V.zoomTo(pocket());facePocket(.7)}
-    surfState(i<=6?'idle':i===11||i===12?'off':'blocked');if(i===9)rec.setStyle(pocket(),{})}
+    surfState(i<=6?'idle':i===11||i===12?'off':'blocked');surfGlass(i>=3&&i<=6);if(i===9)rec.setStyle(pocket(),{})}
   else if(whole){rec.setStyle({},{cartoon:{color:'spectrum'}});home()}
   else{rec.setStyle({},{cartoon:{color:'spectrum',opacity:.55}});rec.setStyle(pocket(),{cartoon:{color:'spectrum',opacity:.55},stick:{radius:.09,colorscheme:'whiteCarbon'}});
     if(!pocketView){const m=$('mol');V.zoomTo(pocket());V.rotate(28,'y');V.rotate(-18,'x');V.zoom(m.clientWidth<m.clientHeight*.9?.5:.7);pocketView=V.getView()}else V.setView(pocketView)}
@@ -174,7 +175,7 @@ function placeBubble(){const bub=$('bub'),dot=$('dot'),view=bub.parentElement,m=
   const ox=m.offsetLeft,oy=m.offsetTop,mw=m.clientWidth,mh=m.clientHeight,phone=ox<5;
   let ax=null,ay=null;if(anchor){const p=V.modelToScreen(anchor()),vr=view.getBoundingClientRect();ax=Math.max(ox+16,Math.min(ox+mw-16,p.x-vr.left-view.clientLeft));ay=Math.max(oy+16,Math.min(oy+mh-16,p.y-vr.top-view.clientTop))}
   let top;
-  if(phone){top=oy+mh+10}
+  if(phone){top=Math.min(oy+mh+10,VH-bh-12)}
   else{const want=ay==null?(VH-bh)/2:ay-bh/2;top=Math.max(34,Math.min(VH-bh-12,want))}
   bubY=bubY==null?top:bubY+(top-bubY)*.15;bub.style.top=bubY+'px';
   if(ax==null){dot.classList.remove('on');$('wpath').setAttribute('d','');return}
