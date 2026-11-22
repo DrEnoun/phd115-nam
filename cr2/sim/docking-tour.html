@@ -50,7 +50,7 @@ button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
   #mol{left:0;bottom:42%}.lane{width:100%;top:58%;background:linear-gradient(0deg,rgba(15,59,76,.35),rgba(4,13,28,0))}#bub{width:auto;left:10px;right:10px;font-size:14.5px}}
 /* surface view */
 #glow{position:absolute;z-index:3;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;pointer-events:none;opacity:0;transition:opacity .5s;mix-blend-mode:screen}
-#glow.active{opacity:1;background:radial-gradient(circle,rgba(93,255,143,.75) 0%,rgba(93,255,143,.25) 40%,transparent 70%);animation:gpulse 1.4s ease-in-out infinite}
+#glow.active{opacity:1;background:radial-gradient(circle,rgba(93,255,143,.4) 0%,rgba(93,255,143,.2) 40%,transparent 70%);animation:gpulse 1.4s ease-in-out infinite}
 #glow.blocked{opacity:1;background:radial-gradient(circle,rgba(255,60,80,.7) 0%,rgba(255,60,80,.22) 40%,transparent 70%);animation:gpulse .9s ease-in-out infinite}
 #glow.hit{opacity:1;background:radial-gradient(circle,rgba(255,40,60,.95) 0%,rgba(255,40,60,.4) 45%,transparent 75%);animation:none;transform:scale(1.35)}
 @keyframes gpulse{0%,100%{transform:scale(.85)}50%{transform:scale(1.15)}}
@@ -140,7 +140,7 @@ function hbLabels(){const box=$('hbl'),g=$('hbg');if(!SURF||beat!==9||!hbN){box.
   box.innerHTML=html;g.innerHTML=svg}
 function facePocket(z){const o=D.atp.out;let q=[o[1],-o[0],0,1+o[2]];const n=Math.hypot(...q);q=q.map(x=>x/n);const v=V.getView();v[4]=q[0];v[5]=q[1];v[6]=q[2];v[7]=q[3];V.setView(v);V.zoom(z)}
 /* ---------- ATP helpers ---------- */
-const ATPST={stick:{radius:.28,colorscheme:'magentaCarbon'},sphere:{scale:.28,colorscheme:'magentaCarbon'}};
+const ATPST=new URLSearchParams(location.search).get('view')==='surface'?{stick:{radius:.42,colorscheme:'magentaCarbon'},sphere:{scale:.45,colorscheme:'magentaCarbon'}}:{stick:{radius:.28,colorscheme:'magentaCarbon'},sphere:{scale:.28,colorscheme:'magentaCarbon'}};
 function atpPlace(k,side){if(!atpM)return;const off=[OUT[0]*k+(side?side[0]:0),OUT[1]*k+(side?side[1]:0),OUT[2]*k+(side?side[2]:0)];
   atpM.selectedAtoms({}).forEach((a,i)=>{a.x=ATP0[i][0]+off[0];a.y=ATP0[i][1]+off[1];a.z=ATP0[i][2]+off[2]});atpM.setStyle({},ATPST)}
 function atpHide(){if(atpM)atpM.setStyle({},{})}
@@ -153,8 +153,8 @@ const BEATS=[
  {s:7,who:'enzyme',at:()=>protCenter(),say:'Hi! I am <b>Abl kinase</b>, a real enzyme. This is my real 3D shape, found by X-ray crystallography. 🧬',go(){spinY('y',.5)}},
  {s:7.5,who:'enzyme',at:()=>protCenter(),say:'I am a <b>catalyst</b>. I move a phosphate group from ATP onto other proteins. In one blood cancer (CML), I am stuck <b>ON</b> 😵 Too much of a good thing! A medicine that <b>slows me down</b> would help.',go(){spinY('y',.5)}},
  {s:10,who:'atp',at:()=>atpCenter(),say:'I am <b>ATP</b>, the enzyme&#39;s <b>real substrate</b>. I slide into the <b>empty active site</b>… the enzyme takes one of my phosphate groups ⚡ That is the reaction it catalyses.',
-  go(){atpPlace(20);tween(2600,k=>atpPlace(20*(1-ease(k))),()=>{lab3d('⚡ phosphate moved: reaction!',atpCenter(),'#d4ff3a','#13240a');score('Active site','Working ⚡');surfState('active')});
-   tween(7200,k=>{if(k>.82){atpPlace(20*ease((k-.82)/.18));surfState('idle')}});score('Active site','Empty')}},
+  go(){const end=SURF?7.5:0;atpPlace(20);tween(2600,k=>atpPlace(20-(20-end)*ease(k)),()=>{if(SURF)lab3d('⚡ ATP',(()=>{const c=atpCenter();return{x:c.x,y:c.y-5,z:c.z}})(),'#ff8ef0','#2a0a28');lab3d('⚡ phosphate moved: reaction!',atpCenter(),'#d4ff3a','#13240a');score('Active site','Working ⚡');surfState('active')});
+   tween(7200,k=>{if(k>.82){V.removeAllLabels();atpPlace(end+(20-end)*ease((k-.82)/.18));surfState('idle')}});score('Active site','Empty')}},
  {s:8,who:'nam',at:()=>boxCorner(),say:'This cyan cube is the <b>grid box</b> 📦 (20 × 20 × 20 Å). It is the search area around the <b>active site</b>. The computer only looks for poses inside it.',go(){score('Grid box','20 × 20 × 20 Å')}},
  {s:5.5,who:'drug',at:()=>ligCenter(),say:'Here I come! Let me try a pose… 🤔 <b>Pose 4: −11.1 kcal/mol</b>.',
   go(){const st=PS[3].map(p=>[p[0]+22,p[1]+16,p[2]-10]);setLig(st);morph(st,PS[3],2200,0);score('Pose 4 score','−11.1 kcal/mol')}},
