@@ -124,7 +124,7 @@ function scene(i){V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM
   const whole=i<=1||i===BEATS.length-1;
   if(whole){rec.setStyle({},{cartoon:{color:'spectrum'}});home()}
   else{rec.setStyle({},{cartoon:{color:'spectrum',opacity:.55}});rec.setStyle(pocket(),{cartoon:{color:'spectrum',opacity:.55},stick:{radius:.09,colorscheme:'whiteCarbon'}});
-    if(!pocketView){V.zoomTo(pocket());V.rotate(28,'y');V.rotate(-18,'x');V.zoom(.7);pocketView=V.getView()}else V.setView(pocketView)}
+    if(!pocketView){const m=$('mol');V.zoomTo(pocket());V.rotate(28,'y');V.rotate(-18,'x');V.zoom(m.clientWidth<m.clientHeight*.9?.5:.7);pocketView=V.getView()}else V.setView(pocketView)}
   if(i>=3&&i<=7)showBox(true);
   if(i<=3)lig.setStyle({},{});else if(i===4)lig.setStyle({},{});else if(i<=7)setLig(PS[[3,2,1][i-5]]);else{setLig(PS[0]);if(i===BEATS.length-1)lig.setStyle({},{sphere:{colorscheme:'orangeCarbon'}})}
   if(i===8)setXray(true);
@@ -153,7 +153,7 @@ function placeBubble(){const bub=$('bub'),dot=$('dot'),view=bub.parentElement,m=
   $('wpath').setAttribute('d',phone?`M${bx},${by} C${bx},${my} ${ax},${my} ${ax},${ay}`:`M${bx},${by} C${mx},${by} ${mx},${ay} ${ax},${ay}`)}
 /* ---------- main loop ---------- */
 let lastNow=performance.now();
-function loop(now){const dt=Math.min(100,now-lastNow)*speed;lastNow=now;
+function loop(){const now=performance.now();const dt=Math.min(100,now-lastNow)*speed;lastNow=now;
   if(D){if(playing){T+=dt;
       tw=tw.filter(t=>{const k=Math.min(1,(T-t.t0)/t.dur);t.fn(k);if(k>=1){t.done&&t.done();return false}return true});
       const b=BEATS[beat],k=Math.min(1,(T-beatT0)/(b.s*1000));$('prog').children[beat].firstChild.style.width=(k*100)+'%';
