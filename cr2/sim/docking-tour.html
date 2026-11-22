@@ -176,7 +176,7 @@ const BEATS=[
    [0,1,2].forEach(j=>{const t0=j*3800;tween(t0+1500,k=>{const kk=Math.max(0,(k*(t0+1500)-t0)/1500);if(k*(t0+1500)>=t0)atpPlace(20-(SURF?5.5:13)*ease(kk),side(j))},hit(j));
      tween(t0+3300,k=>{const tt=k*(t0+3300);if(tt>=t0+1700){const kk=(tt-t0-1700)/1600;atpPlace((SURF?14.5:7)+(SURF?5.5:13)*ease(kk),side(j))}})});
    atpPlace(20,side(0));score('ATP blocked','× 0')}},
- {s:9,who:'enzyme',at:()=>ligTop(),say:'ATP cannot reach my active site, so I <b>cannot do my reaction</b>. I am <b>blocked</b> 🚫 Imatinib is an <b>enzyme inhibitor</b>. That is how the drug works! 💊',go(){atpPlace(16,side(1));score('Enzyme','Inhibited 🚫')}},
+ {s:9,who:'enzyme',at:()=>ligTop(),say:'ATP cannot reach my active site, so I <b>cannot do my reaction</b>. I am <b>blocked</b> 🚫 Imatinib is an <b>enzyme inhibitor</b>. That is how the drug works! 💊',go(){atpPlace(SURF?12:16,SURF?side(1).map(x=>x*4):side(1));if(SURF)lab3d('⚡ ATP: locked out',(()=>{const c=atpCenter();return{x:c.x,y:c.y-6,z:c.z}})(),'#ff8ef0','#2a0a28');score('Enzyme','Inhibited 🚫')}},
  {s:8,who:'nam',at:null,say:'That is real <b>computational chemistry</b> 🔬 Scientists dock drugs on a computer before making them in the lab. One day, this could be <b>your</b> job!',go(){score();spinY('y',.5)}}];
 /* set the whole scene for beat i, so any beat can be shown at any time */
 function scene(i){hbN=0;V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}setXray(false);score();
