@@ -61,6 +61,8 @@ button{font-family:'League Spartan',system-ui,sans-serif;cursor:pointer}
 body.surface #bub{font-size:21px;line-height:1.35;padding:13px 17px 15px}
 body.surface #bub .who{font-size:15px}body.surface #bub .who img{width:30px;height:30px}body.surface #bub .who i{font-size:22px}
 body.surface .score b{font-size:30px}body.surface .score span{font-size:13.5px}
+#hbl{position:absolute;inset:0;z-index:5;pointer-events:none}
+#hbl span{position:absolute;transform:translateY(-50%);padding:3px 10px;border-radius:10px;background:#2a2000;border:2px solid #ffe066;color:#ffe066;font:800 17px 'League Spartan',sans-serif;box-shadow:0 0 14px rgba(255,224,102,.6);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -68,7 +70,7 @@ body.surface .score b{font-size:30px}body.surface .score span{font-size:13.5px}
   <div class="bar"><div><h1>Docking tour: <span>imatinib</span> meets its enzyme 🎬</h1><p>Sit back and watch. Real enzyme (PDB 1IEP), real AutoDock Vina docking results.</p></div><span class="pill">Computational chemistry</span></div>
   <div class="ctl"><button id="bPrev" class="g" title="Previous scene">⏮</button><button id="bPlay">⏸ Pause</button><button id="bNext" class="g" title="Next scene">⏭</button><button id="bSpd" class="g">1×</button><button id="bAgain" class="g">↺</button><div class="prog" id="prog"></div><span class="cap" id="cap">1 / 13</span></div>
   <div class="view">
-    <div class="lane"></div><div id="mol"></div><svg id="wire"><path id="wpath" fill="none" stroke="#d4ff3a" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/></svg><div class="loading" id="loading">Loading the enzyme… 🧬</div>
+    <div class="lane"></div><div id="mol"></div><div id="hbl"></div><svg id="wire"><g id="hbg"></g><path id="wpath" fill="none" stroke="#d4ff3a" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/></svg><div class="loading" id="loading">Loading the enzyme… 🧬</div>
     <div class="hud">Abl kinase · PDB 1IEP</div>
     <div class="score" id="score"><span id="scoreLab"></span><b id="scoreVal"></b></div>
     <div id="glow"></div><div class="flash" id="flash"></div><div id="dot"></div>
@@ -120,6 +122,22 @@ function buildSurf(){// cut a window over the pocket so the drug and ATP inside 
 const BIGLIG={stick:{radius:.42,colorscheme:'orangeCarbon'},sphere:{scale:.45,colorscheme:'orangeCarbon'}};
 function ligOut(){const o=D.atp.out,k=4.5;setLig(PS[0].map(p=>[p[0]+o[0]*k,p[1]+o[1]*k,p[2]+o[2]*k]));lig.setStyle({},BIGLIG)}
 function drugTag(){lab3d('💊 Imatinib',(()=>{const c=ligCenter(),o=D.atp.out;return{x:c.x-o[0]*2,y:c.y-o[1]*2-4,z:c.z-o[2]*2}})(),'#ffb347','#3a1600')}
+let hbN=0;
+function hbDraw(t){V.removeAllShapes();D.hbonds.slice(0,hbN).forEach((h,i)=>{const a={x:h.l[0],y:h.l[1],z:h.l[2]},b={x:h.p[0],y:h.p[1],z:h.p[2]},fresh=i===hbN-1;
+  V.addCylinder({start:a,end:b,radius:(fresh?.55:.4)+.12*Math.sin(t*6+i),color:'#ffe066',alpha:fresh?.55:.35,fromCap:1,toCap:1});
+  V.addCylinder({start:a,end:b,radius:.15,color:'#fff8c4',fromCap:1,toCap:1});
+  V.addSphere({center:b,radius:.55,color:'#ffe066',alpha:.8})})}
+function hbLabels(){const box=$('hbl'),g=$('hbg');if(!SURF||beat!==9||!hbN){box.innerHTML='';g.innerHTML='';return}
+  const vr=$('mol').getBoundingClientRect(),view=box.getBoundingClientRect(),c0=V.modelToScreen(ligCenter()),cx=c0.x-view.left,cy=c0.y-view.top;
+  const L=D.hbonds.slice(0,hbN).map(h=>{const p=V.modelToScreen({x:h.p[0],y:h.p[1],z:h.p[2]});return{t:h.res,x:p.x-view.left,y:p.y-view.top}});
+  const left=L.filter(l=>l.x<cx).sort((a,b)=>a.y-b.y),right=L.filter(l=>l.x>=cx).sort((a,b)=>a.y-b.y);
+  const top=vr.top-view.top+40,bot=vr.bottom-view.top-20;let html='',svg='';
+  for(const [side,arr] of [[-1,left],[1,right]]){let y=-1e9;arr.forEach(l=>{l.ly=Math.max(l.y,y+38);y=l.ly});
+    const over=arr.length?arr[arr.length-1].ly-bot:0;if(over>0)arr.forEach(l=>l.ly-=over);arr.forEach(l=>l.ly=Math.max(top,l.ly));
+    arr.forEach(l=>{const lx=side<0?Math.max(12,cx-170):Math.min(view.width-110,cx+120);
+      html+=`<span style="left:${lx}px;top:${l.ly}px">${l.t}</span>`;const ex=side<0?lx+92:lx;
+      svg+=`<path d="M${ex},${l.ly} L${l.x},${l.y}" stroke="#ffe066" stroke-width="2" fill="none" opacity=".9"/><circle cx="${l.x}" cy="${l.y}" r="4" fill="#ffe066"/>`})}
+  box.innerHTML=html;g.innerHTML=svg}
 function facePocket(z){const o=D.atp.out;let q=[o[1],-o[0],0,1+o[2]];const n=Math.hypot(...q);q=q.map(x=>x/n);const v=V.getView();v[4]=q[0];v[5]=q[1];v[6]=q[2];v[7]=q[3];V.setView(v);V.zoom(z)}
 /* ---------- ATP helpers ---------- */
 const ATPST={stick:{radius:.28,colorscheme:'magentaCarbon'},sphere:{scale:.28,colorscheme:'magentaCarbon'}};
@@ -144,7 +162,7 @@ const BEATS=[
  {s:4.2,who:'drug',at:()=>ligCenter(),say:'<b>Pose 2: −11.3</b>. Getting closer… 😊',go(){morph(PS[2],PS[1],1500,4);score('Pose 2 score','−11.3 kcal/mol')}},
  {s:6,who:'drug',at:()=>ligCenter(),say:'<b>Pose 1: −13.2 kcal/mol</b>. My best fit! 🎉 A more negative score means a better fit.',go(){surfGlass(true);tween(1500,()=>{},()=>{surfState('blocked')});morph(PS[1],PS[0],1500,2);score('Best pose','−13.2 kcal/mol')}},
  {s:8,who:'nam',at:()=>ligCenter(),say:'The <b style="color:#1f8f4c">green</b> sticks show where the real drug sits in the X-ray structure. The orange best pose lies right on top of them: only <b>0.38 Å</b> away, smaller than one atom! ✅',go(){score('Best pose vs X-ray','0.38 Å')}},
- {s:8.5,who:'drug',at:()=>ligTop(),say:'I <b>hold hands</b> with the pocket in 6 places 🤝 These yellow dashes are <b>hydrogen bonds</b>. They keep me tightly in place.',go(){score('Hydrogen bonds','6')}},
+ {s:8.5,who:'drug',at:()=>ligTop(),say:'I <b>hold hands</b> with the pocket in 6 places 🤝 These glowing yellow lines are <b>hydrogen bonds</b>. They keep me tightly in place.',go(){score('Hydrogen bonds','0');if(SURF){V.removeAllShapes();hbN=0;tween(8400,k=>{const t=k*8.4,n=Math.max(0,Math.min(6,Math.floor((t-.5)/.9)+1));if(n!==hbN){hbN=n;score('Hydrogen bonds',String(n))}hbDraw(t)})}else score('Hydrogen bonds','6')}},
  {s:12,who:'atp',at:()=>atpCenter(),say:'Let me in! I need the active site… ✗ <b>Blocked!</b> The drug is sitting in <b>my place</b>. I try again and again, but I just <b>bounce off</b>. 😢',
   go(){let n=0;const hit=j=>()=>{n++;if(SURF){V.removeAllLabels();drugTag()}lab3d('✗ Blocked!',atpCenter());score('ATP blocked','× '+n);if(SURF)surfHit()};
    [0,1,2].forEach(j=>{const t0=j*3800;tween(t0+1500,k=>{const kk=Math.max(0,(k*(t0+1500)-t0)/1500);if(k*(t0+1500)>=t0)atpPlace(20-(SURF?5.5:13)*ease(kk),side(j))},hit(j));
@@ -153,7 +171,7 @@ const BEATS=[
  {s:9,who:'enzyme',at:()=>ligTop(),say:'ATP cannot reach my active site, so I <b>cannot do my reaction</b>. I am <b>blocked</b> 🚫 Imatinib is an <b>enzyme inhibitor</b>. That is how the drug works! 💊',go(){atpPlace(16,side(1));score('Enzyme','Inhibited 🚫')}},
  {s:8,who:'nam',at:null,say:'That is real <b>computational chemistry</b> 🔬 Scientists dock drugs on a computer before making them in the lab. One day, this could be <b>your</b> job!',go(){score();spinY('y',.5)}}];
 /* set the whole scene for beat i, so any beat can be shown at any time */
-function scene(i){V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}setXray(false);score();
+function scene(i){hbN=0;V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}setXray(false);score();
   const whole=i<=1||i===BEATS.length-1;
   if(SURF){rec.setStyle({},{});if(whole){V.zoomTo();facePocket(i===BEATS.length-1?1.6:1.15)}else if(i===8||i===9){V.zoomTo({model:lig});facePocket(.85)}else{V.zoomTo(pocket());facePocket(.7)}
     surfState(i<=6?'idle':i===11||i===12?'off':'blocked');surfGlass(i===8||i===9?2:i>=3&&i<=7);if(i===9)rec.setStyle(pocket(),{})}
@@ -194,7 +212,7 @@ function loop(){const now=performance.now();const dt=Math.min(100,now-lastNow)*s
       tw=tw.filter(t=>{const k=Math.min(1,(T-t.t0)/t.dur);t.fn(k);if(k>=1){t.done&&t.done();return false}return true});
       const b=BEATS[beat],k=Math.min(1,(T-beatT0)/(b.s*1000));$('prog').children[beat].firstChild.style.width=(k*100)+'%';
       if(k>=1)next()}
-    V.render();placeBubble();if(SURF){const c=D.center,p=V.modelToScreen({x:c[0],y:c[1],z:c[2]}),vw=$('glow').parentElement.getBoundingClientRect();const g=$('glow');g.style.left=(p.x-vw.left)+'px';g.style.top=(p.y-vw.top)+'px'}}
+    V.render();placeBubble();hbLabels();if(SURF){const c=D.center,p=V.modelToScreen({x:c[0],y:c[1],z:c[2]}),vw=$('glow').parentElement.getBoundingClientRect();const g=$('glow');g.style.left=(p.x-vw.left)+'px';g.style.top=(p.y-vw.top)+'px'}}
   requestAnimationFrame(loop)}
 $('bPlay').onclick=()=>{playing=!playing;$('bPlay').textContent=playing?'⏸ Pause':'▶ Play';if(!playing)V.spin(false);else if(beat<=1||beat===BEATS.length-1)spinY('y',.5)};
 $('bAgain').onclick=()=>{playing=true;$('bPlay').textContent='⏸ Pause';jump(0)};
