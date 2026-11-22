@@ -117,6 +117,9 @@ function buildSurf(){// cut a window over the pocket so the drug and ATP inside 
   const keep={not:{serial:cut}},pk=D.pocket.map(p=>p.num);
   return Promise.all([V.addSurface($3Dmol.SurfaceType.MS,{color:SC.idle[0]},{and:[keep,{not:{resi:pk}}]},keep),V.addSurface($3Dmol.SurfaceType.MS,{color:SC.idle[1]},{and:[keep,{resi:pk}]},keep)])
    .then(ids=>{sBody=ids[0];sPock=ids[1];sState='';surfState('idle')})}
+const BIGLIG={stick:{radius:.42,colorscheme:'orangeCarbon'},sphere:{scale:.45,colorscheme:'orangeCarbon'}};
+function ligOut(){const o=D.atp.out,k=4.5;setLig(PS[0].map(p=>[p[0]+o[0]*k,p[1]+o[1]*k,p[2]+o[2]*k]));lig.setStyle({},BIGLIG)}
+function drugTag(){lab3d('💊 Imatinib',(()=>{const c=ligCenter(),o=D.atp.out;return{x:c.x-o[0]*2,y:c.y-o[1]*2-4,z:c.z-o[2]*2}})(),'#ffb347','#3a1600')}
 function facePocket(z){const o=D.atp.out;let q=[o[1],-o[0],0,1+o[2]];const n=Math.hypot(...q);q=q.map(x=>x/n);const v=V.getView();v[4]=q[0];v[5]=q[1];v[6]=q[2];v[7]=q[3];V.setView(v);V.zoom(z)}
 /* ---------- ATP helpers ---------- */
 const ATPST={stick:{radius:.28,colorscheme:'magentaCarbon'},sphere:{scale:.28,colorscheme:'magentaCarbon'}};
@@ -143,16 +146,16 @@ const BEATS=[
  {s:8,who:'nam',at:()=>ligCenter(),say:'The <b style="color:#1f8f4c">green</b> sticks show where the real drug sits in the X-ray structure. The orange best pose lies right on top of them: only <b>0.38 Å</b> away, smaller than one atom! ✅',go(){score('Best pose vs X-ray','0.38 Å')}},
  {s:8.5,who:'drug',at:()=>ligTop(),say:'I <b>hold hands</b> with the pocket in 6 places 🤝 These yellow dashes are <b>hydrogen bonds</b>. They keep me tightly in place.',go(){score('Hydrogen bonds','6')}},
  {s:12,who:'atp',at:()=>atpCenter(),say:'Let me in! I need the active site… ✗ <b>Blocked!</b> The drug is sitting in <b>my place</b>. I try again and again, but I just <b>bounce off</b>. 😢',
-  go(){let n=0;const hit=j=>()=>{n++;lab3d('✗ Blocked!',atpCenter());score('ATP blocked','× '+n);if(SURF)surfHit()};
-   [0,1,2].forEach(j=>{const t0=j*3800;tween(t0+1500,k=>{const kk=Math.max(0,(k*(t0+1500)-t0)/1500);if(k*(t0+1500)>=t0)atpPlace(20-13*ease(kk),side(j))},hit(j));
-     tween(t0+3300,k=>{const tt=k*(t0+3300);if(tt>=t0+1700){const kk=(tt-t0-1700)/1600;atpPlace(7+13*ease(kk),side(j))}})});
+  go(){let n=0;const hit=j=>()=>{n++;if(SURF){V.removeAllLabels();drugTag()}lab3d('✗ Blocked!',atpCenter());score('ATP blocked','× '+n);if(SURF)surfHit()};
+   [0,1,2].forEach(j=>{const t0=j*3800;tween(t0+1500,k=>{const kk=Math.max(0,(k*(t0+1500)-t0)/1500);if(k*(t0+1500)>=t0)atpPlace(20-(SURF?5.5:13)*ease(kk),side(j))},hit(j));
+     tween(t0+3300,k=>{const tt=k*(t0+3300);if(tt>=t0+1700){const kk=(tt-t0-1700)/1600;atpPlace((SURF?14.5:7)+(SURF?5.5:13)*ease(kk),side(j))}})});
    atpPlace(20,side(0));score('ATP blocked','× 0')}},
  {s:9,who:'enzyme',at:()=>ligTop(),say:'ATP cannot reach my active site, so I <b>cannot do my reaction</b>. I am <b>blocked</b> 🚫 Imatinib is an <b>enzyme inhibitor</b>. That is how the drug works! 💊',go(){atpPlace(16,side(1));score('Enzyme','Inhibited 🚫')}},
  {s:8,who:'nam',at:null,say:'That is real <b>computational chemistry</b> 🔬 Scientists dock drugs on a computer before making them in the lab. One day, this could be <b>your</b> job!',go(){score();spinY('y',.5)}}];
 /* set the whole scene for beat i, so any beat can be shown at any time */
 function scene(i){V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM){V.removeModel(gridM);gridM=null}setXray(false);score();
   const whole=i<=1||i===BEATS.length-1;
-  if(SURF){rec.setStyle({},{});if(whole){V.zoomTo();facePocket(1.15)}else if(i===8||i===9){V.zoomTo({model:lig});facePocket(.85)}else{V.zoomTo(pocket());facePocket(.7)}
+  if(SURF){rec.setStyle({},{});if(whole){V.zoomTo();facePocket(i===BEATS.length-1?1.6:1.15)}else if(i===8||i===9){V.zoomTo({model:lig});facePocket(.85)}else{V.zoomTo(pocket());facePocket(.7)}
     surfState(i<=6?'idle':i===11||i===12?'off':'blocked');surfGlass(i===8||i===9?2:i>=3&&i<=7);if(i===9)rec.setStyle(pocket(),{})}
   else if(whole){rec.setStyle({},{cartoon:{color:'spectrum'}});home()}
   else{rec.setStyle({},{cartoon:{color:'spectrum',opacity:.55}});rec.setStyle(pocket(),{cartoon:{color:'spectrum',opacity:.55},stick:{radius:.09,colorscheme:'whiteCarbon'}});
@@ -161,7 +164,8 @@ function scene(i){V.spin(false);V.removeAllLabels();V.removeAllShapes();if(gridM
   if(i<=3)lig.setStyle({},{});else if(i===4)lig.setStyle({},{});else if(i<=7)setLig(PS[[3,2,1][i-5]]);else{setLig(PS[0]);if(i===BEATS.length-1&&!SURF)lig.setStyle({},{sphere:{colorscheme:'orangeCarbon'}})}
   if(i===8){setXray(true);if(SURF)lig.setStyle({},{stick:{radius:.13,colorscheme:'orangeCarbon'}})}
   if(i===9)hbonds(true);
-  if(i===2||i===10||i===11)atpPlace(20);else atpHide()}
+  if(i===2||i===10||i===11)atpPlace(20);else atpHide()
+  if(SURF&&i>=10){ligOut();drugTag()}}
 /* ---------- progress UI ---------- */
 function buildProg(){$('prog').innerHTML=BEATS.map((_,i)=>`<i data-i="${i}"><u></u></i>`).join('');[...$('prog').children].forEach(el=>el.onclick=()=>jump(+el.dataset.i))}
 function jump(i){tw=[];beat=(i+BEATS.length)%BEATS.length;beatT0=T;scene(beat);const b=BEATS[beat];if(b.go)b.go();say(b);V.render();
