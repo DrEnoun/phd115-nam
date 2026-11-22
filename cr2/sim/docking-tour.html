@@ -63,6 +63,14 @@ body.surface #bub .who{font-size:15px}body.surface #bub .who img{width:30px;heig
 body.surface .score b{font-size:30px}body.surface .score span{font-size:13.5px}
 #hbl{position:absolute;inset:0;z-index:5;pointer-events:none}
 #hbl span{position:absolute;transform:translateY(-50%);padding:3px 10px;border-radius:10px;background:#2a2000;border:2px solid #ffe066;color:#ffe066;font:800 17px 'League Spartan',sans-serif;box-shadow:0 0 14px rgba(255,224,102,.6);white-space:nowrap}
+#bub{border:4px solid transparent}
+#bub[data-who=enzyme]{background:#dcf7ef;border-color:#14a383}
+#bub[data-who=atp]{background:#fbe3fa;border-color:#c437b8}
+#bub[data-who=drug]{background:#ffe9d1;border-color:#ee8a1c}
+#bub[data-who=nam]{background:#ebe5ff;border-color:#6b4fe0}
+#bub .who span{padding:2px 10px;border-radius:999px;color:#fff!important}
+#bub[data-who=enzyme] .who span{background:#14a383}#bub[data-who=atp] .who span{background:#c437b8}
+#bub[data-who=drug] .who span{background:#ee8a1c}#bub[data-who=nam] .who span{background:#6b4fe0}
 </style>
 </head>
 <body>
@@ -191,7 +199,7 @@ function jump(i){tw=[];beat=(i+BEATS.length)%BEATS.length;beatT0=T;scene(beat);c
 function next(){jump(beat+1)}
 function say(b){const bub=$('bub'),w=WHO[b.who];
   $('who').innerHTML=(w[0]==='img'?'<img src="../../img/drnam-48.png" alt="">':'<i>'+w[0]+'</i>')+`<span style="color:${w[2]}">${w[1]}</span>`;
-  $('say').innerHTML=b.say;anchor=b.at;bub.classList.remove('pop');void bub.offsetWidth;bub.classList.add('on','pop');bubY=null}
+  $('say').innerHTML=b.say;anchor=b.at;bub.dataset.who=b.who;$('wpath').setAttribute('stroke',{enzyme:'#3ee0b8',atp:'#ff7af0',drug:'#ffab4a',nam:'#a48cff'}[b.who]);bub.classList.remove('pop');void bub.offsetWidth;bub.classList.add('on','pop');bubY=null}
 let bubY=null;
 function placeBubble(){const bub=$('bub'),dot=$('dot'),view=bub.parentElement,m=$('mol'),VW=view.clientWidth,VH=view.clientHeight,bh=bub.offsetHeight,bw=bub.offsetWidth;
   const ox=m.offsetLeft,oy=m.offsetTop,mw=m.clientWidth,mh=m.clientHeight,phone=ox<5;
